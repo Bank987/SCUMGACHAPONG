@@ -162,11 +162,19 @@ router.get("/callback", async (req, res) => {
 
     res.send(`
       <script>
-        if (window.opener) {
-          window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS' }, '*');
-          window.close();
-        } else {
-          window.location.href = '/';
+        try {
+          if (window.opener) {
+            window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS' }, '*');
+            // If the message fails due to cross-origin, let's at least try to reload the opener
+            setTimeout(() => {
+                try { window.opener.location.reload(); } catch(e){}
+                window.close();
+            }, 500);
+          } else {
+            window.location.href = '/';
+          }
+        } catch(e) {
+            window.location.href = '/';
         }
       </script>
     `);
