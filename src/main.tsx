@@ -1,5 +1,5 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
@@ -10,6 +10,15 @@ window.fetch = async (input, init = {}) => {
   if (typeof url === "string" && url.startsWith("/api")) {
     url = `${import.meta.env.VITE_API_URL || ""}${url}`;
     init.credentials = "include"; // Required for cross-origin cookies
+
+    // Pull token from localStorage and attach to Authorization header
+    const token = localStorage.getItem("token");
+    if (token) {
+      init.headers = {
+        ...init.headers,
+        Authorization: `Bearer ${token}`
+      };
+    }
   }
   return originalFetch(url, init);
 };
