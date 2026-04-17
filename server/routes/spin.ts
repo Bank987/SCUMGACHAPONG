@@ -77,7 +77,7 @@ router.post("/", async (req, res) => {
           ...(caseData.price === 0 ? [{ spins: { $exists: false } }] : [])
         ]
       },
-      {
+      { 
         $inc: { spins: -caseData.price },
         $set: { spinLockedUntil: lockTime }
       },
@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
       const checkUser = await User.findById(userId);
       if (!checkUser) return res.status(400).json({ error: "User not found" });
       if (checkUser.isBanned) return res.status(403).json({ error: `บัญชีถูกระงับ: ${checkUser.banReason}` });
-
+      
       if (checkUser.spinLockedUntil && checkUser.spinLockedUntil > now) {
         // User is trying to bypass the lock (refresh exploit or speedhack)
         checkUser.cheatWarnings = (checkUser.cheatWarnings || 0) + 1;
@@ -100,12 +100,12 @@ router.post("/", async (req, res) => {
           return res.status(403).json({ error: "บัญชีของคุณถูกระงับเนื่องจากตรวจพบการโกง" });
         }
         await checkUser.save();
-
+        
         await CheatLog.create({
           userId: user?._id || checkUser._id,
           action: "Spin Rate Limit Exceeded",
           cheatType: "Animation Skip / Speedhack",
-          description: `พยายามสุ่มกล่องซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.spinLockedUntil.getTime() - now.getTime()) / 1000)} วินาที)`
+          description: `พยายามสุ่มกล่องซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.spinLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
         });
 
         console.warn(`[ANTI-CHEAT] User ${userId} attempted to spin too quickly. Warning: ${checkUser.cheatWarnings}/5`);
@@ -164,12 +164,13 @@ router.post("/", async (req, res) => {
         itemColor: winningItem?.color ?? "#fff"
       });
 
-      // Send webhook 1 (Admin)
-      await sendWebhook('admin', {
+      // Send webhook (Public Gacha)
+      await sendWebhook('gacha', {
+        username: "รายงานผลสุ่มกาชาปอง",
         embeds: [{
-          title: "🎰 New Drop!",
-          description: `**${user.username}** เปิด **${caseData.name}** ได้ **${itemName}**`,
+          description: `**${user.username}** สุ่มกล่อง **${caseData.name}**\nได้รับ **${itemName}** !`,
           color: parseInt(winningItem?.color?.replace("#", "") || "00ff00", 16),
+          thumbnail: { url: itemImage },
           fields: [{ name: "Rarity", value: winningItem?.rarity ?? "common", inline: true }],
           timestamp: new Date().toISOString()
         }]
@@ -360,7 +361,7 @@ router.post("/upgrade-item", async (req, res) => {
           ...(cost === 0 ? [{ upgradePoints: { $exists: false } }] : [])
         ]
       },
-      {
+      { 
         $inc: { upgradePoints: -cost },
         $set: { upgradeLockedUntil: lockTime }
       },
@@ -372,7 +373,7 @@ router.post("/upgrade-item", async (req, res) => {
       const checkUser = await User.findById(userId);
       if (!checkUser) return res.status(400).json({ error: "User not found" });
       if (checkUser.isBanned) return res.status(403).json({ error: `บัญชีถูกระงับ: ${checkUser.banReason}` });
-
+      
       if (checkUser.upgradeLockedUntil && checkUser.upgradeLockedUntil > now) {
         // User is trying to bypass the lock (refresh exploit or speedhack)
         checkUser.cheatWarnings = (checkUser.cheatWarnings || 0) + 1;
@@ -388,7 +389,7 @@ router.post("/upgrade-item", async (req, res) => {
           userId: user?._id || checkUser._id,
           action: "Upgrade Rate Limit Exceeded",
           cheatType: "Animation Skip / Speedhack",
-          description: `พยายามอัปเกรดไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.upgradeLockedUntil.getTime() - now.getTime()) / 1000)} วินาที)`
+          description: `พยายามอัปเกรดไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
         });
 
         console.warn(`[ANTI-CHEAT] User ${userId} attempted to upgrade too quickly. Warning: ${checkUser.cheatWarnings}/5`);
@@ -427,16 +428,16 @@ router.post("/upgrade-item", async (req, res) => {
     const roll = randomNumber / maxUint32;
     // -----------------------------------
 
-    let resultStatus: 'success' | 'stay' | 'downgrade' = 'stay';
+    let resultStatus: 'SUCCESS' | 'FAILED' | 'DOWN' = 'FAILED';
 
     if (roll < rate.success) {
-      resultStatus = 'success';
+      resultStatus = 'SUCCESS';
       item.upgradeLevel = currentLevel + 1;
     } else if (roll < rate.success + rate.stay) {
-      resultStatus = 'stay';
+      resultStatus = 'FAILED';
       // Level stays the same
     } else {
-      resultStatus = 'downgrade';
+      resultStatus = 'DOWN';
       item.upgradeLevel = rate.downgradeTo;
     }
 
@@ -454,6 +455,21 @@ router.post("/upgrade-item", async (req, res) => {
       remainingPoints: user.upgradePoints,
       rate: rate
     });
+
+    try {
+      await sendWebhook('upgrade', {
+        username: "รายงานผลตีบวก",
+        embeds: [{
+          description: `**${user.username}** ตีบวกไอเทม **${item.itemName}**\nโอกาส ${Math.round(rate.success * 100)} % และ "**${resultStatus} !**"\nตอนนี้เลเวล **+${item.upgradeLevel}** !`,
+          color: resultStatus === 'SUCCESS' ? 0x00ff00 : (resultStatus === 'DOWN' ? 0xff0000 : 0xffff00),
+          thumbnail: { url: item.itemImage },
+          fields: [{ name: "Rarity", value: item.itemRarity || "Mythic", inline: true }],
+          timestamp: new Date().toISOString()
+        }]
+      });
+    } catch (whErr) {
+      console.error("Webhook upgrade err:", whErr);
+    }
   } catch (err) {
     console.error("Upgrade item error:", err);
     res.status(500).json({ error: "Server error" });
@@ -493,7 +509,7 @@ router.post("/upgrade", async (req, res) => {
     const isSuccess = (randomNumber / maxUint32) < 0.3;
 
     if (isSuccess) {
-      await sendWebhook('public', {
+      await sendWebhook('upgrade', {
         embeds: [{
           title: "✨ อัปเกรดสำเร็จ!",
           description: `**${user.username}** ตีบวกอาวุธโชว์สำเร็จ! โคตรตึง!`,
@@ -543,7 +559,7 @@ router.post("/upgrade-trade", async (req, res) => {
         userId: checkUser._id,
         action: "Upgrade Trade Rate Limit Exceeded",
         cheatType: "Animation Skip / Speedhack",
-        description: `พยายาม Trade ไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.upgradeLockedUntil.getTime() - now.getTime()) / 1000)} วินาที)`
+        description: `พยายาม Trade ไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
       });
       return res.status(429).json({ error: "กรุณารอให้อนิเมชั่นจบก่อนทำรายการถัดไป" });
     }
@@ -580,8 +596,8 @@ router.post("/upgrade-trade", async (req, res) => {
     }
 
     if (checkUser) {
-      checkUser.upgradeLockedUntil = new Date(now.getTime() + 8300); // 8.3s animation lock
-      await checkUser.save();
+        checkUser.upgradeLockedUntil = new Date(now.getTime() + 8300); // 8.3s animation lock
+        await checkUser.save();
     }
 
     if (isSuccess) {
