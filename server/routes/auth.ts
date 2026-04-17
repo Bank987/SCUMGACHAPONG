@@ -46,21 +46,21 @@ router.get("/me", async (req, res) => {
     // But allow a tiny buffer (e.g., 2 seconds before the lock ends) 
     // to avoid false positives for fast loaders or network latency.
     const now = new Date();
-
+    
     let isCheatRefresh = false;
     let cheatRefreshDesc = "";
-
+    
     if (user.spinLockedUntil && user.spinLockedUntil > new Date(now.getTime() + 2000)) {
       isCheatRefresh = true;
-      cheatRefreshDesc = `ผู้ใช้รีเฟรชหน้าเว็บข้ามอนิเมชั่น (เหลือเวลาล็อคสุ่ม ${Math.ceil((user.spinLockedUntil.getTime() - now.getTime()) / 1000)} วินาที)`;
+      cheatRefreshDesc = `ผู้ใช้รีเฟรชหน้าเว็บข้ามอนิเมชั่น (เหลือเวลาล็อคสุ่ม ${Math.ceil((user.spinLockedUntil.getTime() - now.getTime())/1000)} วินาที)`;
     } else if (user.upgradeLockedUntil && user.upgradeLockedUntil > new Date(now.getTime() + 2000)) {
       isCheatRefresh = true;
-      cheatRefreshDesc = `ผู้ใช้รีเฟรชหน้าเว็บข้ามอนิเมชั่น (เหลือเวลาล็อคอัปเกรด ${Math.ceil((user.upgradeLockedUntil.getTime() - now.getTime()) / 1000)} วินาที)`;
+      cheatRefreshDesc = `ผู้ใช้รีเฟรชหน้าเว็บข้ามอนิเมชั่น (เหลือเวลาล็อคอัปเกรด ${Math.ceil((user.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`;
     }
 
     if (isCheatRefresh) {
       user.cheatWarnings = (user.cheatWarnings || 0) + 1;
-
+      
       await CheatLog.create({
         userId: user._id,
         action: "Page Refresh during Animation",
@@ -92,7 +92,14 @@ router.get("/url", (req, res) => {
   if (!clientId) {
     return res.status(500).json({ error: "DISCORD_CLIENT_ID not configured in .env" });
   }
-  const redirectUri = encodeURIComponent(`${process.env.APP_URL}/api/auth/callback`);
+
+  // Remove trailing slashes from APP_URL if they exist
+  let appUrl = process.env.APP_URL || "https://scumgachapong.vercel.app";
+  if (appUrl.endsWith("/")) {
+    appUrl = appUrl.slice(0, -1);
+  }
+
+  const redirectUri = encodeURIComponent(`${appUrl}/api/auth/callback`);
   const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
   res.json({ url });
 });
@@ -104,7 +111,13 @@ router.get("/callback", async (req, res) => {
 
     const clientId = process.env.DISCORD_CLIENT_ID;
     const clientSecret = process.env.DISCORD_CLIENT_SECRET;
-    const redirectUri = `${process.env.APP_URL}/api/auth/callback`;
+
+    // Remove trailing slashes from APP_URL if they exist
+    let appUrl = process.env.APP_URL || "https://scumgachapong.vercel.app";
+    if (appUrl.endsWith("/")) {
+      appUrl = appUrl.slice(0, -1);
+    }
+    const redirectUri = `${appUrl}/api/auth/callback`;
 
     const params = new URLSearchParams();
     params.append('client_id', clientId!);
@@ -144,10 +157,10 @@ router.get("/callback", async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none"
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none" 
     });
 
     res.send(`
@@ -197,10 +210,10 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none"
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: "none" 
     });
     res.json(user);
   } catch (err) {
