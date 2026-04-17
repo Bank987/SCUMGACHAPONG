@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { User, PackageOpen, LayoutDashboard, History as HistoryIcon, Shield, Swords, Flame } from "lucide-react";
 import { useStore } from "../store/useStore";
@@ -8,8 +9,18 @@ interface SidebarProps {
 }
 
 export function Sidebar({ user, onClose }: SidebarProps) {
-  const { logout } = useStore();
+  const { logout, checkAuth } = useStore();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
+        checkAuth();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [checkAuth]);
 
   const handleLogin = () => {
     const authWindow = window.open("", "oauth_popup", "width=600,height=700");
