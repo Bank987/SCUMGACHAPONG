@@ -37,7 +37,7 @@ export default function Upgrade() {
 
     const [isSpinning, setIsSpinning] = useState(false);
     const isSpinningRef = useRef(false);
-    const [resultStatus, setResultStatus] = useState<'success' | 'stay' | 'downgrade' | null>(null);
+    const [resultStatus, setResultStatus] = useState<'SUCCESS' | 'FAILED' | 'DOWN' | null>(null);
     const [flash, setFlash] = useState<'success' | 'stay' | 'downgrade' | null>(null);
     const controls = useAnimation();
 
@@ -104,7 +104,7 @@ export default function Upgrade() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Upgrade failed");
 
-            const status = data.status; // 'success', 'stay', 'downgrade'
+            const status = data.status; // 'SUCCESS', 'FAILED', 'DOWN'
             const rate = UPGRADE_RATES[currentLvl];
 
             // Calculate rotation
@@ -123,7 +123,7 @@ export default function Upgrade() {
             playUpgradeSpinSound();
 
             // Play the result sound immediately (audio contains the suspense/spin)
-            if (status === 'success') {
+            if (status === 'SUCCESS') {
                 playUpgradeSuccessSound();
             } else {
                 playUpgradeFailSound();
@@ -140,10 +140,10 @@ export default function Upgrade() {
 
             setResultStatus(status);
 
-            if (status === 'success') {
+            if (status === 'SUCCESS') {
                 setFlash('success');
                 toast.success(`Upgrade Successful! Item is now +${data.newLevel}`);
-            } else if (status === 'stay') {
+            } else if (status === 'FAILED') {
                 setFlash('stay');
                 toast.error("Upgrade Failed! Item level remains the same.");
             } else {
@@ -306,18 +306,18 @@ export default function Upgrade() {
                                     {/* Massive background glow for the text */}
                                     <div className={cn(
                                         "absolute inset-0 blur-[80px] opacity-100 -z-10",
-                                        resultStatus === 'success' ? "bg-[#10b981]" :
-                                            resultStatus === 'stay' ? "bg-[#f97316]" :
+                                        resultStatus === 'SUCCESS' ? "bg-[#10b981]" :
+                                            resultStatus === 'FAILED' ? "bg-[#f97316]" :
                                                 "bg-[#dc2626]"
                                     )} />
 
                                     <h2 className={cn(
                                         "text-3xl sm:text-4xl md:text-6xl font-black tracking-[0.1em] md:tracking-[0.15em] uppercase italic text-white break-words",
-                                        resultStatus === 'success' ? "drop-shadow-[0_0_40px_rgba(16,185,129,1)] drop-shadow-[0_0_80px_rgba(16,185,129,0.8)]" :
-                                            resultStatus === 'stay' ? "drop-shadow-[0_0_40px_rgba(249,115,22,1)] drop-shadow-[0_0_80px_rgba(249,115,22,0.8)]" :
+                                        resultStatus === 'SUCCESS' ? "drop-shadow-[0_0_40px_rgba(16,185,129,1)] drop-shadow-[0_0_80px_rgba(16,185,129,0.8)]" :
+                                            resultStatus === 'FAILED' ? "drop-shadow-[0_0_40px_rgba(249,115,22,1)] drop-shadow-[0_0_80px_rgba(249,115,22,0.8)]" :
                                                 "drop-shadow-[0_0_40px_rgba(220,38,38,1)] drop-shadow-[0_0_80px_rgba(220,38,38,0.8)]"
                                     )}>
-                                        {resultStatus === 'success' ? "Success" : resultStatus === 'stay' ? "Failed" : "Downgraded"}
+                                        {resultStatus === 'SUCCESS' ? "Success" : resultStatus === 'FAILED' ? "Failed" : "Down"}
                                     </h2>
                                 </motion.div>
                             </div>
