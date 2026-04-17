@@ -12,16 +12,6 @@ export function Sidebar({ user, onClose }: SidebarProps) {
   const { logout, checkAuth } = useStore();
   const location = useLocation();
 
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
-        checkAuth();
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [checkAuth]);
-
   const handleLogin = () => {
     const authWindow = window.open("", "oauth_popup", "width=600,height=700");
     if (!authWindow) return alert("Please allow popups.");
