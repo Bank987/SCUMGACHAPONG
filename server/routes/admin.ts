@@ -5,7 +5,7 @@ import { Settings } from "../models/Settings.js";
 import { CheatLog } from "../models/CheatLog.js";
 
 const router = express.Router();
-const ADMIN_PIN = process.env.ADMIN_PIN || "123456";
+const ADMIN_PIN = process.env.ADMIN_PIN;
 
 router.use(async (req, res, next) => {
   try {
