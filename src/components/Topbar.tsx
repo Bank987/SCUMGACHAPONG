@@ -6,16 +6,6 @@ import { LogOut, Coins } from "lucide-react";
 export default function Topbar() {
   const { user, isAuthenticated, logout, checkAuth } = useStore();
 
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
-        checkAuth();
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [checkAuth]);
-
   const handleLogin = async () => {
     // 1. Open popup synchronously to bypass browser popup blockers
     const authWindow = window.open("", "oauth_popup", "width=600,height=700");
