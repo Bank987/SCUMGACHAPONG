@@ -52,6 +52,7 @@ export const useStore = create<AppState>((set) => ({
   },
   logout: async () => {
     try {
+      localStorage.removeItem("token");
       await fetch("/api/auth/logout", { method: "POST" });
       set({ user: null, isAuthenticated: false });
     } catch (error) {
