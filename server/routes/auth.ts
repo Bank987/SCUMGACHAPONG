@@ -8,7 +8,11 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 function getUserId(req: any) {
-  const token = req.cookies?.token;
+  let token = req.cookies?.token;
+  if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+  
   if (!token) return null;
 
   try {
@@ -157,24 +161,24 @@ router.get("/callback", async (req, res) => {
     res.cookie("token", token, { 
       httpOnly: true, 
       secure: true, 
-      sameSite: "none" 
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     res.send(`
       <script>
         try {
           if (window.opener) {
-            window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS' }, '*');
-            // If the message fails due to cross-origin, let's at least try to reload the opener
+            window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS', token: '${token}' }, '*');
+            // Close the popup right away, the main window will fetch auth state reactively
             setTimeout(() => {
-                try { window.opener.location.reload(); } catch(e){}
                 window.close();
             }, 500);
           } else {
-            window.location.href = '/';
+            window.location.href = '/?token=${token}';
           }
         } catch(e) {
-            window.location.href = '/';
+            window.location.href = '/?token=${token}';
         }
       </script>
     `);
@@ -232,9 +236,10 @@ router.post("/login", async (req, res) => {
     res.cookie("token", token, { 
       httpOnly: true, 
       secure: true, 
-      sameSite: "none" 
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
-    res.json(user);
+    res.json({ ...user.toObject(), token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
