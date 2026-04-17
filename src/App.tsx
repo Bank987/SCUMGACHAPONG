@@ -20,6 +20,14 @@ export default function App() {
   const [isServerReady, setIsServerReady] = useState(false);
 
   useEffect(() => {
+    // Handle fallback query param token
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("token");
+    if (urlToken) {
+      localStorage.setItem("token", urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     // Only fetch user & settings if the server is awake and ready
     if (isServerReady) {
       checkAuth();
@@ -28,6 +36,9 @@ export default function App() {
 
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
+        if (event.data.token) {
+          localStorage.setItem("token", event.data.token);
+        }
         checkAuth();
       }
     };
@@ -82,7 +93,7 @@ export default function App() {
 
           {/* Mobile Sidebar Overlay */}
           {isSidebarOpen && (
-            <div
+            <div 
               className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm"
               onClick={() => setIsSidebarOpen(false)}
             />
