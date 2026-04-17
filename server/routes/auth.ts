@@ -93,12 +93,8 @@ router.get("/url", (req, res) => {
     return res.status(500).json({ error: "DISCORD_CLIENT_ID not configured in .env" });
   }
 
-  // Remove trailing slashes from APP_URL if they exist
-  let appUrl = process.env.APP_URL || "https://scumgachapong.vercel.app";
-  if (appUrl.endsWith("/")) {
-    appUrl = appUrl.slice(0, -1);
-  }
-
+  // Force exact Vercel URL for redirect
+  const appUrl = "https://scumgachapong.vercel.app";
   const redirectUri = encodeURIComponent(`${appUrl}/api/auth/callback`);
   const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
   res.json({ url });
@@ -112,16 +108,17 @@ router.get("/callback", async (req, res) => {
     const clientId = process.env.DISCORD_CLIENT_ID;
     const clientSecret = process.env.DISCORD_CLIENT_SECRET;
 
-    // Remove trailing slashes from APP_URL if they exist
-    let appUrl = process.env.APP_URL || "https://scumgachapong.vercel.app";
-    if (appUrl.endsWith("/")) {
-      appUrl = appUrl.slice(0, -1);
+    if (!clientId || !clientSecret) {
+      return res.status(500).send("DISCORD_CLIENT_ID or DISCORD_CLIENT_SECRET is missing on the server.");
     }
+
+    // Force exact Vercel URL for redirect
+    const appUrl = "https://scumgachapong.vercel.app";
     const redirectUri = `${appUrl}/api/auth/callback`;
 
     const params = new URLSearchParams();
-    params.append('client_id', clientId!);
-    params.append('client_secret', clientSecret!);
+    params.append('client_id', clientId);
+    params.append('client_secret', clientSecret);
     params.append('grant_type', 'authorization_code');
     params.append('code', code as string);
     params.append('redirect_uri', redirectUri);
@@ -175,7 +172,21 @@ router.get("/callback", async (req, res) => {
     `);
   } catch (err: any) {
     console.error("Discord Auth Error:", err?.response?.data || err);
-    res.status(500).send("Authentication failed");
+    
+    // Explicitly send the precise error out to the screen for troubleshooting
+    const errorDetails = err?.response?.data 
+      ? JSON.stringify(err.response.data) 
+      : (err.message || "Unknown error");
+      
+    res.status(500).send(`
+      <div style="font-family: sans-serif; padding: 20px; color: #ff4444; background: #222; border-radius: 8px; max-width: 600px; margin: 40px auto;">
+        <h2>Authentication failed</h2>
+        <p>There was an error communicating with Discord. Here are the details from the server:</p>
+        <pre style="background: #111; padding: 15px; border-radius: 4px; overflow: auto; color: #ddd;">${errorDetails}</pre>
+        <br/><p>Please share this error or check DISCORD_CLIENT_SECRET on your Render dashboard.</p>
+        <button onclick="window.close()">Close Window</button>
+      </div>
+    `);
   }
 });
 
