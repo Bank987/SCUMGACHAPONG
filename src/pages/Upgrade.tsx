@@ -148,7 +148,7 @@ export default function Upgrade() {
                 toast.error("Upgrade Failed! Item level remains the same.");
             } else {
                 setFlash('downgrade');
-                toast.error(`Upgrade Failed! Item dropped to +${data.newLevel}`);
+                toast.error(`Upgrade Failed! Level Down to +${data.newLevel}`);
             }
 
             // Update inventory
@@ -211,7 +211,7 @@ export default function Upgrade() {
                             <Swords className="w-8 h-8 text-[#ffb700]" />
                             Item Upgrade
                         </h1>
-                        <p className="text-gray-400 mt-2 font-bold text-sm uppercase tracking-wider">Enhance your items to higher levels. Beware of downgrades!</p>
+                        <p className="text-gray-400 mt-2 font-bold text-sm uppercase tracking-wider">Enhance your items to higher levels. Beware of level down!</p>
                     </div>
                 </div>
 
@@ -505,7 +505,7 @@ export default function Upgrade() {
                                         <p className="text-sm font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].stay * 100).toFixed(0)}%</p>
                                     </div>
                                     <div className="bg-[#991b1b]/10 border border-[#991b1b]/30 rounded-lg p-2 text-center">
-                                        <p className="text-[9px] text-[#ef4444] font-bold uppercase tracking-widest mb-1">Downgrade</p>
+                                        <p className="text-[9px] text-[#ef4444] font-bold uppercase tracking-widest mb-1">Down</p>
                                         <p className="text-sm font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].downgrade * 100).toFixed(0)}%</p>
                                     </div>
                                 </div>
