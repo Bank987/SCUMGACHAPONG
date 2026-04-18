@@ -16,9 +16,14 @@ const upgradeRateLimits = new Map<string, number>();
 const spinRateLimits = new Map<string, number>();
 
 function getUser(req: any) {
+  let token = req.cookies?.token;
+  if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) return null;
+
   try {
-    const token = req.cookies?.token;
-    if (!token) return null;
     const decoded: any = jwt.verify(token, JWT_SECRET);
     return decoded?.userId;
   } catch {
