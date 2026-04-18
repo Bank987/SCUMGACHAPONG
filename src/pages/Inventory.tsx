@@ -48,9 +48,9 @@ export default function Inventory() {
     const handleUpgrade = async (item: InventoryItem) => {
         if (!isAuthenticated) return;
 
-        const cost = 10 + ((item.upgradeLevel || 0) * 5);
+        const cost = 10;
         if ((user?.upgradePoints || 0) < cost) {
-            toast.error(`REFINE POINT ไม่พอ! (ใช้ ${cost} แต้ม)`);
+            toast.error(`REFINE POINT ไม่พอ! (ใช้ 10 แต้ม)`);
             return;
         }
 
@@ -108,7 +108,7 @@ export default function Inventory() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {items.map((item) => {
                         const level = item.upgradeLevel || 0;
-                        const cost = 10 + (level * 5);
+                        const cost = 10;
                         const isMaxLevel = level >= 10;
 
                         return (
