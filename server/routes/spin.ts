@@ -73,13 +73,19 @@ router.post("/", async (req, res) => {
       {
         _id: userId,
         isBanned: { $ne: true },
-        $or: [
-          { spinLockedUntil: { $lte: now } },
-          { spinLockedUntil: null }
-        ],
-        $or: [
-          { spins: { $gte: caseData.price } },
-          ...(caseData.price === 0 ? [{ spins: { $exists: false } }] : [])
+        $and: [
+          {
+            $or: [
+              { spinLockedUntil: { $lte: now } },
+              { spinLockedUntil: null }
+            ]
+          },
+          {
+            $or: [
+              { spins: { $gte: caseData.price } },
+              ...(caseData.price === 0 ? [{ spins: { $exists: false } }] : [])
+            ]
+          }
         ]
       },
       { 
@@ -357,13 +363,16 @@ router.post("/upgrade-item", async (req, res) => {
       {
         _id: userId,
         isBanned: { $ne: true },
-        $or: [
-          { upgradeLockedUntil: { $lte: now } },
-          { upgradeLockedUntil: null }
-        ],
-        $or: [
-          { upgradePoints: { $gte: cost } },
-          ...(cost === 0 ? [{ upgradePoints: { $exists: false } }] : [])
+        $and: [
+          {
+            $or: [
+              { upgradeLockedUntil: { $lte: now } },
+              { upgradeLockedUntil: null }
+            ]
+          },
+          {
+            upgradePoints: { $gte: cost }
+          }
         ]
       },
       { 
@@ -491,10 +500,7 @@ router.post("/upgrade", async (req, res) => {
     const user = await User.findOneAndUpdate(
       {
         _id: userId,
-        $or: [
-          { upgradePoints: { $gte: cost } },
-          ...(cost === 0 ? [{ upgradePoints: { $exists: false } }] : [])
-        ]
+        upgradePoints: { $gte: cost }
       },
       { $inc: { upgradePoints: -cost } },
       { new: true }
