@@ -16,7 +16,11 @@ export default function History() {
     fetch("/api/spin/history")
       .then(res => res.json())
       .then(data => {
-        setHistory(data);
+        if (Array.isArray(data)) {
+          setHistory(data);
+        } else {
+          setHistory([]);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
