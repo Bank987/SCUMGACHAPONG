@@ -465,10 +465,9 @@ router.post("/upgrade-item", async (req, res) => {
       await sendWebhook('upgrade', {
         username: "รายงานผลตีบวก",
         embeds: [{
-          description: `**${user.username}** ตีบวกไอเทม **${item.itemName}**\nโอกาส ${Math.round(rate.success * 100)} % และ "**${resultStatus} !**"\nตอนนี้เลเวล **+${item.upgradeLevel}** !`,
+          description: `**${user.username}** อัพเกรด **${item.itemName}**\nโอกาส ${Math.round(rate.success * 100)} % และ "**${resultStatus} !**"\nตอนนี้เลเวล **+${item.upgradeLevel}** !`,
           color: resultStatus === 'SUCCESS' ? 0x00ff00 : (resultStatus === 'DOWN' ? 0xff0000 : 0xffff00),
           thumbnail: { url: item.itemImage },
-          fields: [{ name: "Rarity", value: item.itemRarity || "Mythic", inline: true }],
           timestamp: new Date().toISOString()
         }]
       });
