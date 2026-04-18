@@ -218,7 +218,7 @@ export default function Upgrade() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Left: Inventory Selection */}
                     <div className={cn(
-                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-5 flex flex-col h-[500px] lg:h-[700px] shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all duration-500",
+                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-5 flex flex-col min-h-[550px] lg:min-h-[700px] shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all duration-500",
                         isSpinning && "opacity-50 grayscale-[30%] pointer-events-none"
                     )}>
                         <div className="flex items-center justify-between mb-4">
@@ -469,10 +469,10 @@ export default function Upgrade() {
                         </div>
 
                         {selectedItem ? (
-                            <div className="flex-1 flex flex-col items-center justify-center space-y-8">
+                            <div className="flex-1 flex flex-col items-center justify-center space-y-4 lg:space-y-6 py-4">
                                 {/* Current Item */}
-                                <div className="p-6 bg-[#050507] rounded-xl border border-white/10 flex flex-col items-center relative group overflow-hidden shadow-inner w-full">
-                                    <div className="w-24 h-24 flex items-center justify-center mb-4 relative z-10">
+                                <div className="p-4 lg:p-6 bg-[#050507] shrink-0 rounded-xl border border-white/10 flex flex-col items-center relative group overflow-hidden shadow-inner w-full">
+                                    <div className="w-20 h-20 lg:w-24 lg:h-24 flex items-center justify-center mb-4 relative z-10">
                                         <img src={selectedItem.itemImage} alt={selectedItem.itemName} className="max-w-full max-h-full object-contain drop-shadow-xl opacity-50" />
                                     </div>
                                     <p className="text-center font-bold text-gray-400 text-sm relative z-10 uppercase tracking-wider">{selectedItem.itemName}</p>
@@ -481,11 +481,11 @@ export default function Upgrade() {
                                     </div>
                                 </div>
 
-                                <ArrowRight className="w-8 h-8 text-[#ffb700] animate-pulse rotate-90 lg:rotate-0" />
+                                <ArrowRight className="w-8 h-8 shrink-0 text-[#ffb700] animate-pulse rotate-90 lg:rotate-0" />
 
                                 {/* Upgraded Item */}
-                                <div className="p-6 bg-[#050507] rounded-xl border border-[#ffb700]/30 flex flex-col items-center relative group overflow-hidden shadow-[inset_0_0_20px_rgba(255,183,0,0.05)] w-full">
-                                    <div className="w-32 h-32 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-700 ease-out relative z-10">
+                                <div className="p-4 lg:p-6 bg-[#050507] shrink-0 rounded-xl border border-[#ffb700]/30 flex flex-col items-center relative group overflow-hidden shadow-[inset_0_0_20px_rgba(255,183,0,0.05)] w-full">
+                                    <div className="w-24 h-24 lg:w-32 lg:h-32 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-700 ease-out relative z-10">
                                         <img src={selectedItem.itemImage} alt={selectedItem.itemName} className="max-w-full max-h-full object-contain drop-shadow-[0_0_15px_rgba(255,183,0,0.5)]" />
                                     </div>
                                     <p className="text-center font-bold text-white text-lg relative z-10 uppercase tracking-wider">{selectedItem.itemName}</p>
@@ -495,7 +495,7 @@ export default function Upgrade() {
                                 </div>
 
                                 {/* Probabilities */}
-                                <div className="w-full grid grid-cols-3 gap-2 mt-4">
+                                <div className="w-full shrink-0 grid grid-cols-3 gap-2 pt-2">
                                     <div className="bg-[#10b981]/10 border border-[#10b981]/30 rounded-lg p-2 text-center">
                                         <p className="text-[9px] text-[#10b981] font-bold uppercase tracking-widest mb-1">Success</p>
                                         <p className="text-sm font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].success * 100).toFixed(0)}%</p>
