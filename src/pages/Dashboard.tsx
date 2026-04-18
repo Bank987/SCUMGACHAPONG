@@ -105,7 +105,6 @@ export default function Dashboard() {
           className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-screen pointer-events-none"
           style={{ backgroundImage: `url('${spotlightBg}')` }}
         />
-        <div className="absolute right-0 top-0 bottom-0 w-2/3 bg-gradient-to-l from-[#050507] to-transparent pointer-events-none" />
         <div className="absolute -left-20 -top-20 w-64 h-64 bg-[#ffb700]/20 blur-[80px] pointer-events-none" />
       </div>
 
