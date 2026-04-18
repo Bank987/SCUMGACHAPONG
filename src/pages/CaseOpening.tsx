@@ -60,7 +60,15 @@ export default function CaseOpening() {
 
     // Load Roller Audio
     if (!audioPlayerRef.current) {
-      audioPlayerRef.current = new Audio("https://cdn.discordapp.com/attachments/1492459270564741273/1494195061628604558/sound_gashapon.mp3?ex=69e261d7&is=69e11057&hm=f3eea3775aa61af010ad684d3febe1f3f37712f83d33222465d22608977ec115&");
+      audioPlayerRef.current = new Audio("/audio/sound_gashapon.mp3");
+      
+      // Auto unlock check if we can
+      audioPlayerRef.current.play().catch(() => {}).finally(() => {
+          if (audioPlayerRef.current) {
+              audioPlayerRef.current.pause();
+              audioPlayerRef.current.currentTime = 0;
+          }
+      });
     }
   }, [id, navigate]);
 
@@ -170,7 +178,7 @@ export default function CaseOpening() {
               const passedItems = Math.floor((currentX + centerOffset) / itemWidth);
 
               if (passedItems > lastPassedItem) {
-                // playTickSound(); // Disabled old tick sound
+                // playTickSound(); // Disable tick sound tracking to use original behavior
                 lastPassedItem = passedItems;
               }
             }
