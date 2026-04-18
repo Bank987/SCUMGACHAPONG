@@ -98,7 +98,7 @@ router.get("/url", (req, res) => {
   }
 
   // Force exact Vercel URL for redirect
-  const appUrl = "https://scumgachapong.vercel.app";
+  const appUrl = "https://land-roleplay.shop";
   const redirectUri = encodeURIComponent(`${appUrl}/api/auth/callback`);
   const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
   res.json({ url });
@@ -117,7 +117,7 @@ router.get("/callback", async (req, res) => {
     }
 
     // Force exact Vercel URL for redirect
-    const appUrl = "https://scumgachapong.vercel.app";
+    const appUrl = "https://land-roleplay.shop";
     const redirectUri = `${appUrl}/api/auth/callback`;
 
     const params = new URLSearchParams();
