@@ -346,8 +346,8 @@ router.post("/upgrade-item", async (req, res) => {
       return res.status(400).json({ error: "ไอเทมนี้ตีบวกตันแล้ว (+10)" });
     }
 
-    // Cost calculation (e.g., 10 points per level)
-    const cost = 10 + (currentLevel * 5);
+    // Cost calculation (fixed at 10 points per level now as requested)
+    const cost = 10;
 
     const now = new Date();
     const lockTime = new Date(now.getTime() + 8300); // 8.3 seconds lock
