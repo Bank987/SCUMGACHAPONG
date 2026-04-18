@@ -23,17 +23,26 @@ export const initAudio = () => {
         revealAudio.volume = 0.6;
     }
     if (!upgradeSuccessAudio) {
-        // A cool success sound
-        upgradeSuccessAudio = new Audio("https://cdn.discordapp.com/attachments/1492459270564741273/1493452969591574660/eef675f4f58e129c.mp3?ex=69dfaeb6&is=69de5d36&hm=85fcb7335be11ae38b15e976aab72c03e9268a5e03b7493cd8ffe568e2bc733f&v=2");
+        // Local path so it never expires: Requires user to upload file to public/audio/
+        upgradeSuccessAudio = new Audio("/audio/upgrade_success.mp3");
         upgradeSuccessAudio.volume = 1.0;
         upgradeSuccessAudio.loop = false;
     }
     if (!upgradeFailAudio) {
-        // The requested fail sound
-        upgradeFailAudio = new Audio("https://cdn.discordapp.com/attachments/1492459270564741273/1493452983143366666/sound.mp3?ex=69dfaeba&is=69de5d3a&hm=90d258be74a6fd2ed2c4b7a0d0609e059535fcc2c4ebc636a6ec8f67b81e9d3e&v=2");
+        // Local path so it never expires: Requires user to upload file to public/audio/
+        upgradeFailAudio = new Audio("/audio/upgrade_fail.mp3");
         upgradeFailAudio.volume = 1.0;
         upgradeFailAudio.loop = false;
     }
+
+    // Unlock audio context for mobile browsers by playing and immediately pausing
+    [tickAudio, revealAudio, upgradeSuccessAudio, upgradeFailAudio].forEach(audio => {
+        if (audio && audio.paused) {
+            audio.play().catch(() => {});
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    });
 };
 
 export const playUpgradeSpinSound = () => {
