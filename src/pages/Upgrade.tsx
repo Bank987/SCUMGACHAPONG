@@ -266,7 +266,7 @@ export default function Upgrade() {
 
                     {/* Center: Upgrade Spinner */}
                     <div className={cn(
-                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-8 flex flex-col items-center justify-between relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] h-[500px] lg:h-[700px] transition-all duration-500"
+                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-8 flex flex-col items-center justify-between relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] min-h-[550px] lg:min-h-[700px] transition-all duration-500"
                     )}>
                         {/* Professional Flash Effect */}
                         <div className={cn(
@@ -459,7 +459,7 @@ export default function Upgrade() {
 
                     {/* Right: Target Selection / Preview */}
                     <div className={cn(
-                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-5 flex flex-col h-[500px] lg:h-[700px] shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all duration-500",
+                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-5 flex flex-col min-h-[550px] lg:min-h-[700px] shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all duration-500",
                         isSpinning && "opacity-50 grayscale-[30%] pointer-events-none"
                     )}>
                         <div className="flex items-center justify-between mb-4">
@@ -495,18 +495,18 @@ export default function Upgrade() {
                                 </div>
 
                                 {/* Probabilities */}
-                                <div className="w-full shrink-0 grid grid-cols-3 gap-2 pt-2">
-                                    <div className="bg-[#10b981]/10 border border-[#10b981]/30 rounded-lg p-2 text-center">
-                                        <p className="text-[9px] text-[#10b981] font-bold uppercase tracking-widest mb-1">Success</p>
-                                        <p className="text-sm font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].success * 100).toFixed(0)}%</p>
+                                <div className="w-full shrink-0 grid grid-cols-3 gap-2 mt-4 lg:mt-6">
+                                    <div className="bg-[#10b981]/10 border border-[#10b981]/30 rounded-lg p-3 text-center">
+                                        <p className="text-[10px] text-[#10b981] font-bold uppercase tracking-widest mb-1">Success</p>
+                                        <p className="text-base font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].success * 100).toFixed(0)}%</p>
                                     </div>
-                                    <div className="bg-[#f97316]/10 border border-[#f97316]/30 rounded-lg p-2 text-center">
-                                        <p className="text-[9px] text-[#f97316] font-bold uppercase tracking-widest mb-1">Fail (Stay)</p>
-                                        <p className="text-sm font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].stay * 100).toFixed(0)}%</p>
+                                    <div className="bg-[#f97316]/10 border border-[#f97316]/30 rounded-lg p-3 text-center">
+                                        <p className="text-[10px] text-[#f97316] font-bold uppercase tracking-widest mb-1">Fail (Stay)</p>
+                                        <p className="text-base font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].stay * 100).toFixed(0)}%</p>
                                     </div>
-                                    <div className="bg-[#991b1b]/10 border border-[#991b1b]/30 rounded-lg p-2 text-center">
-                                        <p className="text-[9px] text-[#ef4444] font-bold uppercase tracking-widest mb-1">Down</p>
-                                        <p className="text-sm font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].downgrade * 100).toFixed(0)}%</p>
+                                    <div className="bg-[#991b1b]/10 border border-[#991b1b]/30 rounded-lg p-3 text-center">
+                                        <p className="text-[10px] text-[#ef4444] font-bold uppercase tracking-widest mb-1">Down</p>
+                                        <p className="text-base font-mono font-black text-white">{isMaxLevel ? "0" : (UPGRADE_RATES[selectedItem.upgradeLevel || 0].downgrade * 100).toFixed(0)}%</p>
                                     </div>
                                 </div>
                             </div>
