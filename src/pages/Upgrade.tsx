@@ -219,7 +219,7 @@ export default function Upgrade() {
                     {/* Left: Inventory Selection */}
                     <div className={cn(
                         "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-5 flex flex-col min-h-[550px] lg:min-h-[700px] shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all duration-500",
-                        isSpinning && "opacity-50 grayscale-[30%] pointer-events-none"
+                        (isSpinning && resultStatus === null) && "opacity-50 grayscale-[30%] pointer-events-none"
                     )}>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-sm font-black text-white flex items-center gap-2 uppercase tracking-widest">
@@ -266,7 +266,8 @@ export default function Upgrade() {
 
                     {/* Center: Upgrade Spinner */}
                     <div className={cn(
-                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-8 flex flex-col items-center justify-between relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] min-h-[550px] lg:min-h-[700px] transition-all duration-500"
+                        "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-8 flex flex-col items-center justify-between relative overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] min-h-[550px] lg:min-h-[700px] transition-all duration-500",
+                        (isSpinning && resultStatus === null) && "pointer-events-none"
                     )}>
                         {/* Professional Flash Effect */}
                         <div className={cn(
@@ -296,7 +297,7 @@ export default function Upgrade() {
 
                         {/* Sleek Result Overlay */}
                         {resultStatus !== null && (
-                            <div className="absolute inset-0 z-[60] flex items-center justify-center pointer-events-none bg-[#0a0a0f]/80 backdrop-blur-md">
+                            <div className="absolute inset-x-0 top-0 bottom-[80px] z-[60] flex items-center justify-center pointer-events-none bg-[#0a0a0f]/80 backdrop-blur-md">
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.5, filter: "brightness(3) blur(10px)" }}
                                     animate={{ opacity: 1, scale: 1, filter: "brightness(1) blur(0px)" }}
@@ -430,12 +431,12 @@ export default function Upgrade() {
                         </div>
 
                         {/* Action Area */}
-                        <div className="w-full relative z-20 h-16 flex items-center justify-center">
+                        <div className="w-full relative z-[70] h-16 flex items-center justify-center">
                             {resultStatus !== null ? (
                                 <div className="w-full animate-in fade-in duration-500">
                                     <button
                                         onClick={resetSpinner}
-                                        className="w-full py-3 bg-[#0a0500] border-[2px] border-[#ffb700] text-[#ffb700] font-black uppercase tracking-widest text-[14px] rounded-xl hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(255,102,0,0.4),inset_0_0_20px_rgba(255,102,0,0.4)] hover:shadow-[0_0_30px_rgba(255,102,0,0.6),inset_0_0_30px_rgba(255,102,0,0.6)] hover:text-white"
+                                        className="w-full py-3 bg-[#0a0500] border-[2px] border-[#ffb700] text-[#ffb700] font-black uppercase tracking-widest text-[14px] rounded-xl hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(255,102,0,0.4),inset_0_0_20px_rgba(255,102,0,0.4)] hover:shadow-[0_0_30px_rgba(255,102,0,0.6),inset_0_0_30px_rgba(255,102,0,0.6)] hover:text-white cursor-pointer pointer-events-auto"
                                     >
                                         Continue
                                     </button>
@@ -460,7 +461,7 @@ export default function Upgrade() {
                     {/* Right: Target Selection / Preview */}
                     <div className={cn(
                         "lg:col-span-4 bg-[#0a0a0f]/90 backdrop-blur-xl border border-[#ffb700]/20 rounded-2xl p-5 flex flex-col min-h-[550px] lg:min-h-[700px] shadow-[0_0_30px_rgba(0,0,0,0.8)] transition-all duration-500",
-                        isSpinning && "opacity-50 grayscale-[30%] pointer-events-none"
+                        (isSpinning && resultStatus === null) && "opacity-50 grayscale-[30%] pointer-events-none"
                     )}>
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-sm font-black text-white flex items-center gap-2 uppercase tracking-widest">
