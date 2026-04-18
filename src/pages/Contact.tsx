@@ -11,7 +11,7 @@ export default function Contact() {
                     ติดต่อ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffb700] to-[#ff8c00]">แอดมิน</span>
                 </h1>
                 <p className="relative z-10 text-[15px] font-bold text-gray-400 max-w-lg mx-auto">
-                    ถ้า Gacha Point หมด หรือเจอปัญหาในการใช้งาน ทักมาหาทีมงานเราได้เลย! เปิดให้บริการ 24 ชั่วโมง ไวสุดๆ แน่นอนครับ
+                    ติดต่อแอดมิน DISCORD @allinone11
                 </p>
             </div>
 
@@ -67,7 +67,7 @@ export default function Contact() {
                     <div className="text-center relative z-10 w-full">
                         <h3 className="text-xl font-black text-white mb-2">Discord </h3>
                         <div className="w-full text-sm font-bold text-gray-200 flex items-center justify-center gap-2 bg-black/40 py-2 px-4 rounded-xl border border-[#5865F2]/30 select-all cursor-text hover:bg-black/60 hover:border-[#5865F2]/80 transition-colors">
-                            @Admin_Name
+                            @allinone11
                         </div>
                     </div>
                 </div>
