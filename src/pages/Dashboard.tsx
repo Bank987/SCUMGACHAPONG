@@ -112,13 +112,13 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* กล่องแบบที่ 1 */}
-        {renderCategory("กล่องแบบที่ 1", cat1)}
+        {renderCategory("LIMITED TIME GASHAPON", cat1)}
 
         {/* กล่องแบบที่ 2 */}
-        {renderCategory("กล่องแบบที่ 2", cat2)}
+        {renderCategory("STANDARD GASHAPON", cat2)}
 
         {/* กล่องแบบที่ 3 */}
-        {renderCategory("กล่องแบบที่ 3", cat3)}
+        {renderCategory("SKIN COSTUME GASHAPON", cat3)}
 
         {/* ตีบวกอาวุธโชว์ */}
         <div className="bg-gradient-to-br from-[#1a1510] to-[#111218] border border-[#ffb700]/30 rounded-[24px] p-6 shadow-[0_0_30px_rgba(255,183,0,0.1)] flex flex-col items-center justify-center text-center relative overflow-hidden">
