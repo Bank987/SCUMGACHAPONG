@@ -157,9 +157,10 @@ export default function CaseOpening() {
           const itemWidth = 180 + 8; // 180px width + 8px gap (gap-2)
           const targetIndex = 65;
           const randomOffset = Math.floor(Math.random() * (itemWidth - 10)) - ((itemWidth - 10) / 2);
-          const containerWidth = rollerRef.current.parentElement?.clientWidth || 800;
-          const centerOffset = containerWidth / 2 - (180 / 2);
-          const distance = -(targetIndex * itemWidth) + centerOffset + randomOffset;
+          // With paddingLeft: 50%, the roller's 0th item starts with its left edge perfectly in the center.
+          // To center the 0th item, we shift it left by 180/2 = 90px.
+          // To center targetIndex, we shift left by (targetIndex * itemWidth) + 90px.
+          const distance = -(targetIndex * itemWidth) - 90 + randomOffset;
 
           rollerRef.current.style.transition = "transform 7s cubic-bezier(0.05, 0.9, 0.1, 1)";
           rollerRef.current.style.transform = `translateX(${distance}px)`;
@@ -175,7 +176,7 @@ export default function CaseOpening() {
             if (transform && transform !== 'none') {
               const values = transform.split('(')[1].split(')')[0].split(',');
               const currentX = Math.abs(parseFloat(values[4]));
-              const passedItems = Math.floor((currentX + centerOffset) / itemWidth);
+              const passedItems = Math.floor(currentX / itemWidth);
 
               if (passedItems > lastPassedItem) {
                 // playTickSound(); // Disable tick sound tracking to use original behavior
@@ -337,7 +338,8 @@ export default function CaseOpening() {
           <div className="h-[220px] overflow-hidden relative">
             <div
               ref={rollerRef}
-              className={`flex items-center h-full gap-2 px-[50vw] w-max transition-[filter] duration-700 ${isFastSpinning ? 'blur-[2px]' : 'blur-0'}`}
+              style={{ paddingLeft: '50%', paddingRight: '50%' }}
+              className={`flex items-center h-full gap-2 w-max transition-[filter] duration-700 ${isFastSpinning ? 'blur-[2px]' : 'blur-0'}`}
             >
               {rollerItems.length > 0 ? (
                 rollerItems.map((item, idx) => (
