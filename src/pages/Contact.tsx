@@ -11,13 +11,13 @@ export default function Contact() {
                     ติดต่อ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffb700] to-[#ff8c00]">แอดมิน</span>
                 </h1>
                 <p className="relative z-10 text-[15px] font-bold text-gray-400 max-w-lg mx-auto">
-                    คลิกที่ Discord @allinone11  ด่านล่างนี้
+                    ถ้า Gacha Point หมด หรือเจอปัญหาในการใช้งาน ทักมาหาทีมงานเราได้เลย! เปิดให้บริการ 24 ชั่วโมง ไวสุดๆ แน่นอนครับ
                 </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl mx-auto mb-6">
                 {/* Facebook */}
-                <a href="https://facebook.com" target="_blank" rel="noreferrer" className="group relative bg-[#111218] border border-[#ffb700]/30 p-8 flex flex-col items-center justify-center gap-5 transition-all hover:border-[#1877F2] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(24,119,242,0.2)] rounded-[24px]">
+                <a href="https://www.facebook.com/AshenLandScumRP/" target="_blank" rel="noreferrer" className="group relative bg-[#111218] border border-[#ffb700]/30 p-8 flex flex-col items-center justify-center gap-5 transition-all hover:border-[#1877F2] hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(24,119,242,0.2)] rounded-[24px]">
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,rgba(24,119,242,0.1)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity rounded-[24px]" />
 
                     <div className="w-20 h-20 bg-[#1877F2]/10 rounded-[20px] flex items-center justify-center shadow-[0_0_20px_rgba(24,119,242,0.2)] group-hover:scale-110 transition-transform">
@@ -67,7 +67,7 @@ export default function Contact() {
                     <div className="text-center relative z-10 w-full">
                         <h3 className="text-xl font-black text-white mb-2">Discord </h3>
                         <div className="w-full text-sm font-bold text-gray-200 flex items-center justify-center gap-2 bg-black/40 py-2 px-4 rounded-xl border border-[#5865F2]/30 select-all cursor-text hover:bg-black/60 hover:border-[#5865F2]/80 transition-colors">
-                            @allinone11
+                            @Admin_Name
                         </div>
                     </div>
                 </div>
