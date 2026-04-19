@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useStore } from "./store/useStore";
 import { Sidebar } from "./components/Sidebar";
 import { SpotlightSidebar } from "./components/SpotlightSidebar";
@@ -11,7 +11,7 @@ import Contact from "./pages/Contact";
 import Inventory from "./pages/Inventory";
 import Upgrade from "./pages/Upgrade";
 import { Toaster } from "./components/ui/sonner";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home, PackageOpen, Gift, Swords, History as HistoryIcon, User, LogIn, LogOut } from "lucide-react";
 import { ServerLoader } from "./components/ServerLoader";
 
 export default function App() {
@@ -76,37 +76,56 @@ export default function App() {
         </div>
 
         <div className="relative z-10 flex flex-col md:flex-row w-full h-full">
-          {/* Mobile Header */}
-          <div className="md:hidden flex items-center justify-between h-16 px-4 bg-[#0a0a0f] border-b border-[#ffb700]/30 z-50">
+          {/* Mobile Header (Sleek, No Hamburger) */}
+          <div className="md:hidden flex items-center justify-between h-[60px] px-3 bg-[#0a0a0f] border-b border-white/5 z-50 shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-[#00ff00] to-[#00ff88] font-black text-black flex items-center justify-center rounded-lg shadow-[0_0_10px_rgba(0,255,0,0.4)]">
                 <span className="text-sm">L</span>
               </div>
-              <span className="font-black text-xl text-white tracking-widest uppercase italic">
+              <span className="font-black text-lg text-white tracking-widest uppercase italic hidden sm:block">
                 LAND<span className="text-[#00ff00]">-SERIES</span>
               </span>
             </div>
-            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-[#ffb700] p-2">
-              {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            
+            <div className="flex items-center gap-3">
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-end justify-center h-full">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[#3b82f6] text-[10px] font-black">⚡</span>
+                      <span className="text-white text-xs font-bold leading-none">{Math.floor(user.spins)}</span>
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-[#ffb700] text-[10px] font-black">✨</span>
+                      <span className="text-white text-xs font-bold leading-none">{Math.floor(user.upgradePoints || 0)}</span>
+                    </div>
+                  </div>
+                  <div className="w-8 h-8 rounded-lg border border-[#ffb700]/50 overflow-hidden bg-[#050507]">
+                    {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover"/> : <User className="text-gray-400 p-1 w-full h-full" />}
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => {
+                  const authWindow = window.open("", "oauth_popup", "width=600,height=700");
+                  if (!authWindow) return alert("Please allow popups.");
+                  fetch("/api/auth/url").then(res => res.json()).then(data => {
+                    if (data.url) authWindow.location.href = data.url; else { authWindow.close(); alert("Failed to connect."); }
+                  }).catch(() => authWindow.close());
+                }} className="text-[10px] bg-gradient-to-r from-[#ffb700] to-[#ff8c00] text-black px-3 py-1.5 rounded-lg font-black tracking-widest uppercase shadow-[0_0_10px_rgba(255,183,0,0.4)]">
+                  เข้าสู่ระบบ
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Mobile Sidebar Overlay */}
-          {isSidebarOpen && (
-            <div 
-              className="fixed inset-0 bg-black/80 z-40 md:hidden backdrop-blur-sm"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-          )}
-
-          {/* Intense Sidebar */}
-          <div className={`fixed md:relative z-50 h-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+          {/* Desktop Sidebar (Hidden on mobile) */}
+          <div className="hidden md:block fixed md:relative z-50 h-full transition-transform duration-300 ease-in-out">
             <Sidebar user={user} onClose={() => setIsSidebarOpen(false)} />
           </div>
 
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden relative">
             {/* Main Content Area */}
-            <main className="flex-1 overflow-y-auto overflow-x-hidden !scrollbar-hide pb-20 pt-6 px-4 md:px-8 shadow-[inset_10px_0_30px_rgba(0,0,0,0.5)]">
+            <main className="flex-1 overflow-y-auto overflow-x-hidden !scrollbar-hide pb-24 md:pb-6 pt-6 px-4 md:px-8 shadow-[inset_10px_0_30px_rgba(0,0,0,0.5)]">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/case/:id" element={<CaseOpening />} />
@@ -118,6 +137,9 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
+            
+            {/* Nav Component rendered as part of layout */}
+            <MobileBottomNav user={user} />
           </div>
 
           {/* Spotlight Sidebar */}
@@ -139,5 +161,46 @@ export default function App() {
         />
       </div>
     </BrowserRouter>
+  );
+}
+
+function MobileBottomNav({ user }: any) {
+  const location = useLocation();
+  const path = location.pathname;
+
+  return (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a0f] backdrop-blur-xl border-t border-white/5 z-50">
+      <div className="flex justify-between items-end h-[70px] pb-2 px-4 relative">
+        <NavSlot path="/" currentPath={path} label="หน้าหลัก" icon={<Home size={24} />} isExact />
+        <NavSlot path="/inventory" currentPath={path} label="กระเป๋า" icon={<PackageOpen size={24} />} />
+
+        {/* Center Highlight */}
+        <div className="relative -top-5 z-20 flex flex-col items-center w-[72px]">
+          <Link to="/" className="flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#3b82f6] border-[5px] border-[#0a0a0f] shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-transform active:scale-95">
+            <Gift size={30} className="text-[#0a0a0f] fill-current" />
+          </Link>
+          <span className="text-[11px] font-bold mt-1 text-gray-400">สุ่มของ</span>
+        </div>
+
+        <NavSlot path="/upgrade" currentPath={path} label="ตีบวก" icon={<Swords size={24} />} />
+        <NavSlot path="/history" currentPath={path} label="ประวัติ" icon={<HistoryIcon size={24} />} />
+      </div>
+    </div>
+  );
+}
+
+function NavSlot({ path, currentPath, label, icon, isExact = false }: { path: string, currentPath: string, label: string, icon: React.ReactNode, isExact?: boolean }) {
+  const active = isExact ? currentPath === path : currentPath.startsWith(path);
+
+  return (
+    <Link to={path} className="flex flex-col items-center justify-end h-full gap-1.5 w-14 pb-1 relative z-10 group">
+      {active && <div className="absolute top-0 w-6 h-[3px] bg-[#3b82f6] rounded-b-md shadow-[0_0_8px_#3b82f6]" />}
+      <div className={`transition-colors ${active ? "text-[#3b82f6]" : "text-gray-500"}`}>
+        {icon}
+      </div>
+      <span className={`text-[11px] font-bold transition-colors ${active ? "text-[#3b82f6]" : "text-gray-500"}`}>
+        {label}
+      </span>
+    </Link>
   );
 }
