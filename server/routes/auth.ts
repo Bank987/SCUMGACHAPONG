@@ -3,6 +3,7 @@ import { User } from "../models/User.js";
 import { CheatLog } from "../models/CheatLog.js";
 import jwt from "jsonwebtoken";
 import axios from "axios";
+import { sendWebhook } from "../utils/webhook.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
@@ -63,20 +64,31 @@ router.get("/me", async (req, res) => {
     }
 
     if (isCheatRefresh) {
-      user.cheatWarnings = (user.cheatWarnings || 0) + 1;
+      const updatedUser = await User.findByIdAndUpdate(user._id, { $inc: { cheatWarnings: 1 } }, { new: true });
+      if (!updatedUser) return res.status(404).json({ error: "User not found" });
       
       await CheatLog.create({
-        userId: user._id,
+        userId: updatedUser._id,
         action: "Page Refresh during Animation",
         cheatType: "Animation Skip",
         description: cheatRefreshDesc
       });
 
-      if (user.cheatWarnings >= 5) {
-        user.isBanned = true;
-        user.banReason = "Auto-ban: จงใจรีเฟรชหน้าเว็บเพื่อข้ามอนิเมชั่นบ่อยครั้งเกินกำหนด";
+      if (updatedUser.cheatWarnings >= 5 && !updatedUser.isBanned) {
+        updatedUser.isBanned = true;
+        updatedUser.banReason = "Auto-ban: จงใจรีเฟรชหน้าเว็บเพื่อข้ามอนิเมชั่นบ่อยครั้งเกินกำหนด";
+        await updatedUser.save();
+        
+        await CheatLog.create({
+          userId: updatedUser._id,
+          action: "ACCOUNT BANNED",
+          cheatType: "Auto-Ban",
+          description: updatedUser.banReason
+        });
       }
-      await user.save();
+      
+      user.isBanned = updatedUser.isBanned;
+      user.banReason = updatedUser.banReason;
     }
 
     if (user.isBanned) {
