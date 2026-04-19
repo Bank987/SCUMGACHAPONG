@@ -11,7 +11,7 @@ import Contact from "./pages/Contact";
 import Inventory from "./pages/Inventory";
 import Upgrade from "./pages/Upgrade";
 import { Toaster } from "./components/ui/sonner";
-import { Menu, X, Home, PackageOpen, Gift, Swords, History as HistoryIcon, User, LogIn, LogOut } from "lucide-react";
+import { Menu, X, Home, PackageOpen, Gift, Swords, History as HistoryIcon, User, LogIn, LogOut, MessageSquare } from "lucide-react";
 import { ServerLoader } from "./components/ServerLoader";
 
 export default function App() {
@@ -176,10 +176,10 @@ function MobileBottomNav({ user }: any) {
 
         {/* Center Highlight */}
         <div className="relative -top-5 z-20 flex flex-col items-center w-[72px]">
-          <Link to="/" className="flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#3b82f6] border-[5px] border-[#0a0a0f] shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-transform active:scale-95">
-            <Gift size={30} className="text-[#0a0a0f] fill-current" />
+          <Link to="/contact" className="flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#ffb700] border-[5px] border-[#0a0a0f] shadow-[0_0_20px_rgba(255,183,0,0.5)] transition-transform active:scale-95">
+            <MessageSquare size={26} className="text-[#0a0a0f] fill-current" />
           </Link>
-          <span className="text-[11px] font-bold mt-1 text-gray-400">สุ่มของ</span>
+          <span className="text-[11px] font-bold mt-1 text-gray-400">ติดต่อแอดมิน</span>
         </div>
 
         <NavSlot path="/upgrade" currentPath={path} label="ตีบวก" icon={<Swords size={24} />} />
@@ -194,11 +194,11 @@ function NavSlot({ path, currentPath, label, icon, isExact = false }: { path: st
 
   return (
     <Link to={path} className="flex flex-col items-center justify-end h-full gap-1.5 w-14 pb-1 relative z-10 group">
-      {active && <div className="absolute top-0 w-6 h-[3px] bg-[#3b82f6] rounded-b-md shadow-[0_0_8px_#3b82f6]" />}
-      <div className={`transition-colors ${active ? "text-[#3b82f6]" : "text-gray-500"}`}>
+      {active && <div className="absolute top-0 w-6 h-[3px] bg-[#ffb700] rounded-b-md shadow-[0_0_8px_#ffb700]" />}
+      <div className={`transition-colors ${active ? "text-[#ffb700]" : "text-gray-500"}`}>
         {icon}
       </div>
-      <span className={`text-[11px] font-bold transition-colors ${active ? "text-[#3b82f6]" : "text-gray-500"}`}>
+      <span className={`text-[11px] font-bold transition-colors ${active ? "text-[#ffb700]" : "text-gray-500"}`}>
         {label}
       </span>
     </Link>
