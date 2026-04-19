@@ -73,13 +73,19 @@ router.post("/", async (req, res) => {
       {
         _id: userId,
         isBanned: { $ne: true },
-        $or: [
-          { spinLockedUntil: { $lte: now } },
-          { spinLockedUntil: null }
-        ],
-        $or: [
-          { spins: { $gte: caseData.price } },
-          ...(caseData.price === 0 ? [{ spins: { $exists: false } }] : [])
+        $and: [
+          {
+            $or: [
+              { spinLockedUntil: { $lte: now } },
+              { spinLockedUntil: null }
+            ]
+          },
+          {
+            $or: [
+              { spins: { $gte: caseData.price } },
+              ...(caseData.price === 0 ? [{ spins: { $exists: false } }] : [])
+            ]
+          }
         ]
       },
       { 
@@ -97,23 +103,32 @@ router.post("/", async (req, res) => {
       
       if (checkUser.spinLockedUntil && checkUser.spinLockedUntil > now) {
         // User is trying to bypass the lock (refresh exploit or speedhack)
-        checkUser.cheatWarnings = (checkUser.cheatWarnings || 0) + 1;
-        if (checkUser.cheatWarnings >= 5) {
-          checkUser.isBanned = true;
-          checkUser.banReason = "Auto-ban: พยายามข้ามอนิเมชั่นหรือใช้โปรแกรมช่วยเล่น (Speedhack/Refresh Abuse)";
-          await checkUser.save();
-          return res.status(403).json({ error: "บัญชีของคุณถูกระงับเนื่องจากตรวจพบการโกง" });
-        }
-        await checkUser.save();
-        
+        const updatedUser = await User.findByIdAndUpdate(checkUser._id, { $inc: { cheatWarnings: 1 } }, { new: true });
+        if (!updatedUser) return res.status(404).json({ error: "User not found" });
+
         await CheatLog.create({
-          userId: user?._id || checkUser._id,
+          userId: updatedUser._id,
           action: "Spin Rate Limit Exceeded",
           cheatType: "Animation Skip / Speedhack",
-          description: `พยายามสุ่มกล่องซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.spinLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
+          description: `พยายามสุ่มกล่องซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((updatedUser.spinLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
         });
 
-        console.warn(`[ANTI-CHEAT] User ${userId} attempted to spin too quickly. Warning: ${checkUser.cheatWarnings}/5`);
+        if (updatedUser.cheatWarnings >= 5 && !updatedUser.isBanned) {
+          updatedUser.isBanned = true;
+          updatedUser.banReason = "Auto-ban: พยายามข้ามอนิเมชั่นหรือใช้โปรแกรมช่วยเล่น (Speedhack/Refresh Abuse)";
+          await updatedUser.save();
+          
+          await CheatLog.create({
+            userId: updatedUser._id,
+            action: "ACCOUNT BANNED",
+            cheatType: "Auto-Ban",
+            description: updatedUser.banReason
+          });
+
+          return res.status(403).json({ error: "บัญชีของคุณถูกระงับเนื่องจากตรวจพบการโกง" });
+        }
+
+        console.warn(`[ANTI-CHEAT] User ${userId} attempted to spin too quickly. Warning: ${updatedUser.cheatWarnings}/5`);
         return res.status(429).json({ error: "กรุณารอให้อนิเมชั่นจบก่อนทำการสุ่มครั้งต่อไป (Anti-Spam/Anti-Skip)" });
       }
 
@@ -357,13 +372,16 @@ router.post("/upgrade-item", async (req, res) => {
       {
         _id: userId,
         isBanned: { $ne: true },
-        $or: [
-          { upgradeLockedUntil: { $lte: now } },
-          { upgradeLockedUntil: null }
-        ],
-        $or: [
-          { upgradePoints: { $gte: cost } },
-          ...(cost === 0 ? [{ upgradePoints: { $exists: false } }] : [])
+        $and: [
+          {
+            $or: [
+              { upgradeLockedUntil: { $lte: now } },
+              { upgradeLockedUntil: null }
+            ]
+          },
+          {
+            upgradePoints: { $gte: cost }
+          }
         ]
       },
       { 
@@ -381,23 +399,32 @@ router.post("/upgrade-item", async (req, res) => {
       
       if (checkUser.upgradeLockedUntil && checkUser.upgradeLockedUntil > now) {
         // User is trying to bypass the lock (refresh exploit or speedhack)
-        checkUser.cheatWarnings = (checkUser.cheatWarnings || 0) + 1;
-        if (checkUser.cheatWarnings >= 5) {
-          checkUser.isBanned = true;
-          checkUser.banReason = "Auto-ban: พยายามข้ามอนิเมชั่นหรือใช้โปรแกรมช่วยเล่น (Speedhack/Refresh Abuse)";
-          await checkUser.save();
-          return res.status(403).json({ error: "บัญชีของคุณถูกระงับเนื่องจากตรวจพบการโกง" });
-        }
-        await checkUser.save();
+        const updatedUser = await User.findByIdAndUpdate(checkUser._id, { $inc: { cheatWarnings: 1 } }, { new: true });
+        if (!updatedUser) return res.status(404).json({ error: "User not found" });
 
         await CheatLog.create({
-          userId: user?._id || checkUser._id,
+          userId: updatedUser._id,
           action: "Upgrade Rate Limit Exceeded",
           cheatType: "Animation Skip / Speedhack",
-          description: `พยายามอัปเกรดไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
+          description: `พยายามอัปเกรดไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((updatedUser.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
         });
 
-        console.warn(`[ANTI-CHEAT] User ${userId} attempted to upgrade too quickly. Warning: ${checkUser.cheatWarnings}/5`);
+        if (updatedUser.cheatWarnings >= 5 && !updatedUser.isBanned) {
+          updatedUser.isBanned = true;
+          updatedUser.banReason = "Auto-ban: พยายามข้ามอนิเมชั่นหรือใช้โปรแกรมช่วยเล่น (Speedhack/Refresh Abuse)";
+          await updatedUser.save();
+
+          await CheatLog.create({
+            userId: updatedUser._id,
+            action: "ACCOUNT BANNED",
+            cheatType: "Auto-Ban",
+            description: updatedUser.banReason
+          });
+          
+          return res.status(403).json({ error: "บัญชีของคุณถูกระงับเนื่องจากตรวจพบการโกง" });
+        }
+
+        console.warn(`[ANTI-CHEAT] User ${userId} attempted to upgrade too quickly. Warning: ${updatedUser.cheatWarnings}/5`);
         return res.status(429).json({ error: "กรุณารอให้อนิเมชั่นจบก่อนทำการอัปเกรดครั้งต่อไป (Anti-Spam)" });
       }
 
@@ -491,10 +518,7 @@ router.post("/upgrade", async (req, res) => {
     const user = await User.findOneAndUpdate(
       {
         _id: userId,
-        $or: [
-          { upgradePoints: { $gte: cost } },
-          ...(cost === 0 ? [{ upgradePoints: { $exists: false } }] : [])
-        ]
+        upgradePoints: { $gte: cost }
       },
       { $inc: { upgradePoints: -cost } },
       { new: true }
@@ -556,15 +580,34 @@ router.post("/upgrade-trade", async (req, res) => {
 
     const now = new Date();
     const checkUser = await User.findById(userId);
-    if (checkUser && checkUser.upgradeLockedUntil && checkUser.upgradeLockedUntil > now) {
-      checkUser.cheatWarnings = (checkUser.cheatWarnings || 0) + 1;
-      await checkUser.save();
+    if (!checkUser) return res.status(401).json({ error: "User not found" });
+
+    if (checkUser.upgradeLockedUntil && checkUser.upgradeLockedUntil > now) {
+      const updatedUser = await User.findByIdAndUpdate(userId, { $inc: { cheatWarnings: 1 } }, { new: true });
+      if (!updatedUser) return res.status(404).json({ error: "User not found" });
+
       await CheatLog.create({
-        userId: checkUser._id,
+        userId: updatedUser._id,
         action: "Upgrade Trade Rate Limit Exceeded",
         cheatType: "Animation Skip / Speedhack",
-        description: `พยายาม Trade ไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((checkUser.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
+        description: `พยายาม Trade ไอเทมซ้ำขณะที่อนิเมชั่นเก่ายังไม่จบ (เหลือเวลาล็อค ${Math.ceil((updatedUser.upgradeLockedUntil.getTime() - now.getTime())/1000)} วินาที)`
       });
+
+      if (updatedUser.cheatWarnings >= 5 && !updatedUser.isBanned) {
+        updatedUser.isBanned = true;
+        updatedUser.banReason = "Auto-ban: พยายามข้ามอนิเมชั่นหรือใช้โปรแกรมช่วยเล่น (Speedhack/Refresh Abuse)";
+        await updatedUser.save();
+
+        await CheatLog.create({
+          userId: updatedUser._id,
+          action: "ACCOUNT BANNED",
+          cheatType: "Auto-Ban",
+          description: updatedUser.banReason
+        });
+        
+        return res.status(403).json({ error: "บัญชีของคุณถูกระงับเนื่องจากตรวจพบการโกง" });
+      }
+
       return res.status(429).json({ error: "กรุณารอให้อนิเมชั่นจบก่อนทำรายการถัดไป" });
     }
 
