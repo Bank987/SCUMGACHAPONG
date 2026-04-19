@@ -107,6 +107,16 @@ export default function Admin() {
     }
   };
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadData();
+      const interval = setInterval(() => {
+        loadData();
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
+
   if (!isAuthenticated) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] px-4">
@@ -363,7 +373,7 @@ export default function Admin() {
                             <span className="text-red-500 text-xs font-bold px-2 py-1 bg-red-500/10 rounded border border-red-500/20">BANNED</span>
                             <button
                               onClick={() => {
-                                if (confirm("แน่ใจหรือไม่ที่จะปลดแบนผู้เล่นคนนี้?")) {
+                                if(confirm("แน่ใจหรือไม่ที่จะปลดแบนผู้เล่นคนนี้?")) {
                                   handleUpdateUser(u._id, { isBanned: false, cheatWarnings: 0, banReason: "" });
                                 }
                               }}
@@ -376,7 +386,7 @@ export default function Admin() {
                           <button
                             onClick={() => {
                               const reason = prompt("เหตุผลที่แบน:");
-                              if (reason !== null) {
+                              if(reason !== null) {
                                 handleUpdateUser(u._id, { isBanned: true, banReason: reason || "แบนโดยแอดมิน" });
                               }
                             }}
@@ -593,7 +603,7 @@ export default function Admin() {
                           {new Date(log.createdAt).toLocaleString('th-TH')}
                         </td>
                         <td className="p-4 flex items-center gap-3">
-                          <img src={log.userId?.avatar || `https://ui-avatars.com/api/?name=${log.userId?.username || 'U'}`} alt="avatar" className="w-8 h-8 rounded-lg" />
+                          <img src={log.userId?.avatar || `https://ui-avatars.com/api/?name=${log.userId?.username||'U'}`} alt="avatar" className="w-8 h-8 rounded-lg" />
                           <span className="font-bold text-[14px]">{log.userId?.username || "Unknown"}</span>
                         </td>
                         <td className="p-4">
