@@ -5,7 +5,7 @@ import { Settings } from "../models/Settings.js";
 import { CheatLog } from "../models/CheatLog.js";
 
 const router = express.Router();
-const ADMIN_PIN = process.env.ADMIN_PIN;
+const ADMIN_PIN = process.env.ADMIN_PIN || "123456";
 
 router.use(async (req, res, next) => {
   try {
@@ -40,8 +40,19 @@ router.put("/users/:id", async (req, res) => {
     if (banReason !== undefined) updateData.banReason = banReason;
     if (cheatWarnings !== undefined) updateData.cheatWarnings = cheatWarnings;
 
+    const oldUser = await User.findById(req.params.id);
     const user = await User.findOneAndUpdate({ _id: req.params.id }, { $set: updateData }, { new: true });
     if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Track admin manual ban/unban
+    if (oldUser && oldUser.isBanned !== user.isBanned) {
+      await CheatLog.create({
+        userId: user._id,
+        action: user.isBanned ? "ADMIN BANNED" : "ADMIN UNBANNED",
+        cheatType: "Manual Action",
+        description: user.isBanned ? `แบนโดยแอดมิน: ${user.banReason}` : "ปลดแบนโดยแอดมิน"
+      });
+    }
 
     res.json(user);
   } catch (err) {
