@@ -287,6 +287,7 @@ export default function CaseOpening() {
         <motion.img
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
+          referrerPolicy="no-referrer"
           src={caseData.image}
           alt={caseData.name}
           className="h-56 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] mb-6 relative z-10 animate-[float_4s_ease-in-out_infinite]"
@@ -354,7 +355,7 @@ export default function CaseOpening() {
                     {/* Background Glow based on rarity */}
                     <div className="absolute inset-0 opacity-[0.15] pointer-events-none" style={{ background: `radial-gradient(circle at center, ${item.color} 0%, transparent 70%)` }}></div>
 
-                    <img src={item.image} alt={item.name} className="max-h-24 object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)] mb-4 relative z-10" />
+                    <img referrerPolicy="no-referrer" src={item.image} alt={item.name} className="max-h-24 object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)] mb-4 relative z-10" />
                     <p className="text-[13px] text-center font-bold truncate w-full text-gray-200 tracking-wide relative z-10">{item.name}</p>
                   </div>
                 ))
@@ -446,6 +447,7 @@ export default function CaseOpening() {
                 ></motion.div>
 
                 <img
+                  referrerPolicy="no-referrer"
                   src={spinResult.image}
                   alt={spinResult.name}
                   className="h-32 md:h-44 object-contain relative z-10"
@@ -473,7 +475,7 @@ export default function CaseOpening() {
               style={{ borderBottomColor: item.color }}
             >
               <div className="h-20 w-full flex items-center justify-center mb-3 relative z-10">
-                <img src={item.image} alt={item.name} className="max-h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
+                <img referrerPolicy="no-referrer" src={item.image} alt={item.name} className="max-h-full object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
               </div>
               <p className="text-[11px] text-center font-bold text-gray-300 truncate w-full" title={item.name}>{item.name}</p>
             </div>
