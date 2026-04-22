@@ -248,7 +248,7 @@ export default function Upgrade() {
                                             )}
                                         >
                                             <div className="w-12 h-12 bg-[#0a0a0f] rounded-lg flex items-center justify-center p-2 border border-white/5 group-hover:scale-105 transition-transform duration-500 shadow-inner relative">
-                                                <img src={item.itemImage} alt={item.itemName} className="w-full h-full object-contain drop-shadow-md" />
+                                                <img referrerPolicy="no-referrer" src={item.itemImage} alt={item.itemName} className="w-full h-full object-contain drop-shadow-md" />
                                                 <div className="absolute -top-2 -right-2 bg-[#ffb700] text-black text-[10px] font-black px-1.5 py-0.5 rounded-md border border-[#0a0a0f]">
                                                     +{lvl}
                                                 </div>
@@ -474,7 +474,7 @@ export default function Upgrade() {
                                 {/* Current Item */}
                                 <div className="p-4 lg:p-6 bg-[#050507] shrink-0 rounded-xl border border-white/10 flex flex-col items-center relative group overflow-hidden shadow-inner w-full">
                                     <div className="w-20 h-20 lg:w-24 lg:h-24 flex items-center justify-center mb-4 relative z-10">
-                                        <img src={selectedItem.itemImage} alt={selectedItem.itemName} className="max-w-full max-h-full object-contain drop-shadow-xl opacity-50" />
+                                        <img referrerPolicy="no-referrer" src={selectedItem.itemImage} alt={selectedItem.itemName} className="max-w-full max-h-full object-contain drop-shadow-xl opacity-50" />
                                     </div>
                                     <p className="text-center font-bold text-gray-400 text-sm relative z-10 uppercase tracking-wider">{selectedItem.itemName}</p>
                                     <div className="mt-2 px-4 py-1 bg-[#0a0a0f] rounded-lg text-xs font-mono font-black text-gray-500 border border-white/5 relative z-10">
@@ -487,7 +487,7 @@ export default function Upgrade() {
                                 {/* Upgraded Item */}
                                 <div className="p-4 lg:p-6 bg-[#050507] shrink-0 rounded-xl border border-[#ffb700]/30 flex flex-col items-center relative group overflow-hidden shadow-[inset_0_0_20px_rgba(255,183,0,0.05)] w-full">
                                     <div className="w-24 h-24 lg:w-32 lg:h-32 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-700 ease-out relative z-10">
-                                        <img src={selectedItem.itemImage} alt={selectedItem.itemName} className="max-w-full max-h-full object-contain drop-shadow-[0_0_15px_rgba(255,183,0,0.5)]" />
+                                        <img referrerPolicy="no-referrer" src={selectedItem.itemImage} alt={selectedItem.itemName} className="max-w-full max-h-full object-contain drop-shadow-[0_0_15px_rgba(255,183,0,0.5)]" />
                                     </div>
                                     <p className="text-center font-bold text-white text-lg relative z-10 uppercase tracking-wider">{selectedItem.itemName}</p>
                                     <div className="mt-4 px-6 py-2 bg-[#0a0a0f] rounded-lg text-sm font-mono font-black text-[#ffb700] border border-[#ffb700]/20 relative z-10 shadow-inner">
