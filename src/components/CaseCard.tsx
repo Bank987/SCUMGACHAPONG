@@ -28,6 +28,7 @@ export const CaseCard: React.FC<CaseCardProps> = ({ id, name, price, image }) =>
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[radial-gradient(ellipse_at_bottom,rgba(255,102,0,0.2)_0%,transparent_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
 
                     <img
+                        referrerPolicy="no-referrer"
                         src={image}
                         alt={name}
                         className="w-full h-full object-contain filter drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)] transform transition-transform duration-300 group-hover:scale-110 relative z-10"
