@@ -45,7 +45,7 @@ export default function History() {
         <div className="flex-1 bg-[#14151c] border border-[#ffb700]/30 rounded-[24px] p-8 flex items-center gap-6 shadow-[0_0_15px_rgba(255,183,0,0.1)]">
           <div className="w-20 h-20 rounded-[18px] bg-[#1b1d26] border border-[#ffb700]/30 overflow-hidden flex items-center justify-center shrink-0">
             {user?.avatar ? (
-              <img src={user.avatar} className="w-full h-full object-cover" alt="Profile" />
+              <img referrerPolicy="no-referrer" src={user.avatar} className="w-full h-full object-cover" alt="Profile" />
             ) : (
               <User size={32} className="text-gray-400" />
             )}
@@ -106,7 +106,7 @@ export default function History() {
                   {/* Left: Item Info */}
                   <div className="flex items-center gap-4 md:gap-5 w-full md:w-auto">
                     <div className="w-16 h-16 md:w-20 md:h-20 rounded-[14px] bg-[#181920] border border-[#ffb700]/20 flex items-center justify-center overflow-hidden flex-shrink-0 p-2 shadow-inner">
-                      <img src={item.itemImage} alt={item.itemName} className="max-w-full max-h-full object-contain drop-shadow-md" />
+                      <img referrerPolicy="no-referrer" src={item.itemImage} alt={item.itemName} className="max-w-full max-h-full object-contain drop-shadow-md" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-[14px] md:text-[16px] font-bold text-white tracking-wide truncate">{item.itemName}</h3>
