@@ -91,7 +91,7 @@ export default function Admin() {
     if (pin) handleLogin();
   }, []);
 
-  const loadData = async () => {
+  const loadData = async (isFirstLoad = false) => {
     if (!isAuthenticated) return;
     try {
       const [uRes, cRes, lRes] = await Promise.all([
@@ -101,7 +101,23 @@ export default function Admin() {
       ]);
       if (uRes.ok) setUsers(await uRes.json());
       if (cRes.ok) setCases(await cRes.json());
-      if (lRes.ok) setLogs(await lRes.json());
+      if (lRes.ok) {
+        const newLogsData = await lRes.json();
+        setLogs(prevLogs => {
+          if (!isFirstLoad && prevLogs.length > 0 && newLogsData.length > 0) {
+            const latestOldLogTime = new Date(prevLogs[0].createdAt).getTime();
+            const newLogsToNotify = newLogsData.filter((log: any) => new Date(log.createdAt).getTime() > latestOldLogTime);
+            
+            newLogsToNotify.forEach((log: any) => {
+              toast.error(`⚠️ แจ้งเตือนการโกงใหม่: ${log.userId?.username || 'Unknown'} - ${log.action} (${log.cheatType})`, {
+                duration: 6000,
+                position: 'top-right'
+              });
+            });
+          }
+          return newLogsData;
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -109,10 +125,10 @@ export default function Admin() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      loadData();
+      loadData(true);
       const interval = setInterval(() => {
-        loadData();
-      }, 3000);
+        loadData(false);
+      }, 2000);
       return () => clearInterval(interval);
     }
   }, [isAuthenticated]);
@@ -301,7 +317,7 @@ export default function Admin() {
                   {users.map(u => (
                     <tr key={u._id} className={`border-b border-white/5 last:border-0 hover:bg-[#161720] transition-colors group ${u.isBanned ? 'bg-red-900/10' : ''}`}>
                       <td className="p-4 flex items-center gap-4">
-                        <img src={u.avatar} alt={u.username} className="w-10 h-10 rounded-lg drop-shadow" />
+                        <img referrerPolicy="no-referrer" src={u.avatar} alt={u.username} className="w-10 h-10 rounded-lg drop-shadow" />
                         <div className="flex flex-col">
                           <span className="font-bold text-[15px]">{u.username}</span>
                           {u.cheatWarnings > 0 && <span className="text-[10px] text-orange-400">Cheat Warnings: {u.cheatWarnings}/5</span>}
@@ -423,7 +439,7 @@ export default function Admin() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {cases.map(c => (
                 <div key={c._id} className="bg-[#161720] border border-white/5 rounded-2xl p-6 flex flex-col items-center relative group">
-                  <img src={c.image} alt={c.name} className="h-32 object-contain mb-4 drop-shadow-lg group-hover:scale-110 transition-transform" />
+                  <img referrerPolicy="no-referrer" src={c.image} alt={c.name} className="h-32 object-contain mb-4 drop-shadow-lg group-hover:scale-110 transition-transform" />
                   <h3 className="text-[15px] font-bold text-center mb-2">{c.name}</h3>
                   <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[12px] font-black tracking-widest mb-4 border border-red-500/20">{c.price} SPINS</div>
                   <p className="text-[12px] text-gray-500 font-bold mb-6">{c.items?.length || 0} ชิ้นในกล่องนี้</p>
@@ -603,7 +619,7 @@ export default function Admin() {
                           {new Date(log.createdAt).toLocaleString('th-TH')}
                         </td>
                         <td className="p-4 flex items-center gap-3">
-                          <img src={log.userId?.avatar || `https://ui-avatars.com/api/?name=${log.userId?.username||'U'}`} alt="avatar" className="w-8 h-8 rounded-lg" />
+                          <img referrerPolicy="no-referrer" src={log.userId?.avatar || `https://ui-avatars.com/api/?name=${log.userId?.username||'U'}`} alt="avatar" className="w-8 h-8 rounded-lg" />
                           <span className="font-bold text-[14px]">{log.userId?.username || "Unknown"}</span>
                         </td>
                         <td className="p-4">
@@ -646,7 +662,7 @@ export default function Admin() {
                 <p className="text-[12px] font-bold text-gray-500 mt-2">ปล่อยว่างไว้เพื่อใช้พื้นหลังดำสีล้วน Default Theme.</p>
                 {bgImageInput && (
                   <div className="mt-5 rounded-[16px] overflow-hidden border border-white/10 h-48 relative shadow-inner">
-                    <img src={bgImageInput} alt="Preview" className="w-full h-full object-cover opacity-60" />
+                    <img referrerPolicy="no-referrer" src={bgImageInput} alt="Preview" className="w-full h-full object-cover opacity-60" />
                     <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black to-transparent flex justify-center">
                       <span className="bg-black/80 px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-widest backdrop-blur-md shadow-md border border-white/10 text-white">Preview ภาพจะขึ้นบนเว็บแบบนี้</span>
                     </div>
@@ -665,7 +681,7 @@ export default function Admin() {
                 />
                 {promoBannerInput && (
                   <div className="mt-5 rounded-[16px] overflow-hidden border border-white/10 h-48 relative shadow-inner">
-                    <img src={promoBannerInput} alt="Preview" className="w-full h-full object-cover opacity-60" />
+                    <img referrerPolicy="no-referrer" src={promoBannerInput} alt="Preview" className="w-full h-full object-cover opacity-60" />
                     <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black to-transparent flex justify-center">
                       <span className="bg-black/80 px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-widest backdrop-blur-md shadow-md border border-white/10 text-white">Preview ภาพ Promo Banner</span>
                     </div>
@@ -756,7 +772,7 @@ export default function Admin() {
                   </div>
                   {combatArmoryImageInput && (
                     <div className="mt-2 rounded-[16px] overflow-hidden border border-white/10 w-32 h-32 relative shadow-inner flex items-center justify-center bg-[#0a0a0f]">
-                      <img src={combatArmoryImageInput} alt="Preview" className="max-w-full max-h-full object-contain p-2" />
+                      <img referrerPolicy="no-referrer" src={combatArmoryImageInput} alt="Preview" className="max-w-full max-h-full object-contain p-2" />
                     </div>
                   )}
                 </div>
