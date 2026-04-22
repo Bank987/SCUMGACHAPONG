@@ -101,7 +101,7 @@ export default function App() {
                     </div>
                   </div>
                   <div className="w-8 h-8 rounded-lg border border-[#ffb700]/50 overflow-hidden bg-[#050507]">
-                    {user.avatar ? <img src={user.avatar} className="w-full h-full object-cover"/> : <User className="text-gray-400 p-1 w-full h-full" />}
+                    {user.avatar ? <img referrerPolicy="no-referrer" src={user.avatar} className="w-full h-full object-cover"/> : <User className="text-gray-400 p-1 w-full h-full" />}
                   </div>
                 </div>
               ) : (
