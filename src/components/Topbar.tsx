@@ -66,6 +66,7 @@ export default function Topbar() {
                 <span className="text-[10px] text-white/50 font-black uppercase tracking-widest">{user.role}</span>
               </div>
               <img
+                referrerPolicy="no-referrer"
                 src={user.avatar}
                 alt={user.username}
                 className="w-10 h-10 rounded-lg border-2 border-white/10"
