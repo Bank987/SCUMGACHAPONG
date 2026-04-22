@@ -10,7 +10,7 @@ export function SpotlightSidebar() {
             {spotlightImages.map((img, idx) => (
                 <div key={idx} className="w-full rounded-2xl overflow-hidden border border-[#ffb700]/30 shadow-lg relative group">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none" />
-                    <img src={img} alt={`Spotlight ${idx + 1}`} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img referrerPolicy="no-referrer" src={img} alt={`Spotlight ${idx + 1}`} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute bottom-4 left-4 z-20">
                         <span className="px-2 py-1 bg-[#ffb700]/20 text-[#ffb700] border border-[#ffb700]/30 rounded text-[10px] font-black uppercase tracking-widest backdrop-blur-sm">
                             Legendary
