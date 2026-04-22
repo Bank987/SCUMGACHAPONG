@@ -9,7 +9,7 @@ interface Drop {
     itemImage: string;
     itemColor: string;
     itemRarity: string;
-    spunAt: string;
+    createdAt: string;
 }
 
 export function LiveDropTicker() {
@@ -35,7 +35,7 @@ export function LiveDropTicker() {
 
     // Display dummy data temporarily if the DB has no drops yet.
     const displayDrops = drops.length > 0 ? drops : [
-        { _id: '1', user: "System", avatar: null, itemName: "AWP | รอสุ่มคนแรก...", itemImage: "https://raw.githubusercontent.com/steam-database/GameTracking-CS2/master/Protobufs/steammessages_base.proto", itemColor: "#b0b0b0", itemRarity: "common", spunAt: new Date().toISOString() },
+        { _id: '1', user: "System", avatar: null, itemName: "AWP | รอสุ่มคนแรก...", itemImage: "https://raw.githubusercontent.com/steam-database/GameTracking-CS2/master/Protobufs/steammessages_base.proto", itemColor: "#b0b0b0", itemRarity: "common", createdAt: new Date().toISOString() },
     ];
 
     // We duplicate the array multiple times to ensure the seamless scrolling CSS animation never runs out of content.
@@ -69,7 +69,7 @@ export function LiveDropTicker() {
                             <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                             <div className="w-10 h-10 rounded-lg bg-[#1a1c23] border border-white/5 flex items-center justify-center shrink-0 p-1 relative shadow-inner">
-                                <img src={drop.itemImage} className="max-w-full max-h-full object-contain drop-shadow-md z-10 group-hover:scale-110 transition-transform" alt={drop.itemName} />
+                                <img referrerPolicy="no-referrer" src={drop.itemImage} className="max-w-full max-h-full object-contain drop-shadow-md z-10 group-hover:scale-110 transition-transform" alt={drop.itemName} />
                             </div>
                             <div className="flex flex-col">
                                 <span
