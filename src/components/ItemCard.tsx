@@ -58,6 +58,7 @@ export function ItemCard({ item, isSpinning }: ItemCardProps) {
 
             <div className="relative flex-1 flex items-center justify-center w-full mt-6 z-10">
                 <img
+                    referrerPolicy="no-referrer"
                     src={item.image || "https://via.placeholder.com/150"}
                     alt={item.name}
                     className="max-h-[85px] object-contain filter drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)] transform transition-transform duration-300 group-hover:scale-110"
