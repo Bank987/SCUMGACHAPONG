@@ -140,6 +140,7 @@ export default function Inventory() {
                                         style={{ background: `radial-gradient(circle at center, ${item.itemColor} 0%, transparent 70%)` }}
                                     />
                                     <img
+                                        referrerPolicy="no-referrer"
                                         src={item.itemImage}
                                         alt={item.itemName}
                                         className="w-full h-full object-contain relative z-10 drop-shadow-2xl transition-transform group-hover:scale-110"
