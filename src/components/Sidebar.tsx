@@ -56,7 +56,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-[14px] bg-[#0a0a0f] border-2 border-[#ffb700]/50 p-0.5 shadow-[0_0_10px_rgba(255,183,0,0.2)]">
                 {user.avatar ? (
-                  <img src={user.avatar} alt="Profile" className="w-full h-full object-cover rounded-[10px]" />
+                  <img referrerPolicy="no-referrer" src={user.avatar} alt="Profile" className="w-full h-full object-cover rounded-[10px]" />
                 ) : (
                   <User size={20} className="text-gray-400 m-auto h-full" />
                 )}
