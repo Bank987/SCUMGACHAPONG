@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   balance: { type: Number, default: 0 },
   role: { type: String, default: "user" },
   allowedCases: [{ type: mongoose.Schema.Types.ObjectId, ref: "Case" }],
+  pityCounters: { type: Map, of: Number, default: {} },
   // Anti-Cheat Fields
   spinLockedUntil: { type: Date, default: null },
   upgradeLockedUntil: { type: Date, default: null },

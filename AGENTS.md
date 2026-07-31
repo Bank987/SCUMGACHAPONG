@@ -18,12 +18,13 @@
 
 - `.env` is loaded by both `server.ts` and `seed.ts`. Database-backed behavior requires `MONGODB_URI`; without it the process stays up, but cases are empty and most model-backed routes cannot provide useful behavior.
 - Discord OAuth requires `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET`. Its callback origin is hard-coded to `https://land-roleplay.shop`, so a normal localhost OAuth flow will not round-trip locally.
-- Set `JWT_SECRET` consistently: auth and spin routes sign/verify the same token. `ADMIN_PIN` protects all `/api/admin/*` routes through the `x-admin-pin` header. Optional `WEBHOOK_PUBLIC_URL`, `WEBHOOK_ADMIN_URL`, `WEBHOOK_GACHA_URL`, and `WEBHOOK_UPGRADE_URL` select Discord webhook targets.
+- Set `JWT_SECRET` consistently: auth and spin routes sign/verify the same token. `ADMIN_PIN` protects all `/api/admin/*` routes through the `x-admin-pin` header. `WEBHOOK_GACHA_URL` receives every spin report; `WEBHOOK_PUBLIC_URL` receives only Legendary/Mythic and guaranteed drops. Optional `WEBHOOK_ADMIN_URL` and `WEBHOOK_UPGRADE_URL` select the other Discord webhook targets.
 - `vercel.json` hosts the SPA separately: it proxies `/api/*` to the Render backend, then rewrites all other routes to `index.html`. Preserve this ordering when changing deployment routes.
 
 ## Behavioral Constraints
 
 - Spin and upgrade operations enforce database timestamp locks tied to animation durations. Refreshing or repeating requests while locked increments cheat warnings and can auto-ban users; do not shorten or bypass one side without coordinating the client animation and server lock logic.
 - Server-side random outcomes and atomic balance/item updates in `server/routes/spin.ts` are anti-cheat boundaries. Keep outcome selection and authoritative mutations on the server.
+- Gacha guarantee progress is stored per user and case in `User.pityCounters`; the server increments it with the atomic spin deduction and resets it only when the configured guaranteed Mythic is awarded.
 - Use the `@/` alias only for `src/`; server imports are relative and use `.js` specifiers even though their source files are TypeScript, matching the ESM/`tsx` setup.
 - `dist/` is generated Vite output. Make source changes under `src/` and regenerate with `npm run build` rather than editing bundles directly.

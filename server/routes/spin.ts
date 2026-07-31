@@ -66,6 +66,12 @@ router.post("/", async (req, res) => {
 
     const now = new Date();
     const lockTime = new Date(now.getTime() + 7800); // 7.8 seconds lock
+    const pityCounterPath = `pityCounters.${caseData._id}`;
+    const guaranteedItem = caseData.guaranteeEnabled
+      ? caseData.items.find((item: any) => String(item._id) === String(caseData.guaranteeItemId) && item.rarity?.toLowerCase() === "mythic")
+      : null;
+    const guaranteeEvery = Number(caseData.guaranteeEvery);
+    const guaranteeActive = Boolean(guaranteedItem && Number.isInteger(guaranteeEvery) && guaranteeEvery > 0);
 
     // 🎯 ANTI-CHEAT: Atomic Coin Deduction & DB-Level Locking
     // This prevents double-spend and refresh exploits across multiple instances
@@ -89,7 +95,7 @@ router.post("/", async (req, res) => {
         ]
       },
       { 
-        $inc: { spins: -caseData.price },
+        $inc: { spins: -caseData.price, ...(guaranteeActive ? { [pityCounterPath]: 1 } : {}) },
         $set: { spinLockedUntil: lockTime }
       },
       { new: true }
@@ -135,6 +141,9 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Gacha Point ไม่พอ!" });
     }
 
+    const currentPityCount = guaranteeActive ? Number(user.pityCounters?.get?.(String(caseData._id)) || 0) : 0;
+    const isGuaranteed = guaranteeActive && currentPityCount >= guaranteeEvery;
+
     // 🎯 สุ่มแบบเทพ (Cryptographically Secure Pseudo-Random Number Generator)
     // 1. หาผลรวมของเรททั้งหมด (Total Weight) เพื่อรองรับกรณีที่แอดมินตั้งเรทรวมไม่เท่ากับ 100 พอดี
     const totalWeight = caseData.items.reduce((sum, item) => sum + (item.dropRate || 0), 0);
@@ -147,12 +156,17 @@ router.post("/", async (req, res) => {
     // คำนวณค่าสุ่มให้อยู่ในช่วง 0 ถึง totalWeight
     const rand = (randomNumber / maxUint32) * totalWeight;
 
-    let cumulative = 0;
-    for (const item of caseData.items) {
-      cumulative += item?.dropRate || 0;
-      if (rand <= cumulative) {
-        winningItem = item;
-        break;
+    if (isGuaranteed) {
+      winningItem = guaranteedItem;
+      await User.updateOne({ _id: user._id }, { $set: { [pityCounterPath]: 0 } });
+    } else {
+      let cumulative = 0;
+      for (const item of caseData.items) {
+        cumulative += item?.dropRate || 0;
+        if (rand <= cumulative) {
+          winningItem = item;
+          break;
+        }
       }
     }
 
@@ -184,17 +198,28 @@ router.post("/", async (req, res) => {
         itemColor: winningItem?.color ?? "#fff"
       });
 
-      // Send webhook (Public Gacha)
-      await sendWebhook('gacha', {
+      const playerName = user.gameName || user.username;
+      const webhookPayload = {
         username: "รายงานผลสุ่มกาชาปอง",
         embeds: [{
-          description: `**${user.username}** สุ่มกล่อง **${caseData.name}**\nได้รับ **${itemName}** !`,
+          title: isGuaranteed ? "การันตี Mythic!" : undefined,
+          description: `**${playerName}** สุ่มกล่อง **${caseData.name}**\nได้รับ **${itemName}** !${isGuaranteed ? "\nได้รับจากระบบการันตี" : ""}`,
           color: parseInt(winningItem?.color?.replace("#", "") || "00ff00", 16),
           thumbnail: { url: itemImage },
-          fields: [{ name: "Rarity", value: winningItem?.rarity ?? "common", inline: true }],
+          fields: [
+            { name: "Rarity", value: winningItem?.rarity ?? "common", inline: true },
+            ...(isGuaranteed ? [{ name: "Guarantee", value: `${guaranteeEvery} ครั้ง`, inline: true }] : [])
+          ],
           timestamp: new Date().toISOString()
         }]
-      });
+      };
+
+      // Every result goes to the existing report room; high-rarity drops are also announced publicly.
+      await sendWebhook('gacha', webhookPayload);
+      const rarity = winningItem?.rarity?.toLowerCase();
+      if (isGuaranteed || rarity === "legendary" || rarity === "mythic") {
+        await sendWebhook('public', webhookPayload);
+      }
     } catch (saveError) {
       console.error("Spin debug:", { winningItem, caseId });
       console.error("SpinHistory save error:", saveError);
@@ -206,7 +231,10 @@ router.post("/", async (req, res) => {
 
     res.json({
       item: { ...itemObj, name: itemName, image: itemImage },
-      remainingSpins: user.spins
+      remainingSpins: user.spins,
+      guaranteed: isGuaranteed,
+      guaranteeProgress: isGuaranteed ? 0 : currentPityCount,
+      guaranteeEvery: guaranteeActive ? guaranteeEvery : null
     });
   } catch (err) {
     console.error("Spin debug:", { winningItem, caseId });

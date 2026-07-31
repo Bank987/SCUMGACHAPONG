@@ -14,6 +14,9 @@ const caseSchema = new mongoose.Schema({
   image: { type: String, required: true },
   price: { type: Number, required: true },
   category: { type: String, default: "1" },
+  guaranteeEnabled: { type: Boolean, default: false },
+  guaranteeEvery: { type: Number, default: 0, min: 0 },
+  guaranteeItemId: { type: mongoose.Schema.Types.ObjectId, default: null },
   items: [itemSchema]
 });
 

@@ -247,6 +247,17 @@ export default function Admin() {
       return;
     }
 
+    if (editingCase.guaranteeEnabled) {
+      if (!Number.isInteger(editingCase.guaranteeEvery) || editingCase.guaranteeEvery < 1) {
+        toast.error("จำนวนรอบการันตีต้องเป็นเลขจำนวนเต็มอย่างน้อย 1");
+        return;
+      }
+      if (!editingCase.guaranteeItemId) {
+        toast.error(editingCase._id ? "กรุณาเลือกไอเทม Mythic ที่การันตี" : "กรุณาบันทึกกล่องก่อน แล้วกลับมาเปิดระบบการันตี");
+        return;
+      }
+    }
+
     try {
       const caseDataToSave = { ...editingCase };
       if (!caseDataToSave._id) delete caseDataToSave._id;
@@ -465,7 +476,7 @@ export default function Admin() {
                 ระบบกล่องทั้งหมด
               </h2>
               <button
-                onClick={() => setEditingCase({ name: "", image: "", price: 1, items: [] })}
+                onClick={() => setEditingCase({ name: "", image: "", price: 1, items: [], guaranteeEnabled: false, guaranteeEvery: 0, guaranteeItemId: "" })}
                 className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-5 py-3 rounded-xl font-bold text-[14px] transition-all shadow-lg active:scale-95"
               >
                 <Plus className="w-4 h-4" />
@@ -478,6 +489,7 @@ export default function Admin() {
                   <img referrerPolicy="no-referrer" src={c.image} alt={c.name} className="h-32 object-contain mb-4 drop-shadow-lg group-hover:scale-110 transition-transform" />
                   <h3 className="text-[15px] font-bold text-center mb-2">{c.name}</h3>
                   <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[12px] font-black tracking-widest mb-4 border border-red-500/20">{c.price} SPINS</div>
+                  {c.guaranteeEnabled && <div className="mb-3 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[11px] font-black text-amber-400">การันตีทุก {c.guaranteeEvery} ครั้ง</div>}
                   <p className="text-[12px] text-gray-500 font-bold mb-6">{c.items?.length || 0} ชิ้นในกล่องนี้</p>
                   <div className="flex gap-2 w-full">
                     <button onClick={() => setEditingCase(c)} className="flex-1 py-2.5 bg-blue-500/10 text-blue-500 border border-blue-500/20 hover:bg-blue-500 hover:text-white rounded-xl text-[13px] font-bold transition-all flex items-center justify-center gap-2">
@@ -541,6 +553,48 @@ export default function Admin() {
                   placeholder="https://example.com/image.png"
                   className="w-full bg-[#161720] border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
                 />
+              </div>
+              <div className="col-span-2 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+                <label className="flex cursor-pointer items-center justify-between gap-4">
+                  <div>
+                    <span className="block text-[14px] font-black text-amber-400">เปิดใช้งานระบบการันตี</span>
+                    <span className="mt-1 block text-[12px] text-gray-500">นับแยกตามผู้เล่นและกล่อง เมื่อครบกำหนดจะได้รับ Mythic ที่เลือกทันที กล่องใหม่ต้องบันทึกไอเทมหนึ่งครั้งก่อน</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(editingCase.guaranteeEnabled)}
+                    onChange={e => setEditingCase({ ...editingCase, guaranteeEnabled: e.target.checked })}
+                    className="h-5 w-5 accent-amber-500"
+                  />
+                </label>
+                {editingCase.guaranteeEnabled && (
+                  <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-[12px] font-bold text-gray-400">การันตีเมื่อเปิดครบกี่ครั้ง</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={editingCase.guaranteeEvery || ""}
+                        onChange={e => setEditingCase({ ...editingCase, guaranteeEvery: parseInt(e.target.value) || 0 })}
+                        placeholder="เช่น 50"
+                        className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-white outline-none focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-[12px] font-bold text-gray-400">ไอเทม Mythic ที่การันตี</label>
+                      <select
+                        value={editingCase.guaranteeItemId || ""}
+                        onChange={e => setEditingCase({ ...editingCase, guaranteeItemId: e.target.value })}
+                        className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-white outline-none focus:border-amber-500"
+                      >
+                        <option value="">เลือกไอเทม Mythic</option>
+                        {(editingCase.items || []).filter((item: any) => item.rarity?.toLowerCase() === "mythic").map((item: any) => (
+                          <option key={item._id || item.name} value={item._id || ""} disabled={!item._id}>{item.name}{!item._id ? " (บันทึกกล่องก่อน)" : ""}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -606,7 +660,8 @@ export default function Admin() {
                   </div>
                   <button onClick={() => {
                     const newItems = editingCase.items.filter((_: any, i: number) => i !== idx);
-                    setEditingCase({ ...editingCase, items: newItems });
+                    const removedGuarantee = String(editingCase.guaranteeItemId) === String(item._id);
+                    setEditingCase({ ...editingCase, items: newItems, ...(removedGuarantee ? { guaranteeItemId: "", guaranteeEnabled: false } : {}) });
                   }} className="p-3 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white rounded-xl transition-colors shrink-0">
                     <Trash2 className="w-5 h-5" />
                   </button>

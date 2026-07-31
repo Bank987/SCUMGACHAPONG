@@ -8,6 +8,17 @@ import { SpinHistory } from "../models/SpinHistory.js";
 const router = express.Router();
 const ADMIN_PIN = process.env.ADMIN_PIN || "123456";
 
+function validateGuarantee(caseData: any) {
+  if (!caseData.guaranteeEnabled) return null;
+  const every = Number(caseData.guaranteeEvery);
+  if (!Number.isInteger(every) || every < 1) return "จำนวนรอบการันตีต้องเป็นเลขจำนวนเต็มอย่างน้อย 1";
+
+  const guaranteedItem = caseData.items?.find((item: any) => String(item._id) === String(caseData.guaranteeItemId));
+  if (!guaranteedItem) return "กรุณาเลือกไอเทมการันตีที่อยู่ในกล่องนี้ (กล่องใหม่ต้องบันทึกไอเทมก่อน)";
+  if (guaranteedItem.rarity?.toLowerCase() !== "mythic") return "ไอเทมการันตีต้องเป็นระดับ Mythic เท่านั้น";
+  return null;
+}
+
 router.use(async (req, res, next) => {
   try {
     const pin = req.headers["x-admin-pin"];
@@ -101,6 +112,8 @@ router.get("/cases", async (req, res) => {
 
 router.post("/cases", async (req, res) => {
   try {
+    const guaranteeError = validateGuarantee(req.body);
+    if (guaranteeError) return res.status(400).json({ error: guaranteeError });
     const newCase = await Case.create(req.body);
     res.json(newCase);
   } catch (err) {
@@ -110,6 +123,8 @@ router.post("/cases", async (req, res) => {
 
 router.put("/cases/:id", async (req, res) => {
   try {
+    const guaranteeError = validateGuarantee(req.body);
+    if (guaranteeError) return res.status(400).json({ error: guaranteeError });
     const updatedCase = await Case.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
     if (!updatedCase) return res.status(404).json({ error: "Case not found" });
 
