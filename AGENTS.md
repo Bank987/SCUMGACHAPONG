@@ -1,5 +1,13 @@
 # Repository Guide
 
+## Session Handoff
+
+- GitHub remote is `https://github.com/Bank987/SCUMGACHAPONG.git` on branch `main`. This workspace is initialized as its Git checkout; use ordinary `git push origin main` after verified changes unless the user explicitly asks to replace history.
+- GitHub authentication is stored through Windows Git Credential Manager for account `Bank987`; `gh` is not installed. If credentials expire, use `git credential-manager github login --username Bank987 --browser --force`, never request or embed the user's GitHub password/token.
+- Before commits, keep `opencode.json`, `.env*`, `.opencode/`, `node_modules/`, and `dist/` excluded by `.gitignore`; `opencode.json` contains a local provider credential and must never be staged.
+- The latest shipped features are player `gameName` onboarding, admin per-user/full-season wipes, Legendary/Mythic-only inventory display, public Discord announcements for Legendary/Mythic drops, and per-case guaranteed Mythic configuration/progress.
+- Public drop announcements are implemented but remain inactive until the user supplies a Discord webhook and `WEBHOOK_PUBLIC_URL` is configured in the Render environment. Do not commit webhook URLs.
+
 ## Runtime Shape
 
 - This is one package with two entrypoints: `server.ts` owns Express/Mongoose and mounts Vite as development middleware; `src/main.tsx` starts the React SPA. Use `npm run dev` for the integrated app on fixed port `3000`; running Vite alone omits the API that the startup loader requires at `/api/health`.
