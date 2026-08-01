@@ -112,7 +112,6 @@ export default function WeaponLicense() {
   return (
     <div className="w-full pb-8 md:pb-12">
       <section className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#0b1010]/35 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-xl">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:42px_42px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent" />
 
         <header className="relative flex flex-col gap-4 border-b border-white/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
@@ -131,7 +130,6 @@ export default function WeaponLicense() {
 
         <div className="relative grid min-h-[calc(100dvh-16rem)] items-center gap-10 p-5 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:p-10 xl:gap-14 xl:p-12">
           <div className="min-w-0">
-            <p className="mb-4 flex items-center gap-3 text-xs font-black uppercase text-emerald-300"><span className="h-px w-10 bg-emerald-300" /> Tier clearance protocol</p>
             <h1 className="max-w-4xl text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl lg:text-6xl xl:text-7xl">ARMORY <span className="text-emerald-300">LICENSE</span> TIER</h1>
             <h2 className="mt-5 max-w-3xl text-xl font-black leading-snug text-gray-200 sm:text-2xl lg:text-3xl">{displayName}</h2>
             <p className="mt-5 max-w-3xl text-sm font-normal leading-7 text-gray-400 sm:text-base">
