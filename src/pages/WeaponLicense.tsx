@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BadgeCheck, LockKeyhole, ShieldCheck, TicketCheck, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
-import { initAudio, playLicenseFailSound, playLicenseSuccessSound } from "../lib/audio";
+import { initLicenseAudio, playLicenseFailSound, playLicenseSuccessSound } from "../lib/audio";
 import { useStore } from "../store/useStore";
 
 interface LicenseData {
@@ -57,7 +57,7 @@ export default function WeaponLicense() {
 
   const upgrade = async () => {
     if (!license || upgrading || license.level >= 15 || license.tickets < 1) return;
-    initAudio();
+    initLicenseAudio();
     setUpgrading(true);
     try {
       const res = await fetch("/api/spin/weapon-license/upgrade", { method: "POST" });

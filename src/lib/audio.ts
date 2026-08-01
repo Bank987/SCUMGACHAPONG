@@ -8,13 +8,25 @@ let licenseSuccessAudio: HTMLAudioElement | null = null;
 let licenseFailAudio: HTMLAudioElement | null = null;
 let licenseResultAudio: HTMLAudioElement | null = null;
 
-export const initAudio = () => {
+const resumeAudioContext = () => {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
     if (audioCtx.state === "suspended") {
         audioCtx.resume();
     }
+};
+
+const unlockAudio = (audio: HTMLAudioElement | null) => {
+    if (audio && audio.paused) {
+        audio.play().catch(() => {});
+        audio.pause();
+        audio.currentTime = 0;
+    }
+};
+
+export const initAudio = () => {
+    resumeAudioContext();
 
     // Preload real CS:GO sounds
     if (!tickAudio) {
@@ -37,25 +49,27 @@ export const initAudio = () => {
         upgradeFailAudio.volume = 1.0;
         upgradeFailAudio.loop = false;
     }
+    // Unlock audio context for mobile browsers by playing and immediately pausing
+    [tickAudio, revealAudio, upgradeSuccessAudio, upgradeFailAudio].forEach(unlockAudio);
+};
+
+export const initLicenseAudio = () => {
+    resumeAudioContext();
+
     if (!licenseSuccessAudio) {
-        licenseSuccessAudio = new Audio("/audio/license_success.mp3");
+        licenseSuccessAudio = new Audio("/audio/license_success.mp3?v=2");
         licenseSuccessAudio.volume = 0.9;
         licenseSuccessAudio.loop = false;
+        licenseSuccessAudio.preload = "auto";
     }
     if (!licenseFailAudio) {
-        licenseFailAudio = new Audio("/audio/license_fail.mp3");
+        licenseFailAudio = new Audio("/audio/license_fail.mp3?v=2");
         licenseFailAudio.volume = 0.9;
         licenseFailAudio.loop = false;
+        licenseFailAudio.preload = "auto";
     }
 
-    // Unlock audio context for mobile browsers by playing and immediately pausing
-    [tickAudio, revealAudio, upgradeSuccessAudio, upgradeFailAudio, licenseSuccessAudio, licenseFailAudio].forEach(audio => {
-        if (audio && audio.paused) {
-            audio.play().catch(() => {});
-            audio.pause();
-            audio.currentTime = 0;
-        }
-    });
+    [licenseSuccessAudio, licenseFailAudio].forEach(unlockAudio);
 };
 
 export const playUpgradeSpinSound = () => {
