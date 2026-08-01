@@ -111,7 +111,7 @@ export default function WeaponLicense() {
 
   return (
     <div className="w-full pb-8 md:pb-12">
-      <section className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#0b1010]/35 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-xl">
+      <section className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#0b1010]/35 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-lg">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent" />
 
         <header className="relative flex justify-end border-b border-white/10 px-5 py-4 sm:px-8 lg:px-10">
