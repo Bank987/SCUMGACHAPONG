@@ -4,6 +4,8 @@ let revealAudio: HTMLAudioElement | null = null;
 let upgradeSuccessAudio: HTMLAudioElement | null = null;
 let upgradeFailAudio: HTMLAudioElement | null = null;
 let upgradeSpinAudio: HTMLAudioElement | null = null;
+let licenseResultAudio: HTMLAudioElement | null = null;
+let licenseResultTimer: number | null = null;
 
 export const initAudio = () => {
     if (!audioCtx) {
@@ -91,3 +93,38 @@ export const playUpgradeFailSound = () => {
         upgradeFailAudio.play().catch(console.error);
     }
 };
+
+const playLicenseResultSound = (source: HTMLAudioElement | null) => {
+    if (!source) return;
+
+    if (licenseResultTimer !== null) {
+        window.clearTimeout(licenseResultTimer);
+        licenseResultTimer = null;
+    }
+    if (licenseResultAudio) {
+        licenseResultAudio.pause();
+    }
+
+    const audio = source.cloneNode() as HTMLAudioElement;
+    licenseResultAudio = audio;
+    audio.currentTime = 0;
+    audio.volume = 0.9;
+    audio.play().catch(console.error);
+
+    licenseResultTimer = window.setTimeout(() => {
+        const fade = window.setInterval(() => {
+            audio.volume = Math.max(0, audio.volume - 0.18);
+            if (audio.volume === 0) {
+                window.clearInterval(fade);
+                audio.pause();
+                audio.currentTime = 0;
+                if (licenseResultAudio === audio) licenseResultAudio = null;
+            }
+        }, 30);
+        licenseResultTimer = null;
+    }, 1050);
+};
+
+export const playLicenseSuccessSound = () => playLicenseResultSound(upgradeSuccessAudio);
+
+export const playLicenseFailSound = () => playLicenseResultSound(upgradeFailAudio);

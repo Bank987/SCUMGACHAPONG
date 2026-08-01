@@ -1,7 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BadgeCheck, LockKeyhole, ShieldCheck, TicketCheck, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
-import { initAudio, playUpgradeFailSound, playUpgradeSuccessSound } from "../lib/audio";
+import { initAudio, playLicenseFailSound, playLicenseSuccessSound } from "../lib/audio";
 import { useStore } from "../store/useStore";
 
 interface LicenseData {
@@ -32,6 +32,8 @@ export default function WeaponLicense() {
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(false);
   const [result, setResult] = useState<UpgradeResult | null>(null);
+  const [resultRevealed, setResultRevealed] = useState(false);
+  const revealTimer = useRef<number | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -49,6 +51,10 @@ export default function WeaponLicense() {
       .finally(() => setLoading(false));
   }, [isAuthenticated, setLevelTickets]);
 
+  useEffect(() => () => {
+    if (revealTimer.current !== null) window.clearTimeout(revealTimer.current);
+  }, []);
+
   const upgrade = async () => {
     if (!license || upgrading || license.level >= 15 || license.tickets < 1) return;
     initAudio();
@@ -60,19 +66,30 @@ export default function WeaponLicense() {
 
       const nextResult: UpgradeResult = data;
       setResult(nextResult);
-      setLevelTickets(nextResult.remainingTickets);
-      setLicense((current) => current ? {
-        ...current,
-        level: nextResult.currentLevel,
-        tickets: nextResult.remainingTickets
-      } : current);
-      if (nextResult.success) playUpgradeSuccessSound();
-      else playUpgradeFailSound();
+      setResultRevealed(false);
+      revealTimer.current = window.setTimeout(() => {
+        setLevelTickets(nextResult.remainingTickets);
+        setLicense((current) => current ? {
+          ...current,
+          level: nextResult.currentLevel,
+          tickets: nextResult.remainingTickets
+        } : current);
+        setResultRevealed(true);
+        setUpgrading(false);
+        if (nextResult.success) playLicenseSuccessSound();
+        else playLicenseFailSound();
+        revealTimer.current = null;
+      }, 900);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการเชื่อมต่อ");
-    } finally {
       setUpgrading(false);
     }
+  };
+
+  const closeResult = () => {
+    if (!resultRevealed) return;
+    setResult(null);
+    setResultRevealed(false);
   };
 
   if (!isAuthenticated) {
@@ -132,15 +149,39 @@ export default function WeaponLicense() {
       </div>
 
       {result && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/80 px-4 backdrop-blur-md">
-          <div className={`relative w-full max-w-md overflow-hidden rounded-[28px] border p-8 text-center shadow-2xl ${result.success ? "border-emerald-400/40 bg-[#08130f]" : "border-red-400/40 bg-[#16090a]"}`}>
-            <button onClick={() => setResult(null)} className="absolute right-4 top-4 rounded-full bg-white/5 p-2 text-gray-400 hover:text-white"><X className="h-5 w-5" /></button>
-            <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${result.success ? "bg-emerald-400/15 text-emerald-400" : "bg-red-400/15 text-red-400"}`}><BadgeCheck className="h-11 w-11" /></div>
-            <p className={`mt-5 text-xs font-black uppercase tracking-[0.25em] ${result.success ? "text-emerald-400" : "text-red-400"}`}>{result.success ? "Upgrade Success" : "Upgrade Failed"}</p>
-            <h2 className="mt-3 text-3xl font-black text-white">{result.success ? result.levelName : "ระดับคงเดิม"}</h2>
-            <p className="mt-3 text-sm text-gray-400">{result.success ? `เลื่อนเป็น LEVEL ${result.currentLevel} สำเร็จ` : `ยังคงอยู่ที่ LEVEL ${result.currentLevel}`}</p>
-            <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">RATE</p><p className="mt-1 font-black text-white">{asPercent(result.rate).toFixed(1)}%</p></div><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">TIER ACCESS LEFT</p><p className="mt-1 font-black text-white">{result.remainingTickets}</p></div></div>
-            <button onClick={() => setResult(null)} className={`mt-6 w-full rounded-xl py-3 font-black ${result.success ? "bg-emerald-400 text-[#04100b]" : "bg-red-500 text-white"}`}>ตกลง</button>
+        <div className={`fixed inset-0 z-[1000] flex items-center justify-center overflow-hidden bg-black/85 px-4 backdrop-blur-md ${resultRevealed && !result.success ? "animate-[shake_0.45s_ease-in-out]" : ""}`}>
+          {resultRevealed && (
+            <div className={`pointer-events-none absolute inset-0 animate-[license-flash_0.75s_ease-out_forwards] ${result.success ? "bg-emerald-300" : "bg-red-600"}`} />
+          )}
+          <div className={`pointer-events-none absolute h-[70vmax] w-[70vmax] rounded-full transition-all duration-700 ${resultRevealed ? "scale-100 opacity-100" : "scale-50 opacity-30"} ${result.success ? "bg-[radial-gradient(circle,rgba(52,211,153,0.42)_0%,rgba(16,185,129,0.12)_35%,transparent_68%)]" : "bg-[radial-gradient(circle,rgba(239,68,68,0.4)_0%,rgba(127,29,29,0.15)_35%,transparent_68%)]"}`} />
+
+          <div className={`relative w-full max-w-lg overflow-hidden rounded-[30px] border p-7 text-center shadow-2xl transition-all duration-500 sm:p-9 ${!resultRevealed ? "scale-95 border-white/10 bg-[#080a0c]" : result.success ? "scale-100 border-emerald-300/60 bg-[#07130e] shadow-[0_0_90px_rgba(52,211,153,0.38)]" : "scale-100 border-red-400/60 bg-[#180708] shadow-[0_0_80px_rgba(239,68,68,0.34)]"}`}>
+            {resultRevealed && <button onClick={closeResult} className="absolute right-4 top-4 z-20 rounded-full bg-white/5 p-2 text-gray-400 hover:text-white"><X className="h-5 w-5" /></button>}
+
+            <div className="relative mx-auto flex h-48 w-48 items-center justify-center sm:h-56 sm:w-56">
+              {!resultRevealed && <div className="absolute inset-2 animate-ping rounded-full border border-emerald-300/35" />}
+              {resultRevealed && result.success && <><div className="absolute inset-0 animate-pulse rounded-full bg-emerald-300/25 blur-2xl" /><div className="absolute -inset-8 animate-[spin_8s_linear_infinite] rounded-full border border-dashed border-emerald-300/30" /></>}
+              {resultRevealed && !result.success && <div className="absolute inset-0 rounded-full bg-red-500/25 blur-2xl" />}
+              <div className={`relative flex h-40 w-40 items-center justify-center rounded-full border p-7 transition-all duration-500 sm:h-48 sm:w-48 ${!resultRevealed ? "animate-pulse border-white/10 bg-white/5 opacity-70" : result.success ? "border-emerald-300/50 bg-emerald-300/10 shadow-[0_0_45px_rgba(52,211,153,0.5)]" : "border-red-400/50 bg-red-500/10 grayscale"}`}>
+                {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className={`h-full w-full object-contain transition-all duration-500 ${resultRevealed && result.success ? "drop-shadow-[0_0_24px_rgba(110,231,183,0.9)]" : ""}`} /> : <BadgeCheck className={`h-24 w-24 ${resultRevealed && !result.success ? "text-red-400" : "text-emerald-400"}`} />}
+              </div>
+            </div>
+
+            {!resultRevealed ? (
+              <div className="mt-4">
+                <p className="text-xs font-black uppercase tracking-[0.35em] text-emerald-300">กำลังตรวจสอบสิทธิ์</p>
+                <h2 className="mt-3 text-2xl font-black text-white">กำลังลุ้นผล...</h2>
+                <div className="mx-auto mt-5 h-1.5 w-48 overflow-hidden rounded-full bg-white/10"><div className="h-full animate-[shimmer_0.8s_linear_infinite] bg-gradient-to-r from-transparent via-emerald-300 to-transparent" /></div>
+              </div>
+            ) : (
+              <>
+                <p className={`mt-5 text-xs font-black uppercase tracking-[0.25em] ${result.success ? "text-emerald-400" : "text-red-400"}`}>{result.success ? "Upgrade Success" : "Upgrade Failed"}</p>
+                <h2 className="mt-3 text-3xl font-black text-white">{result.success ? result.levelName : "ระดับคงเดิม"}</h2>
+                <p className="mt-3 text-sm text-gray-400">{result.success ? `เลื่อนเป็น LEVEL ${result.currentLevel} สำเร็จ` : `ยังคงอยู่ที่ LEVEL ${result.currentLevel}`}</p>
+                <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">RATE</p><p className="mt-1 font-black text-white">{asPercent(result.rate).toFixed(1)}%</p></div><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">TIER ACCESS LEFT</p><p className="mt-1 font-black text-white">{result.remainingTickets}</p></div></div>
+                <button onClick={closeResult} className={`mt-6 w-full rounded-xl py-3 font-black ${result.success ? "bg-emerald-400 text-[#04100b]" : "bg-red-500 text-white"}`}>ตกลง</button>
+              </>
+            )}
           </div>
         </div>
       )}

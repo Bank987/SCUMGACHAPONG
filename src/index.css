@@ -163,6 +163,20 @@
       background-color: #ffb700;
     }
   }
+
+  @keyframes license-flash {
+    0% {
+      opacity: 0.82;
+    }
+
+    35% {
+      opacity: 0.28;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
 }
 
 @layer utilities {
