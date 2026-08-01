@@ -93,8 +93,8 @@ export default function WeaponLicense() {
 
   return (
     <div className="w-full pb-8 pt-0 md:pb-12">
-      <div className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-[28px] border border-emerald-400/20 bg-[#0a0d0f]/90 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-8 lg:p-12 xl:p-16 2xl:p-20">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(52,211,153,0.16),transparent_42%)]" />
+      <div className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-[28px] border border-white/15 bg-white/[0.035] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.3)] backdrop-blur-md sm:p-8 lg:p-12 xl:p-16 2xl:p-20">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-black/10" />
         <div className="relative grid min-h-[calc(100dvh-17rem)] items-center gap-12 lg:grid-cols-[1.2fr_0.8fr] xl:gap-20 2xl:grid-cols-[1.25fr_0.75fr]">
           <div>
             <div className="mb-6 flex items-center gap-3 text-emerald-400"><ShieldCheck className="h-7 w-7 sm:h-9 sm:w-9" /><span className="h-px w-16 bg-emerald-400/50 sm:w-24" /></div>
@@ -113,9 +113,9 @@ export default function WeaponLicense() {
           </div>
 
           <div className="relative mx-auto w-full max-w-xl 2xl:max-w-2xl">
-            <div className="absolute -inset-4 rounded-[36px] bg-emerald-400/10 blur-2xl" />
-            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-b from-[#151b1c] to-[#070909] p-7 text-center shadow-2xl sm:p-10 xl:p-12">
-              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-8 shadow-[inset_0_0_35px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.1)] sm:h-72 sm:w-72 2xl:h-80 2xl:w-80">
+            <div className="absolute -inset-4 rounded-[36px] bg-white/[0.04] blur-2xl" />
+            <div className="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/[0.055] p-7 text-center shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-lg sm:p-10 xl:p-12">
+              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-white/15 bg-white/[0.035] p-8 shadow-[inset_0_0_35px_rgba(255,255,255,0.04),0_0_35px_rgba(0,0,0,0.16)] backdrop-blur-md sm:h-72 sm:w-72 2xl:h-80 2xl:w-80">
                 {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className="h-full w-full object-contain drop-shadow-[0_0_18px_rgba(52,211,153,0.4)]" /> : <BadgeCheck className="h-24 w-24 text-emerald-400" />}
               </div>
               <p className="mt-6 text-[11px] font-black uppercase tracking-[0.25em] text-gray-500">Current authorization</p>
@@ -149,5 +149,5 @@ export default function WeaponLicense() {
 }
 
 function Stat({ icon, label, value, wide = false }: { icon: ReactNode; label: string; value: string; wide?: boolean }) {
-  return <div className={`min-h-24 rounded-2xl border border-white/5 bg-black/25 p-5 ${wide ? "col-span-2 sm:col-span-1" : ""}`}><div className="flex items-center gap-2 text-emerald-400 [&>svg]:h-4 [&>svg]:w-4">{icon}<span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span></div><p className="mt-3 text-2xl font-black text-white">{value}</p></div>;
+  return <div className={`min-h-24 rounded-2xl border border-white/10 bg-white/[0.045] p-5 backdrop-blur-md ${wide ? "col-span-2 sm:col-span-1" : ""}`}><div className="flex items-center gap-2 text-emerald-400 [&>svg]:h-4 [&>svg]:w-4">{icon}<span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}</span></div><p className="mt-3 text-2xl font-black text-white">{value}</p></div>;
 }
