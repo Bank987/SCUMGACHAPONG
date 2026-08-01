@@ -3,6 +3,14 @@ import { useStore } from "../store/useStore";
 import { toast } from "sonner";
 import { ShieldAlert, Plus, Users, PackageOpen, Settings, X, Save, Edit, Trash2, KeyRound, ServerCrash } from "lucide-react";
 
+function SaveButton({ onClick, title }: { onClick: () => void; title: string }) {
+  return (
+    <button onClick={onClick} className="shrink-0 rounded-lg border border-green-500/20 bg-green-500/10 p-2 text-green-500 transition-all hover:bg-green-500 hover:text-white" title={title}>
+      <Save className="h-4 w-4" />
+    </button>
+  );
+}
+
 export default function Admin() {
   const { user, fetchSettings, backgroundImage, checkAuth } = useStore();
 
@@ -379,53 +387,42 @@ export default function Admin() {
                 <Trash2 className="h-4 w-4" /> WIPE ผู้ใช้ทั้งหมด
               </button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-[#161720] border-b border-white/5 rounded-t-xl">
-                  <tr>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">User</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">Gacha Point ปัจจุบัน</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">TIER Access</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">ใบอนุญาตอาวุธ</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">REFINE POINT</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">สิทธิ์เปิดกล่อง (คลิกเพื่อสลับ)</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">สถานะ/จัดการ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(u => (
-                    <tr key={u._id} className={`border-b border-white/5 last:border-0 hover:bg-[#161720] transition-colors group ${u.isBanned ? 'bg-red-900/10' : ''}`}>
-                      <td className="p-4 flex items-center gap-4">
-                        <img referrerPolicy="no-referrer" src={u.avatar} alt={u.username} className="w-10 h-10 rounded-lg drop-shadow" />
-                        <div className="flex flex-col">
-                           <div className="flex items-center gap-2">
-                             <input
-                               maxLength={32}
-                               value={u.gameName || ""}
-                               placeholder="ตั้งชื่อผู้เล่น"
-                               onChange={(e) => {
-                                 const newUsers = [...users];
-                                 const idx = newUsers.findIndex(x => x._id === u._id);
-                                 newUsers[idx].gameName = e.target.value;
-                                 setUsers(newUsers);
-                               }}
-                               className="w-44 bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-1.5 text-[13px] font-bold text-white focus:outline-none focus:border-red-500"
-                             />
-                             <button
-                               onClick={() => handleUpdateUser(u._id, { gameName: u.gameName })}
-                               className="p-2 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-lg transition-all"
-                               title="กำหนดชื่อผู้เล่นและล็อกชื่อ"
-                             >
-                               <Save className="w-3.5 h-3.5" />
-                             </button>
-                           </div>
-                           {u.gameNameLocked && <span className="text-[10px] font-bold text-emerald-400">ชื่อถูกกำหนดโดยแอดมิน</span>}
-                          <span className="text-[11px] text-gray-500">Discord: {u.username}</span>
-                          {u.cheatWarnings > 0 && <span className="text-[10px] text-orange-400">Cheat Warnings: {u.cheatWarnings}/5</span>}
+            <div className="grid gap-4 xl:grid-cols-2">
+              {users.map(u => (
+                <article key={u._id} className={`overflow-hidden rounded-2xl border bg-[#0d0e14] shadow-lg transition-colors hover:border-white/15 ${u.isBanned ? 'border-red-500/35 bg-red-950/10' : 'border-white/10'}`}>
+                  <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 p-5">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <img referrerPolicy="no-referrer" src={u.avatar} alt={u.username} className="h-12 w-12 shrink-0 rounded-xl object-cover drop-shadow" />
+                      <div className="min-w-0">
+                        <div className="flex max-w-full items-center gap-2">
+                          <input
+                            maxLength={32}
+                            value={u.gameName || ""}
+                            placeholder="ตั้งชื่อผู้เล่น"
+                            onChange={(e) => {
+                              const newUsers = [...users];
+                              const idx = newUsers.findIndex(x => x._id === u._id);
+                              newUsers[idx].gameName = e.target.value;
+                              setUsers(newUsers);
+                            }}
+                            className="min-w-0 w-full max-w-[220px] bg-[#08090d] border border-white/10 rounded-lg px-2.5 py-1.5 text-[13px] font-bold text-white focus:outline-none focus:border-red-500"
+                          />
+                          <button onClick={() => handleUpdateUser(u._id, { gameName: u.gameName })} className="shrink-0 rounded-lg border border-green-500/20 bg-green-500/10 p-2 text-green-500 transition-all hover:bg-green-500 hover:text-white" title="กำหนดชื่อผู้เล่นและล็อกชื่อ">
+                            <Save className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
+                        {u.gameNameLocked && <span className="mt-1 block text-[10px] font-bold text-emerald-400">ชื่อถูกกำหนดโดยแอดมิน</span>}
+                        <span className="mt-1 block truncate text-[11px] text-gray-500">Discord: {u.username}</span>
+                        {u.cheatWarnings > 0 && <span className="mt-1 block text-[10px] text-orange-400">Cheat Warnings: {u.cheatWarnings}/5</span>}
+                      </div>
+                    </div>
+                    {u.isBanned ? <span className="rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-[10px] font-black text-red-400">BANNED</span> : <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-black text-emerald-400">ACTIVE</span>}
+                  </div>
+
+                  <div className="grid gap-3 p-5 sm:grid-cols-3">
+                    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                      <p className="mb-2 text-[10px] font-black uppercase text-gray-500">Gacha Point</p>
+                      <div className="flex items-center gap-2">
                           <input
                             type="number"
                             value={u.spins}
@@ -435,19 +432,14 @@ export default function Admin() {
                               newUsers[idx].spins = parseInt(e.target.value) || 0;
                               setUsers(newUsers);
                             }}
-                            className="w-24 bg-[#0a0a0f] border border-white/10 rounded-xl px-3 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
+                            className="min-w-0 w-full bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
                           />
-                          <button
-                            onClick={() => handleUpdateUser(u._id, { spins: u.spins })}
-                            className="p-2.5 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-xl transition-all"
-                            title="บันทึก Gacha Point"
-                          >
-                            <Save className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
+                        <SaveButton onClick={() => handleUpdateUser(u._id, { spins: u.spins })} title="บันทึก Gacha Point" />
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-amber-400/15 bg-amber-400/[0.04] p-3">
+                      <p className="mb-2 text-[10px] font-black uppercase text-amber-300/70">TIER Access</p>
+                      <div className="flex items-center gap-2">
                           <input
                             type="number"
                             min="0"
@@ -458,21 +450,14 @@ export default function Admin() {
                               newUsers[idx].levelTickets = parseInt(e.target.value) || 0;
                               setUsers(newUsers);
                             }}
-                            className="w-24 bg-[#0a0a0f] border border-white/10 rounded-xl px-3 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
+                            className="min-w-0 w-full bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
                           />
-                          <button onClick={() => handleUpdateUser(u._id, { levelTickets: u.levelTickets })} className="p-2.5 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-xl transition-all" title="บันทึก TIER Access">
-                            <Save className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex min-w-36 flex-col gap-2">
-                          <span className="w-fit rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-400">LEVEL {Math.min(15, Math.max(0, u.weaponLicenseLevel || 0))}</span>
-                          <button onClick={() => handleWeaponLicenseAccess(u)} className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-black text-blue-400 transition hover:bg-blue-500 hover:text-white">ACCESS</button>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
+                        <SaveButton onClick={() => handleUpdateUser(u._id, { levelTickets: u.levelTickets })} title="บันทึก TIER Access" />
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-cyan-400/15 bg-cyan-400/[0.04] p-3">
+                      <p className="mb-2 text-[10px] font-black uppercase text-cyan-300/70">REFINE POINT</p>
+                      <div className="flex items-center gap-2">
                           <input
                             type="number"
                             value={u.upgradePoints || 0}
@@ -482,19 +467,24 @@ export default function Admin() {
                               newUsers[idx].upgradePoints = parseInt(e.target.value) || 0;
                               setUsers(newUsers);
                             }}
-                            className="w-24 bg-[#0a0a0f] border border-white/10 rounded-xl px-3 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
+                            className="min-w-0 w-full bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
                           />
-                          <button
-                            onClick={() => handleUpdateUser(u._id, { upgradePoints: u.upgradePoints })}
-                            className="p-2.5 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-xl transition-all"
-                            title="บันทึก REFINE POINT"
-                          >
-                            <Save className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-wrap gap-2">
+                        <SaveButton onClick={() => handleUpdateUser(u._id, { upgradePoints: u.upgradePoints })} title="บันทึก REFINE POINT" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/10 p-5">
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[10px] font-black uppercase text-gray-500">ใบอนุญาตอาวุธ</p>
+                      <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-400">LEVEL {Math.min(15, Math.max(0, u.weaponLicenseLevel || 0))}</span>
+                    </div>
+                    <button onClick={() => handleWeaponLicenseAccess(u)} className="w-full rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-xs font-black text-blue-400 transition hover:bg-blue-500 hover:text-white">ACCESS +1 TIER</button>
+                  </div>
+
+                  <div className="border-t border-white/10 p-5">
+                    <p className="mb-3 text-[10px] font-black uppercase text-gray-500">สิทธิ์เปิดกล่อง <span className="font-normal text-gray-600">(คลิกเพื่อสลับ)</span></p>
+                    <div className="flex flex-wrap gap-2">
                           {cases.map(c => {
                             const isAllowed = u.allowedCases?.includes(c._id);
                             return (
@@ -507,22 +497,21 @@ export default function Admin() {
                               </button>
                             );
                           })}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-col gap-2">
-                          {u.isBanned ? (
-                          <>
-                            <span className="text-red-500 text-xs font-bold px-2 py-1 bg-red-500/10 rounded border border-red-500/20">BANNED</span>
-                            <button
-                              onClick={() => {
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 border-t border-white/10 p-5">
+                           {u.isBanned ? (
+                           <>
+                             <button
+                               onClick={() => {
                                 if(confirm("แน่ใจหรือไม่ที่จะปลดแบนผู้เล่นคนนี้?")) {
                                   handleUpdateUser(u._id, { isBanned: false, cheatWarnings: 0, banReason: "" });
                                 }
                               }}
-                              className="text-xs bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white px-2 py-1 rounded transition-colors"
-                            >
-                              ปลดแบน
+                               className="rounded-lg bg-green-500/20 px-3 py-2 text-xs font-bold text-green-400 transition-colors hover:bg-green-500 hover:text-white"
+                             >
+                               ปลดแบน
                             </button>
                           </>
                           ) : (
@@ -533,20 +522,17 @@ export default function Admin() {
                                 handleUpdateUser(u._id, { isBanned: true, banReason: reason || "แบนโดยแอดมิน" });
                               }
                             }}
-                            className="text-xs bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded border border-red-500/20 transition-colors"
-                          >
-                            แบนบัญชี
+                             className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+                           >
+                             แบนบัญชี
                           </button>
                           )}
-                          <button onClick={() => handleDeleteUser(u)} className="text-xs bg-red-950 text-red-300 hover:bg-red-700 hover:text-white px-2 py-1 rounded border border-red-500/30 transition-colors">
-                            ล้างข้อมูลผู้ใช้นี้
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                           <button onClick={() => handleDeleteUser(u)} className="rounded-lg border border-red-500/30 bg-red-950 px-3 py-2 text-xs font-bold text-red-300 transition-colors hover:bg-red-700 hover:text-white">
+                             ล้างข้อมูลผู้ใช้นี้
+                           </button>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         )}
