@@ -5,7 +5,6 @@ let upgradeSuccessAudio: HTMLAudioElement | null = null;
 let upgradeFailAudio: HTMLAudioElement | null = null;
 let upgradeSpinAudio: HTMLAudioElement | null = null;
 let licenseResultAudio: HTMLAudioElement | null = null;
-let licenseResultTimer: number | null = null;
 
 export const initAudio = () => {
     if (!audioCtx) {
@@ -97,32 +96,33 @@ export const playUpgradeFailSound = () => {
 const playLicenseResultSound = (source: HTMLAudioElement | null) => {
     if (!source) return;
 
-    if (licenseResultTimer !== null) {
-        window.clearTimeout(licenseResultTimer);
-        licenseResultTimer = null;
-    }
     if (licenseResultAudio) {
         licenseResultAudio.pause();
     }
 
     const audio = source.cloneNode() as HTMLAudioElement;
     licenseResultAudio = audio;
-    audio.currentTime = 0;
     audio.volume = 0.9;
-    audio.play().catch(console.error);
 
-    licenseResultTimer = window.setTimeout(() => {
-        const fade = window.setInterval(() => {
-            audio.volume = Math.max(0, audio.volume - 0.18);
-            if (audio.volume === 0) {
-                window.clearInterval(fade);
-                audio.pause();
-                audio.currentTime = 0;
-                if (licenseResultAudio === audio) licenseResultAudio = null;
-            }
-        }, 30);
-        licenseResultTimer = null;
-    }, 1050);
+    const playTail = () => {
+        if (licenseResultAudio !== audio) return;
+        const duration = Number(audio.duration);
+        if (!Number.isFinite(duration) || duration <= 0) return;
+
+        audio.currentTime = Math.max(0, duration - 1.3);
+        audio.play().catch(console.error);
+    };
+
+    audio.addEventListener("ended", () => {
+        if (licenseResultAudio === audio) licenseResultAudio = null;
+    }, { once: true });
+
+    if (audio.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        playTail();
+    } else {
+        audio.addEventListener("loadedmetadata", playTail, { once: true });
+        audio.load();
+    }
 };
 
 export const playLicenseSuccessSound = () => playLicenseResultSound(upgradeSuccessAudio);
