@@ -113,9 +113,9 @@ export default function WeaponLicense() {
           </div>
 
           <div className="relative mx-auto w-full max-w-xl 2xl:max-w-2xl">
-            <div className="absolute -inset-4 rounded-[36px] bg-white/[0.04] blur-2xl" />
-            <div className="relative overflow-hidden rounded-[36px] border border-white/15 bg-white/[0.055] p-7 text-center shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-lg sm:p-10 xl:p-12">
-              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-white/15 bg-white/[0.035] p-8 shadow-[inset_0_0_35px_rgba(255,255,255,0.04),0_0_35px_rgba(0,0,0,0.16)] backdrop-blur-md sm:h-72 sm:w-72 2xl:h-80 2xl:w-80">
+            <div className="absolute -inset-4 rounded-[36px] bg-emerald-400/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-b from-[#151b1c] to-[#070909] p-7 text-center shadow-2xl sm:p-10 xl:p-12">
+              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-8 shadow-[inset_0_0_35px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.1)] sm:h-72 sm:w-72 2xl:h-80 2xl:w-80">
                 {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className="h-full w-full object-contain drop-shadow-[0_0_18px_rgba(52,211,153,0.4)]" /> : <BadgeCheck className="h-24 w-24 text-emerald-400" />}
               </div>
               <p className="mt-6 text-[11px] font-black uppercase tracking-[0.25em] text-gray-500">Current authorization</p>
