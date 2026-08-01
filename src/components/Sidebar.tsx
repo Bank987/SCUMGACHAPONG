@@ -27,9 +27,9 @@ export function Sidebar({ user, onClose }: SidebarProps) {
 
   const navLinks = [
     { name: "กล่องสุ่ม", path: "/", icon: <LayoutDashboard size={20} /> },
-    { name: "อัปเกรด", path: "/upgrade", icon: <Swords size={20} /> },
     { name: "ใบอนุญาตอาวุธ", path: "/weapon-license", icon: <BadgeCheck size={20} /> },
     { name: "กระเป๋าของฉัน", path: "/inventory", icon: <PackageOpen size={20} /> },
+    { name: "อัปเกรด", path: "/upgrade", icon: <Swords size={20} /> },
     { name: "ประวัติ", path: "/history", icon: <HistoryIcon size={20} /> },
     { name: "ติดต่อแอดมิน", path: "/contact", icon: <Flame size={20} /> }
   ];
