@@ -49,9 +49,23 @@ router.get("/users", async (req, res) => {
 
 router.put("/users/:id", async (req, res) => {
   try {
-    const { spins, upgradePoints, levelTickets, weaponLicenseLevel, allowedCases, isBanned, banReason, cheatWarnings } = req.body;
+    const { gameName, spins, upgradePoints, levelTickets, weaponLicenseLevel, allowedCases, isBanned, banReason, cheatWarnings } = req.body;
 
     const updateData: any = {};
+    if (gameName !== undefined) {
+      if (typeof gameName !== "string") return res.status(400).json({ error: "gameName must be a string" });
+      const normalizedGameName = gameName.trim();
+      if (normalizedGameName.length < 2 || normalizedGameName.length > 32) {
+        return res.status(400).json({ error: "ชื่อในเกมต้องมีความยาว 2-32 ตัวอักษร" });
+      }
+      const duplicate = await User.exists({
+        _id: { $ne: req.params.id },
+        gameName: { $regex: `^${normalizedGameName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" }
+      });
+      if (duplicate) return res.status(409).json({ error: "ชื่อในเกมนี้ถูกใช้งานแล้ว" });
+      updateData.gameName = normalizedGameName;
+      updateData.gameNameLocked = true;
+    }
     if (spins !== undefined) updateData.spins = spins;
     if (upgradePoints !== undefined) updateData.upgradePoints = upgradePoints;
     if (levelTickets !== undefined) {

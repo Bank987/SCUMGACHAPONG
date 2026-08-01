@@ -398,7 +398,28 @@ export default function Admin() {
                       <td className="p-4 flex items-center gap-4">
                         <img referrerPolicy="no-referrer" src={u.avatar} alt={u.username} className="w-10 h-10 rounded-lg drop-shadow" />
                         <div className="flex flex-col">
-                          <span className="font-bold text-[15px]">{u.gameName || "ยังไม่ตั้งชื่อในเกม"}</span>
+                           <div className="flex items-center gap-2">
+                             <input
+                               maxLength={32}
+                               value={u.gameName || ""}
+                               placeholder="ตั้งชื่อผู้เล่น"
+                               onChange={(e) => {
+                                 const newUsers = [...users];
+                                 const idx = newUsers.findIndex(x => x._id === u._id);
+                                 newUsers[idx].gameName = e.target.value;
+                                 setUsers(newUsers);
+                               }}
+                               className="w-44 bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-1.5 text-[13px] font-bold text-white focus:outline-none focus:border-red-500"
+                             />
+                             <button
+                               onClick={() => handleUpdateUser(u._id, { gameName: u.gameName })}
+                               className="p-2 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-lg transition-all"
+                               title="กำหนดชื่อผู้เล่นและล็อกชื่อ"
+                             >
+                               <Save className="w-3.5 h-3.5" />
+                             </button>
+                           </div>
+                           {u.gameNameLocked && <span className="text-[10px] font-bold text-emerald-400">ชื่อถูกกำหนดโดยแอดมิน</span>}
                           <span className="text-[11px] text-gray-500">Discord: {u.username}</span>
                           {u.cheatWarnings > 0 && <span className="text-[10px] text-orange-400">Cheat Warnings: {u.cheatWarnings}/5</span>}
                         </div>

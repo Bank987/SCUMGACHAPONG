@@ -113,6 +113,10 @@ router.put("/game-name", async (req, res) => {
       return res.status(400).json({ error: "ชื่อในเกมต้องมีความยาว 2-32 ตัวอักษร" });
     }
 
+    const currentUser = await User.findById(userId).select("gameNameLocked");
+    if (!currentUser) return res.status(404).json({ error: "User not found" });
+    if (currentUser.gameNameLocked) return res.status(403).json({ error: "ชื่อในเกมนี้ถูกกำหนดโดยแอดมินแล้ว" });
+
     const duplicate = await User.exists({
       _id: { $ne: userId },
       gameName: { $regex: `^${gameName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" }

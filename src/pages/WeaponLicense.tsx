@@ -127,12 +127,12 @@ export default function WeaponLicense() {
             <h1 className="max-w-4xl text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl lg:text-6xl xl:text-7xl">ARMORY <span className="text-emerald-300">LICENSE</span> TIER</h1>
             <h2 className="mt-5 max-w-3xl text-xl font-black leading-snug text-gray-200 sm:text-2xl lg:text-3xl">{displayName}</h2>
             <p className="mt-5 max-w-3xl text-sm font-normal leading-7 text-gray-400 sm:text-base">
-              ใช้ GUN REFINE ที่ได้จากการส่งของให้ ADMIN ในเกมส์ มากดตีบวกใบอนุญาตครอบครองอาวุธ
+              ใช้ TIER Access ที่ได้จากการส่งของให้ ADMIN ในเกมส์ มากดตีบวกใบอนุญาตครอบครองอาวุธ
               หากสำเร็จ คุณจะได้รับใบครอบครองและพกพาอาวุธนั้นได้ สูงสุด 15 TIER
             </p>
 
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Stat icon={<BadgeCheck />} label="ระดับปัจจุบัน" value={level >= 15 ? "MAX 15" : level ? `LEVEL ${level}` : "LEVEL 0"} tone="emerald" />
+              <Stat icon={<BadgeCheck />} label="ระดับปัจจุบัน" value={level > 0 ? currentName : "LEVEL 0"} tone="emerald" />
               <Stat icon={<TicketCheck />} label="TIER Access" value={String(license.tickets)} tone="amber" />
               <Stat icon={<TrendingUp />} label="โอกาสสำเร็จ" value={level >= 15 ? "MAX" : `${rate.toFixed(rate % 1 ? 1 : 0)}%`} tone="cyan" wide />
             </div>
@@ -183,7 +183,7 @@ export default function WeaponLicense() {
               <div className="relative flex items-center justify-between text-left"><span className="text-[10px] font-bold text-gray-500">UPGRADE COST</span><span className="text-xs font-black text-white">1 TIER Access</span></div>
               <button onClick={upgrade} disabled={upgrading || level >= 15 || license.tickets < 1} className="group relative mt-5 w-full overflow-hidden rounded-md border border-emerald-100/60 bg-emerald-300 py-3.5 text-sm font-black uppercase text-[#04100b] shadow-[0_5px_0_#047857,0_12px_28px_rgba(52,211,153,0.24)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-emerald-200 hover:shadow-[0_7px_0_#047857,0_18px_34px_rgba(52,211,153,0.32)] active:translate-y-1 active:shadow-[0_1px_0_#047857,0_5px_14px_rgba(52,211,153,0.2)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:border-white/5 disabled:bg-white/5 disabled:text-gray-600 disabled:shadow-none">
                 <span className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 skew-x-[-20deg] bg-white/40 opacity-0 transition-all duration-500 group-hover:left-[120%] group-hover:opacity-100 group-disabled:hidden" />
-                <span className="relative">{upgrading ? "กำลังตรวจสอบ..." : level >= 15 ? "ระดับสูงสุดแล้ว" : license.tickets < 1 ? "TIER Access ไม่เพียงพอ" : "อัปเกรดใบอนุญาต -1 TIER Access"}</span>
+                <span className="relative">{upgrading ? "กำลังตรวจสอบ..." : level >= 15 ? "ระดับสูงสุดแล้ว" : license.tickets < 1 ? "TIER Access ไม่เพียงพอ" : `อัปเกรด TIER ${level + 1}`}</span>
               </button>
             </div>
           </div>

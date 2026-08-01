@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   discordId: { type: String, required: false },
   username: { type: String, required: true },
   gameName: { type: String, trim: true, minlength: 2, maxlength: 32 },
+  gameNameLocked: { type: Boolean, default: false },
   avatar: { type: String, required: false },
   spins: { type: Number, default: 0 },
   upgradePoints: { type: Number, default: 0 },
