@@ -8,6 +8,31 @@ export const renderWebhookTemplate = (template: string, values: Record<string, s
   });
 };
 
+export const createWeaponLicenseWebhookPayload = (values: {
+  player: string;
+  functionName: string;
+  levelName: string;
+  message: string;
+  success: boolean;
+  image?: string;
+}) => ({
+  username: "รายงานผลใบอนุญาตครอบครองอาวุธ",
+  embeds: [{
+    title: values.success ? "อัปเกรดใบอนุญาตสำเร็จ" : "อัปเกรดใบอนุญาตไม่สำเร็จ",
+    description: values.message,
+    color: values.success ? 0x34d399 : 0xef4444,
+    ...(values.image ? { thumbnail: { url: values.image } } : {}),
+    fields: [
+      { name: "ผู้เล่น", value: values.player, inline: true },
+      { name: "ใบอนุญาต", value: values.functionName, inline: true },
+      { name: "ระดับ", value: values.levelName, inline: false },
+      { name: "ผลลัพธ์", value: values.success ? "สำเร็จ !" : "ไม่สำเร็จ !", inline: true }
+    ],
+    footer: { text: "ARMORY LICENSE SYSTEM" },
+    timestamp: new Date().toISOString()
+  }]
+});
+
 export const sendWebhook = async (type: WebhookType, payload: any) => {
   let webhookUrl = process.env.WEBHOOK_PUBLIC_URL;
   

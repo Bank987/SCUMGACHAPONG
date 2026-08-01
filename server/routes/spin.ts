@@ -5,7 +5,7 @@ import { SpinHistory } from "../models/SpinHistory.js";
 import { Settings } from "../models/Settings.js";
 import { CheatLog } from "../models/CheatLog.js";
 import jwt from "jsonwebtoken";
-import { renderWebhookTemplate, sendWebhook } from "../utils/webhook.js";
+import { createWeaponLicenseWebhookPayload, renderWebhookTemplate, sendWebhook } from "../utils/webhook.js";
 import crypto from "crypto";
 
 const router = express.Router();
@@ -148,10 +148,14 @@ router.post("/weapon-license/upgrade", async (req, res) => {
       result: success ? "สำเร็จ !" : "ไม่สำเร็จ !"
     });
 
-    void sendWebhook("level", {
-      username: "รายงานผลใบอนุญาตครอบครองอาวุธ",
-      content: message
-    });
+    void sendWebhook("level", createWeaponLicenseWebhookPayload({
+      player: user.gameName || user.username,
+      functionName: displaySettings.weaponLicenseName,
+      levelName,
+      message,
+      success,
+      image: displaySettings.weaponLicenseImage
+    }));
 
     res.json({
       success,
@@ -337,13 +341,24 @@ router.post("/", async (req, res) => {
         }]
       };
 
-      // Every result goes to the existing report room; high-rarity drops are also announced publicly.
+      // Every result goes to the existing report room; only Legendary/Mythic drops are announced publicly.
       await sendWebhook('gacha', webhookPayload);
       const rarity = winningItem?.rarity?.toLowerCase();
-      if (isGuaranteed || rarity === "legendary" || rarity === "mythic") {
+      if (rarity === "legendary" || rarity === "mythic") {
         await sendWebhook('public', {
           username: "ห้องอวดผลกาชาปอง",
-          content: `${playerName} เปิดกาชาปองได้รับไอเทมสุดหายากอย่าง ${itemName} สำเร็จ !`
+          embeds: [{
+            title: isGuaranteed ? "การันตี Mythic!" : "ไอเทมสุดหายากจากกาชาปอง",
+            description: `**${playerName}** เปิดกาชาปองได้รับไอเทมสุดหายากอย่าง **${itemName}** สำเร็จ !`,
+            color: parseInt(winningItem?.color?.replace("#", "") || "00ff00", 16),
+            thumbnail: { url: itemImage },
+            fields: [
+              { name: "Rarity", value: winningItem?.rarity ?? "common", inline: true },
+              { name: "Case", value: caseData?.name ?? "Unknown", inline: true },
+              ...(isGuaranteed ? [{ name: "Guarantee", value: `${guaranteeEvery} ครั้ง`, inline: true }] : [])
+            ],
+            timestamp: new Date().toISOString()
+          }]
         });
       }
     } catch (saveError) {

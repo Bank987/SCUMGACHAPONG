@@ -4,7 +4,7 @@ import { Case } from "../models/Case.js";
 import { Settings } from "../models/Settings.js";
 import { CheatLog } from "../models/CheatLog.js";
 import { SpinHistory } from "../models/SpinHistory.js";
-import { renderWebhookTemplate, sendWebhook } from "../utils/webhook.js";
+import { createWeaponLicenseWebhookPayload, renderWebhookTemplate, sendWebhook } from "../utils/webhook.js";
 
 const router = express.Router();
 const ADMIN_PIN = process.env.ADMIN_PIN || "123456";
@@ -137,13 +137,17 @@ router.post("/users/:id/weapon-license-access", async (req, res) => {
       player: user.gameName || user.username,
       function: settings.weaponLicenseName,
       level: levelName,
-      result: "สำเร็จ ! (ACCESS)"
+      result: "สำเร็จ !"
     });
 
-    void sendWebhook("level", {
-      username: "รายงานผลใบอนุญาตครอบครองอาวุธ",
-      content: message
-    });
+    void sendWebhook("level", createWeaponLicenseWebhookPayload({
+      player: user.gameName || user.username,
+      functionName: settings.weaponLicenseName,
+      levelName,
+      message,
+      success: true,
+      image: settings.weaponLicenseImage
+    }));
 
     res.json(user);
   } catch (err) {
