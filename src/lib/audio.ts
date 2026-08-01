@@ -4,6 +4,8 @@ let revealAudio: HTMLAudioElement | null = null;
 let upgradeSuccessAudio: HTMLAudioElement | null = null;
 let upgradeFailAudio: HTMLAudioElement | null = null;
 let upgradeSpinAudio: HTMLAudioElement | null = null;
+let licenseSuccessAudio: HTMLAudioElement | null = null;
+let licenseFailAudio: HTMLAudioElement | null = null;
 let licenseResultAudio: HTMLAudioElement | null = null;
 
 export const initAudio = () => {
@@ -35,9 +37,19 @@ export const initAudio = () => {
         upgradeFailAudio.volume = 1.0;
         upgradeFailAudio.loop = false;
     }
+    if (!licenseSuccessAudio) {
+        licenseSuccessAudio = new Audio("/audio/license_success.mp3");
+        licenseSuccessAudio.volume = 0.9;
+        licenseSuccessAudio.loop = false;
+    }
+    if (!licenseFailAudio) {
+        licenseFailAudio = new Audio("/audio/license_fail.mp3");
+        licenseFailAudio.volume = 0.9;
+        licenseFailAudio.loop = false;
+    }
 
     // Unlock audio context for mobile browsers by playing and immediately pausing
-    [tickAudio, revealAudio, upgradeSuccessAudio, upgradeFailAudio].forEach(audio => {
+    [tickAudio, revealAudio, upgradeSuccessAudio, upgradeFailAudio, licenseSuccessAudio, licenseFailAudio].forEach(audio => {
         if (audio && audio.paused) {
             audio.play().catch(() => {});
             audio.pause();
@@ -103,28 +115,15 @@ const playLicenseResultSound = (source: HTMLAudioElement | null) => {
     const audio = source.cloneNode() as HTMLAudioElement;
     licenseResultAudio = audio;
     audio.volume = 0.9;
-
-    const playTail = () => {
-        if (licenseResultAudio !== audio) return;
-        const duration = Number(audio.duration);
-        if (!Number.isFinite(duration) || duration <= 0) return;
-
-        audio.currentTime = Math.max(0, duration - 1.3);
-        audio.play().catch(console.error);
-    };
+    audio.currentTime = 0;
 
     audio.addEventListener("ended", () => {
         if (licenseResultAudio === audio) licenseResultAudio = null;
     }, { once: true });
 
-    if (audio.readyState >= HTMLMediaElement.HAVE_METADATA) {
-        playTail();
-    } else {
-        audio.addEventListener("loadedmetadata", playTail, { once: true });
-        audio.load();
-    }
+    audio.play().catch(console.error);
 };
 
-export const playLicenseSuccessSound = () => playLicenseResultSound(upgradeSuccessAudio);
+export const playLicenseSuccessSound = () => playLicenseResultSound(licenseSuccessAudio);
 
-export const playLicenseFailSound = () => playLicenseResultSound(upgradeFailAudio);
+export const playLicenseFailSound = () => playLicenseResultSound(licenseFailAudio);
