@@ -92,16 +92,16 @@ export default function WeaponLicense() {
   const displayImage = license.image || weaponLicenseImage;
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] pb-12 pt-2 md:pt-6">
-      <div className="relative min-h-[680px] overflow-hidden rounded-[28px] border border-emerald-400/20 bg-[#0a0d0f]/90 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-8 lg:p-12 xl:p-14">
+    <div className="w-full pb-8 pt-0 md:pb-12">
+      <div className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-[28px] border border-emerald-400/20 bg-[#0a0d0f]/90 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-8 lg:p-12 xl:p-16 2xl:p-20">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(52,211,153,0.16),transparent_42%)]" />
-        <div className="relative grid min-h-[570px] items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] xl:gap-16">
+        <div className="relative grid min-h-[calc(100dvh-17rem)] items-center gap-12 lg:grid-cols-[1.2fr_0.8fr] xl:gap-20 2xl:grid-cols-[1.25fr_0.75fr]">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-emerald-300"><ShieldCheck className="h-4 w-4" /> ARMORY LICENSE TIER</div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-400">ARMORY LICENSE TIER</p>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl xl:text-6xl">{displayName}</h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-gray-300 sm:text-lg">
-              ใช้ <span className="font-black text-emerald-300">GUN REFINE</span> ที่ได้จากการส่งของให้ ADMIN ในเกมส์ มากดตีบวกใบอนุญาตครอบครองอาวุธ
+            <div className="mb-6 flex items-center gap-3 text-emerald-400"><ShieldCheck className="h-7 w-7 sm:h-9 sm:w-9" /><span className="h-px w-16 bg-emerald-400/50 sm:w-24" /></div>
+            <h1 className="max-w-5xl text-4xl font-black uppercase leading-[0.95] tracking-[-0.04em] text-emerald-300 sm:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl">ARMORY LICENSE TIER</h1>
+            <h2 className="mt-6 max-w-5xl text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl xl:text-6xl">{displayName}</h2>
+            <p className="mt-7 max-w-4xl text-base font-normal leading-8 text-gray-300 sm:text-lg">
+              ใช้ GUN REFINE ที่ได้จากการส่งของให้ ADMIN ในเกมส์ มากดตีบวกใบอนุญาตครอบครองอาวุธ
               หากสำเร็จ คุณจะได้รับใบครอบครองและพกพาอาวุธนั้นได้ สูงสุด 15 TIER
             </p>
 
@@ -112,10 +112,10 @@ export default function WeaponLicense() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-lg">
+          <div className="relative mx-auto w-full max-w-xl 2xl:max-w-2xl">
             <div className="absolute -inset-4 rounded-[36px] bg-emerald-400/10 blur-2xl" />
-            <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-b from-[#151b1c] to-[#070909] p-7 text-center shadow-2xl sm:p-10">
-              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-8 shadow-[inset_0_0_35px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.1)] sm:h-64 sm:w-64">
+            <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-b from-[#151b1c] to-[#070909] p-7 text-center shadow-2xl sm:p-10 xl:p-12">
+              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-8 shadow-[inset_0_0_35px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.1)] sm:h-72 sm:w-72 2xl:h-80 2xl:w-80">
                 {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className="h-full w-full object-contain drop-shadow-[0_0_18px_rgba(52,211,153,0.4)]" /> : <BadgeCheck className="h-24 w-24 text-emerald-400" />}
               </div>
               <p className="mt-6 text-[11px] font-black uppercase tracking-[0.25em] text-gray-500">Current authorization</p>
