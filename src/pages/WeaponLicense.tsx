@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BadgeCheck, ChevronRight, CircleCheck, Fingerprint, LockKeyhole, ShieldCheck, TicketCheck, TrendingUp, X } from "lucide-react";
+import { BadgeCheck, ChevronRight, CircleCheck, Fingerprint, LockKeyhole, TicketCheck, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { initLicenseAudio, playLicenseFailSound, playLicenseSuccessSound } from "../lib/audio";
 import { useStore } from "../store/useStore";
@@ -114,15 +114,8 @@ export default function WeaponLicense() {
       <section className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#0b1010]/35 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent" />
 
-        <header className="relative flex flex-col gap-4 border-b border-white/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-emerald-300/30 bg-emerald-300/10 text-emerald-300 shadow-[inset_0_0_18px_rgba(52,211,153,0.08)]"><ShieldCheck className="h-6 w-6" /></div>
-            <div>
-              <p className="text-[10px] font-black uppercase text-emerald-300">Authorization command</p>
-              <p className="mt-1 text-xs font-bold text-gray-500">LAND SERIES / ARMORY CONTROL</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 self-start rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2 sm:self-auto">
+        <header className="relative flex justify-end border-b border-white/10 px-5 py-4 sm:px-8 lg:px-10">
+          <div className="flex items-center gap-2 rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2">
             <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-300 shadow-[0_0_10px_#6ee7b7]" />
             <span className="text-[10px] font-black uppercase text-emerald-200">System online</span>
           </div>
@@ -178,8 +171,9 @@ export default function WeaponLicense() {
                 <p className="text-sm font-black text-emerald-300">{nextName}</p>
               </div>
               <div className="relative flex items-center justify-between text-left"><span className="text-[10px] font-bold text-gray-500">UPGRADE COST</span><span className="text-xs font-black text-white">1 TIER Access</span></div>
-              <button onClick={upgrade} disabled={upgrading || level >= 15 || license.tickets < 1} className="relative mt-5 w-full rounded-md border border-emerald-200/40 bg-emerald-300 py-3.5 text-sm font-black uppercase text-[#04100b] shadow-[0_0_24px_rgba(52,211,153,0.25)] transition hover:bg-emerald-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:border-white/5 disabled:bg-white/5 disabled:text-gray-600 disabled:shadow-none">
-                {upgrading ? "กำลังตรวจสอบ..." : level >= 15 ? "ระดับสูงสุดแล้ว" : license.tickets < 1 ? "TIER Access ไม่เพียงพอ" : "อัปเกรดใบอนุญาต -1 TIER Access"}
+              <button onClick={upgrade} disabled={upgrading || level >= 15 || license.tickets < 1} className="group relative mt-5 w-full overflow-hidden rounded-md border border-emerald-100/60 bg-emerald-300 py-3.5 text-sm font-black uppercase text-[#04100b] shadow-[0_5px_0_#047857,0_12px_28px_rgba(52,211,153,0.24)] transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:bg-emerald-200 hover:shadow-[0_7px_0_#047857,0_18px_34px_rgba(52,211,153,0.32)] active:translate-y-1 active:shadow-[0_1px_0_#047857,0_5px_14px_rgba(52,211,153,0.2)] disabled:translate-y-0 disabled:cursor-not-allowed disabled:border-white/5 disabled:bg-white/5 disabled:text-gray-600 disabled:shadow-none">
+                <span className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 skew-x-[-20deg] bg-white/40 opacity-0 transition-all duration-500 group-hover:left-[120%] group-hover:opacity-100 group-disabled:hidden" />
+                <span className="relative">{upgrading ? "กำลังตรวจสอบ..." : level >= 15 ? "ระดับสูงสุดแล้ว" : license.tickets < 1 ? "TIER Access ไม่เพียงพอ" : "อัปเกรดใบอนุญาต -1 TIER Access"}</span>
               </button>
             </div>
           </div>
@@ -194,7 +188,7 @@ export default function WeaponLicense() {
           <div className={`pointer-events-none absolute h-[70vmax] w-[70vmax] rounded-full transition-all duration-700 ${resultRevealed ? "scale-100 opacity-100" : "scale-50 opacity-30"} ${result.success ? "bg-[radial-gradient(circle,rgba(52,211,153,0.42)_0%,rgba(16,185,129,0.12)_35%,transparent_68%)]" : "bg-[radial-gradient(circle,rgba(239,68,68,0.4)_0%,rgba(127,29,29,0.15)_35%,transparent_68%)]"}`} />
 
           <div className={`relative w-full max-w-lg overflow-hidden rounded-[30px] border p-7 text-center shadow-2xl transition-all duration-500 sm:p-9 ${!resultRevealed ? "scale-95 border-white/10 bg-[#080a0c]" : result.success ? "scale-100 border-emerald-300/60 bg-[#07130e] shadow-[0_0_90px_rgba(52,211,153,0.38)]" : "scale-100 border-red-400/60 bg-[#180708] shadow-[0_0_80px_rgba(239,68,68,0.34)]"}`}>
-            {resultRevealed && <button onClick={closeResult} className="absolute right-4 top-4 z-20 rounded-full bg-white/5 p-2 text-gray-400 hover:text-white"><X className="h-5 w-5" /></button>}
+            {resultRevealed && <button onClick={closeResult} aria-label="ปิดผลการอัปเกรด" className="absolute right-4 top-4 z-20 rounded-full border border-white/10 bg-white/5 p-2 text-gray-400 shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:rotate-90 hover:bg-white/10 hover:text-white hover:shadow-[0_5px_0_rgba(0,0,0,0.4)] active:translate-y-0.5 active:scale-90 active:shadow-none"><X className="h-5 w-5" /></button>}
 
             <div className="relative mx-auto flex h-48 w-48 items-center justify-center sm:h-56 sm:w-56">
               {!resultRevealed && <div className="absolute inset-2 animate-ping rounded-full border border-emerald-300/35" />}
@@ -217,7 +211,7 @@ export default function WeaponLicense() {
                 <h2 className="mt-3 text-3xl font-black text-white">{result.success ? result.levelName : "ระดับคงเดิม"}</h2>
                 <p className="mt-3 text-sm text-gray-400">{result.success ? `เลื่อนเป็น LEVEL ${result.currentLevel} สำเร็จ` : `ยังคงอยู่ที่ LEVEL ${result.currentLevel}`}</p>
                 <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">RATE</p><p className="mt-1 font-black text-white">{asPercent(result.rate).toFixed(1)}%</p></div><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">TIER ACCESS LEFT</p><p className="mt-1 font-black text-white">{result.remainingTickets}</p></div></div>
-                <button onClick={closeResult} className={`mt-6 w-full rounded-xl py-3 font-black ${result.success ? "bg-emerald-400 text-[#04100b]" : "bg-red-500 text-white"}`}>ตกลง</button>
+                <button onClick={closeResult} className={`group relative mt-6 w-full overflow-hidden rounded-lg border py-3 font-black transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-0.5 active:translate-y-1 active:shadow-none ${result.success ? "border-emerald-200/50 bg-emerald-400 text-[#04100b] shadow-[0_5px_0_#047857,0_12px_25px_rgba(52,211,153,0.2)] hover:brightness-110" : "border-red-300/40 bg-red-500 text-white shadow-[0_5px_0_#991b1b,0_12px_25px_rgba(239,68,68,0.2)] hover:brightness-110"}`}><span className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 skew-x-[-20deg] bg-white/35 transition-[left] duration-500 group-hover:left-[120%]" /><span className="relative">ตกลง</span></button>
               </>
             )}
           </div>
