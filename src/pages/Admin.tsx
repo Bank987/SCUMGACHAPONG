@@ -385,7 +385,7 @@ export default function Admin() {
                   <tr>
                     <th className="p-4 font-bold text-[13px] text-gray-400">User</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">Gacha Point ปัจจุบัน</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">LEVEL TICKET</th>
+                    <th className="p-4 font-bold text-[13px] text-gray-400">TIER Access</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">ใบอนุญาตอาวุธ</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">REFINE POINT</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">สิทธิ์เปิดกล่อง (คลิกเพื่อสลับ)</th>
@@ -439,7 +439,7 @@ export default function Admin() {
                             }}
                             className="w-24 bg-[#0a0a0f] border border-white/10 rounded-xl px-3 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
                           />
-                          <button onClick={() => handleUpdateUser(u._id, { levelTickets: u.levelTickets })} className="p-2.5 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-xl transition-all" title="บันทึก Level Ticket">
+                          <button onClick={() => handleUpdateUser(u._id, { levelTickets: u.levelTickets })} className="p-2.5 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-xl transition-all" title="บันทึก TIER Access">
                             <Save className="w-4 h-4" />
                           </button>
                         </div>

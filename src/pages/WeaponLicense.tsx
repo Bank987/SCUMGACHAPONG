@@ -76,7 +76,7 @@ export default function WeaponLicense() {
   };
 
   if (!isAuthenticated) {
-    return <div className="flex min-h-[65vh] items-center justify-center"><div className="text-center"><LockKeyhole className="mx-auto h-16 w-16 text-gray-600" /><h1 className="mt-4 text-2xl font-black text-white">กรุณาเข้าสู่ระบบ</h1><p className="mt-2 text-sm text-gray-400">เข้าสู่ระบบเพื่อดูและอัปเกรดใบอนุญาตครอบครองอาวุธ</p></div></div>;
+    return <div className="flex min-h-[65vh] items-center justify-center"><div className="text-center"><LockKeyhole className="mx-auto h-16 w-16 text-gray-600" /><h1 className="mt-4 text-2xl font-black text-white">กรุณาเข้าสู่ระบบ</h1><p className="mt-2 text-sm text-gray-400">เข้าสู่ระบบเพื่อดูและอัปเกรด ARMORY LICENSE TIER</p></div></div>;
   }
 
   if (loading) return <div className="flex min-h-[65vh] items-center justify-center"><div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-400 border-r-transparent" /></div>;
@@ -92,26 +92,30 @@ export default function WeaponLicense() {
   const displayImage = license.image || weaponLicenseImage;
 
   return (
-    <div className="mx-auto max-w-6xl pb-12 pt-2 md:pt-6">
-      <div className="relative overflow-hidden rounded-[28px] border border-emerald-400/20 bg-[#0a0d0f]/90 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl md:p-10">
+    <div className="mx-auto w-full max-w-[1440px] pb-12 pt-2 md:pt-6">
+      <div className="relative min-h-[680px] overflow-hidden rounded-[28px] border border-emerald-400/20 bg-[#0a0d0f]/90 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-8 lg:p-12 xl:p-14">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(52,211,153,0.16),transparent_42%)]" />
-        <div className="relative grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="relative grid min-h-[570px] items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] xl:gap-16">
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-emerald-300"><ShieldCheck className="h-4 w-4" /> Weapon Authority</div>
-            <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl md:text-5xl">{displayName}</h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-gray-400">ใช้ Level Ticket เพื่อเลื่อนระดับใบอนุญาต ครั้งละ 1 ใบ หากไม่สำเร็จระดับจะคงเดิม และสามารถเลื่อนได้สูงสุด LEVEL 15</p>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-emerald-300"><ShieldCheck className="h-4 w-4" /> ARMORY LICENSE TIER</div>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-emerald-400">ARMORY LICENSE TIER</p>
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl xl:text-6xl">{displayName}</h1>
+            <p className="mt-6 max-w-3xl text-base leading-8 text-gray-300 sm:text-lg">
+              ใช้ <span className="font-black text-emerald-300">GUN REFINE</span> ที่ได้จากการส่งของให้ ADMIN ในเกมส์ มากดตีบวกใบอนุญาตครอบครองอาวุธ
+              หากสำเร็จ คุณจะได้รับใบครอบครองและพกพาอาวุธนั้นได้ สูงสุด 15 TIER
+            </p>
 
-            <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="mt-9 grid grid-cols-2 gap-4 sm:grid-cols-3">
               <Stat icon={<BadgeCheck />} label="ระดับปัจจุบัน" value={level >= 15 ? "MAX 15" : level ? `LEVEL ${level}` : "LEVEL 0"} />
-              <Stat icon={<TicketCheck />} label="Level Ticket" value={String(license.tickets)} />
+              <Stat icon={<TicketCheck />} label="TIER Access" value={String(license.tickets)} />
               <Stat icon={<TrendingUp />} label="โอกาสสำเร็จ" value={level >= 15 ? "MAX" : `${rate.toFixed(rate % 1 ? 1 : 0)}%`} wide />
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-md">
+          <div className="relative mx-auto w-full max-w-lg">
             <div className="absolute -inset-4 rounded-[36px] bg-emerald-400/10 blur-2xl" />
-            <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-b from-[#151b1c] to-[#070909] p-6 text-center shadow-2xl sm:p-8">
-              <div className="mx-auto flex h-44 w-44 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-7 shadow-[inset_0_0_35px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.1)] sm:h-52 sm:w-52">
+            <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-b from-[#151b1c] to-[#070909] p-7 text-center shadow-2xl sm:p-10">
+              <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-8 shadow-[inset_0_0_35px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.1)] sm:h-64 sm:w-64">
                 {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className="h-full w-full object-contain drop-shadow-[0_0_18px_rgba(52,211,153,0.4)]" /> : <BadgeCheck className="h-24 w-24 text-emerald-400" />}
               </div>
               <p className="mt-6 text-[11px] font-black uppercase tracking-[0.25em] text-gray-500">Current authorization</p>
@@ -120,7 +124,7 @@ export default function WeaponLicense() {
               <p className="text-xs font-bold text-gray-500">เป้าหมายถัดไป</p>
               <p className="mt-1 font-black text-emerald-300">{nextName}</p>
               <button onClick={upgrade} disabled={upgrading || level >= 15 || license.tickets < 1} className="mt-6 w-full rounded-xl border border-emerald-300/30 bg-emerald-400 py-3.5 text-sm font-black uppercase tracking-widest text-[#04100b] shadow-[0_0_24px_rgba(52,211,153,0.28)] transition hover:bg-emerald-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-white/5 disabled:bg-white/5 disabled:text-gray-600 disabled:shadow-none">
-                {upgrading ? "กำลังตรวจสอบ..." : level >= 15 ? "ระดับสูงสุดแล้ว" : license.tickets < 1 ? "Level Ticket ไม่เพียงพอ" : "อัปเกรดใบอนุญาต -1 Ticket"}
+                {upgrading ? "กำลังตรวจสอบ..." : level >= 15 ? "ระดับสูงสุดแล้ว" : license.tickets < 1 ? "TIER Access ไม่เพียงพอ" : "อัปเกรดใบอนุญาต -1 TIER Access"}
               </button>
             </div>
           </div>
@@ -135,7 +139,7 @@ export default function WeaponLicense() {
             <p className={`mt-5 text-xs font-black uppercase tracking-[0.25em] ${result.success ? "text-emerald-400" : "text-red-400"}`}>{result.success ? "Upgrade Success" : "Upgrade Failed"}</p>
             <h2 className="mt-3 text-3xl font-black text-white">{result.success ? result.levelName : "ระดับคงเดิม"}</h2>
             <p className="mt-3 text-sm text-gray-400">{result.success ? `เลื่อนเป็น LEVEL ${result.currentLevel} สำเร็จ` : `ยังคงอยู่ที่ LEVEL ${result.currentLevel}`}</p>
-            <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">RATE</p><p className="mt-1 font-black text-white">{asPercent(result.rate).toFixed(1)}%</p></div><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">TICKETS LEFT</p><p className="mt-1 font-black text-white">{result.remainingTickets}</p></div></div>
+            <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">RATE</p><p className="mt-1 font-black text-white">{asPercent(result.rate).toFixed(1)}%</p></div><div className="rounded-xl bg-black/25 p-3"><p className="text-[10px] font-bold text-gray-500">TIER ACCESS LEFT</p><p className="mt-1 font-black text-white">{result.remainingTickets}</p></div></div>
             <button onClick={() => setResult(null)} className={`mt-6 w-full rounded-xl py-3 font-black ${result.success ? "bg-emerald-400 text-[#04100b]" : "bg-red-500 text-white"}`}>ตกลง</button>
           </div>
         </div>
@@ -145,5 +149,5 @@ export default function WeaponLicense() {
 }
 
 function Stat({ icon, label, value, wide = false }: { icon: ReactNode; label: string; value: string; wide?: boolean }) {
-  return <div className={`rounded-2xl border border-white/5 bg-black/25 p-4 ${wide ? "col-span-2 sm:col-span-1" : ""}`}><div className="flex items-center gap-2 text-emerald-400 [&>svg]:h-4 [&>svg]:w-4">{icon}<span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span></div><p className="mt-2 text-xl font-black text-white">{value}</p></div>;
+  return <div className={`min-h-24 rounded-2xl border border-white/5 bg-black/25 p-5 ${wide ? "col-span-2 sm:col-span-1" : ""}`}><div className="flex items-center gap-2 text-emerald-400 [&>svg]:h-4 [&>svg]:w-4">{icon}<span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span></div><p className="mt-3 text-2xl font-black text-white">{value}</p></div>;
 }

@@ -131,7 +131,7 @@ router.post("/weapon-license/upgrade", async (req, res) => {
       if (checkUser.levelUpgradeLockedUntil && checkUser.levelUpgradeLockedUntil > now) {
         return res.status(429).json({ error: "กรุณารอสักครู่ก่อนอัปเกรดอีกครั้ง" });
       }
-      if (Number(checkUser.levelTickets || 0) < 1) return res.status(400).json({ error: "Level Ticket ไม่พอ" });
+      if (Number(checkUser.levelTickets || 0) < 1) return res.status(400).json({ error: "TIER Access ไม่พอ" });
       return res.status(409).json({ error: "ข้อมูลใบอนุญาตมีการเปลี่ยนแปลง กรุณาลองใหม่" });
     }
 

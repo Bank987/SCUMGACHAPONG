@@ -113,7 +113,7 @@ router.post("/users/:id/weapon-license-access", async (req, res) => {
       const checkUser = await User.findById(req.params.id);
       if (!checkUser) return res.status(404).json({ error: "User not found" });
       if (Number(checkUser.weaponLicenseLevel || 0) >= 15) return res.status(400).json({ error: "Weapon license is already at max level" });
-      if (Number(checkUser.levelTickets || 0) < 1) return res.status(400).json({ error: "Insufficient Level Tickets" });
+      if (Number(checkUser.levelTickets || 0) < 1) return res.status(400).json({ error: "Insufficient TIER Access" });
       return res.status(409).json({ error: "Weapon license data changed, please retry" });
     }
 

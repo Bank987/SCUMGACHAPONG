@@ -80,7 +80,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
                 </div>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">LEVEL TICKET</span>
+                <span className="text-[11px] font-bold text-gray-500 tracking-widest">TIER Access</span>
                 <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
                   <BadgeCheck className="h-3.5 w-3.5 text-emerald-400" />
                   <span className="font-black text-white tracking-wider text-[14px]">{Math.floor(user.levelTickets || 0)}</span>
