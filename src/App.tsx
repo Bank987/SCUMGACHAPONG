@@ -10,8 +10,9 @@ import History from "./pages/History";
 import Contact from "./pages/Contact";
 import Inventory from "./pages/Inventory";
 import Upgrade from "./pages/Upgrade";
+import WeaponLicense from "./pages/WeaponLicense";
 import { Toaster } from "./components/ui/sonner";
-import { Menu, X, Home, PackageOpen, Gift, Swords, History as HistoryIcon, User, LogIn, LogOut, MessageSquare } from "lucide-react";
+import { Home, PackageOpen, Swords, User, MessageSquare, BadgeCheck } from "lucide-react";
 import { ServerLoader } from "./components/ServerLoader";
 
 export default function App() {
@@ -116,14 +117,18 @@ export default function App() {
             <div className="flex items-center gap-3">
               {user ? (
                 <div className="flex items-center gap-3">
-                  <div className="flex flex-col items-end justify-center h-full">
+                  <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/5 bg-white/[0.03] px-2 py-1.5">
                     <div className="flex items-center gap-1">
                       <span className="text-[#3b82f6] text-[10px] font-black">⚡</span>
                       <span className="text-white text-xs font-bold leading-none">{Math.floor(user.spins)}</span>
                     </div>
-                    <div className="flex items-center gap-1 mt-1">
+                    <div className="flex items-center gap-1">
                       <span className="text-[#ffb700] text-[10px] font-black">✨</span>
                       <span className="text-white text-xs font-bold leading-none">{Math.floor(user.upgradePoints || 0)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <BadgeCheck className="h-3 w-3 text-emerald-400" />
+                      <span className="text-white text-xs font-bold leading-none">{Math.floor(user.levelTickets || 0)}</span>
                     </div>
                   </div>
                   <div className="w-8 h-8 rounded-lg border border-[#ffb700]/50 overflow-hidden bg-[#050507]">
@@ -158,6 +163,7 @@ export default function App() {
                 <Route path="/history" element={<History />} />
                 <Route path="/inventory" element={<Inventory />} />
                 <Route path="/upgrade" element={<Upgrade />} />
+                <Route path="/weapon-license" element={<WeaponLicense />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
@@ -230,7 +236,7 @@ function MobileBottomNav({ user }: any) {
         </div>
 
         <NavSlot path="/upgrade" currentPath={path} label="ตีบวก" icon={<Swords size={24} />} />
-        <NavSlot path="/history" currentPath={path} label="ประวัติ" icon={<HistoryIcon size={24} />} />
+        <NavSlot path="/weapon-license" currentPath={path} label="ใบอนุญาต" icon={<BadgeCheck size={24} />} />
       </div>
     </div>
   );

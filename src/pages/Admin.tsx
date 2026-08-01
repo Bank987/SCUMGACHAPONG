@@ -24,6 +24,11 @@ export default function Admin() {
   const [spotlightImage5, setSpotlightImage5] = useState("");
   const [combatArmoryNameInput, setCombatArmoryNameInput] = useState("");
   const [combatArmoryImageInput, setCombatArmoryImageInput] = useState("");
+  const [weaponLicenseNameInput, setWeaponLicenseNameInput] = useState("");
+  const [weaponLicenseImageInput, setWeaponLicenseImageInput] = useState("");
+  const [weaponLicenseLevelNamesInput, setWeaponLicenseLevelNamesInput] = useState<string[]>(Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`));
+  const [weaponLicenseWebhookSuccessMessage, setWeaponLicenseWebhookSuccessMessage] = useState("");
+  const [weaponLicenseWebhookFailureMessage, setWeaponLicenseWebhookFailureMessage] = useState("");
   const [editingCase, setEditingCase] = useState<any | null>(null);
 
   // Helper for requests
@@ -70,6 +75,13 @@ export default function Admin() {
           setSpotlightImage5(settingsData.spotlightImages?.[4] || "");
           setCombatArmoryNameInput(settingsData.combatArmoryName || "Combat Armory Tier");
           setCombatArmoryImageInput(settingsData.combatArmoryImage || "https://cdn.discordapp.com/attachments/1492459270564741273/1493677975315419236/4_1.png?ex=69dfd784&is=69de8604&hm=7e9d37824a788f8a2161fcb6786d07a985cd2415aac399080d2a14fdcd3513a0&");
+          setWeaponLicenseNameInput(settingsData.weaponLicenseName || "ใบอนุญาตครอบครองอาวุธ");
+          setWeaponLicenseImageInput(settingsData.weaponLicenseImage || "");
+          setWeaponLicenseLevelNamesInput(Array.isArray(settingsData.weaponLicenseLevelNames) && settingsData.weaponLicenseLevelNames.length === 15
+            ? settingsData.weaponLicenseLevelNames
+            : Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`));
+          setWeaponLicenseWebhookSuccessMessage(settingsData.weaponLicenseWebhookSuccessMessage || "");
+          setWeaponLicenseWebhookFailureMessage(settingsData.weaponLicenseWebhookFailureMessage || "");
         } else {
           setBgImageInput(backgroundImage);
         }
@@ -216,6 +228,25 @@ export default function Admin() {
     }
   };
 
+  const handleWeaponLicenseAccess = async (targetUser: any) => {
+    const label = targetUser.gameName || targetUser.username;
+    if (!confirm(`ยืนยันให้สิทธิ์เข้าถึงใบอนุญาตอาวุธแก่ ${label}?`)) return;
+    try {
+      const res = await adminFetch(`/api/admin/users/${targetUser._id}/weapon-license-access`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error || "ให้สิทธิ์ไม่สำเร็จ");
+        return;
+      }
+      setUsers(current => current.map(item => item._id === targetUser._id ? { ...item, ...(data.user || data) } : item));
+      await loadData();
+      if (targetUser._id === user?._id) checkAuth();
+      toast.success(`ให้สิทธิ์ ${label} สำเร็จ`);
+    } catch {
+      toast.error("มีปัญหาในการเชื่อมต่อกับเซิร์ฟเวอร์");
+    }
+  };
+
   // --- Settings Management ---
   const handleSaveSettings = async () => {
     try {
@@ -226,7 +257,12 @@ export default function Admin() {
           promoBanner: promoBannerInput,
           spotlightImages: [spotlightImage1, spotlightImage2, spotlightImage3, spotlightImage4, spotlightImage5].filter(Boolean),
           combatArmoryName: combatArmoryNameInput,
-          combatArmoryImage: combatArmoryImageInput
+          combatArmoryImage: combatArmoryImageInput,
+          weaponLicenseName: weaponLicenseNameInput,
+          weaponLicenseImage: weaponLicenseImageInput,
+          weaponLicenseLevelNames: weaponLicenseLevelNamesInput,
+          weaponLicenseWebhookSuccessMessage,
+          weaponLicenseWebhookFailureMessage
         })
       });
       if (res.ok) {
@@ -349,6 +385,8 @@ export default function Admin() {
                   <tr>
                     <th className="p-4 font-bold text-[13px] text-gray-400">User</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">Gacha Point ปัจจุบัน</th>
+                    <th className="p-4 font-bold text-[13px] text-gray-400">LEVEL TICKET</th>
+                    <th className="p-4 font-bold text-[13px] text-gray-400">ใบอนุญาตอาวุธ</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">REFINE POINT</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">สิทธิ์เปิดกล่อง (คลิกเพื่อสลับ)</th>
                     <th className="p-4 font-bold text-[13px] text-gray-400">สถานะ/จัดการ</th>
@@ -385,6 +423,31 @@ export default function Admin() {
                           >
                             <Save className="w-4 h-4" />
                           </button>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            value={u.levelTickets || 0}
+                            onChange={(e) => {
+                              const newUsers = [...users];
+                              const idx = newUsers.findIndex(x => x._id === u._id);
+                              newUsers[idx].levelTickets = parseInt(e.target.value) || 0;
+                              setUsers(newUsers);
+                            }}
+                            className="w-24 bg-[#0a0a0f] border border-white/10 rounded-xl px-3 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
+                          />
+                          <button onClick={() => handleUpdateUser(u._id, { levelTickets: u.levelTickets })} className="p-2.5 bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white rounded-xl transition-all" title="บันทึก Level Ticket">
+                            <Save className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex min-w-36 flex-col gap-2">
+                          <span className="w-fit rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-400">LEVEL {Math.min(15, Math.max(0, u.weaponLicenseLevel || 0))}</span>
+                          <button onClick={() => handleWeaponLicenseAccess(u)} className="rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-black text-blue-400 transition hover:bg-blue-500 hover:text-white">ACCESS</button>
                         </div>
                       </td>
                       <td className="p-4">
@@ -866,6 +929,44 @@ export default function Admin() {
                       <img referrerPolicy="no-referrer" src={combatArmoryImageInput} alt="Preview" className="max-w-full max-h-full object-contain p-2" />
                     </div>
                   )}
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-white/5">
+                <div className="mb-4">
+                  <h3 className="text-[16px] font-black text-white">ตั้งค่าใบอนุญาตครอบครองอาวุธ</h3>
+                  <p className="mt-1 text-[12px] text-gray-500">ตั้งค่าข้อความและภาพที่แสดงในหน้าใบอนุญาต รวมถึงชื่อแต่ละระดับ</p>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-1 block text-[12px] font-bold text-gray-400">ชื่อฟังก์ชัน</label>
+                    <input value={weaponLicenseNameInput} onChange={e => setWeaponLicenseNameInput(e.target.value)} placeholder="ใบอนุญาตครอบครองอาวุธ" className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[12px] font-bold text-gray-400">URL Logo</label>
+                    <input value={weaponLicenseImageInput} onChange={e => setWeaponLicenseImageInput(e.target.value)} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
+                    {weaponLicenseImageInput && <div className="mt-3 flex h-28 w-28 items-center justify-center rounded-xl border border-white/10 bg-[#0a0a0f] p-3"><img src={weaponLicenseImageInput} referrerPolicy="no-referrer" alt="Weapon license preview" className="max-h-full max-w-full object-contain" /></div>}
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-[12px] font-bold text-gray-400">ชื่อ LEVEL 1 ถึง LEVEL 15</label>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {weaponLicenseLevelNamesInput.map((levelName, index) => (
+                        <label key={index} className="flex items-center gap-3 rounded-xl border border-white/5 bg-[#0a0a0f] px-3 py-2">
+                          <span className="w-16 shrink-0 text-[10px] font-black text-emerald-400">LEVEL {index + 1}</span>
+                          <input value={levelName} onChange={e => setWeaponLicenseLevelNamesInput(current => current.map((name, nameIndex) => nameIndex === index ? e.target.value : name))} className="min-w-0 flex-1 bg-transparent text-[13px] text-white outline-none" />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[12px] font-bold text-gray-400">Success webhook template</label>
+                    <textarea rows={3} value={weaponLicenseWebhookSuccessMessage} onChange={e => setWeaponLicenseWebhookSuccessMessage(e.target.value)} placeholder="{player} อัปเกรด {function} เป็น {level}: {result}" className="w-full resize-y rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[12px] font-bold text-gray-400">Failure webhook template</label>
+                    <textarea rows={3} value={weaponLicenseWebhookFailureMessage} onChange={e => setWeaponLicenseWebhookFailureMessage(e.target.value)} placeholder="{player} อัปเกรด {function} ที่ {level}: {result}" className="w-full resize-y rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
+                  </div>
+                  <p className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-[12px] leading-5 text-blue-300">Placeholders ที่ใช้ได้: <code>{'{player}'}</code> ชื่อผู้เล่น, <code>{'{function}'}</code> ชื่อฟังก์ชัน, <code>{'{level}'}</code> ระดับใบอนุญาต และ <code>{'{result}'}</code> ผลสำเร็จหรือไม่สำเร็จ</p>
                 </div>
               </div>
 

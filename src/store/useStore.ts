@@ -8,6 +8,8 @@ interface User {
   avatar: string;
   spins: number;
   upgradePoints: number;
+  levelTickets: number;
+  weaponLicenseLevel: number;
   balance: number;
   role: string;
   allowedCases?: string[];
@@ -20,9 +22,13 @@ interface AppState {
   backgroundImage: string;
   promoBanner: string;
   spotlightImages: string[];
+  weaponLicenseName: string;
+  weaponLicenseImage: string;
+  weaponLicenseLevelNames: string[];
   setUser: (user: User | null) => void;
   setSpins: (spins: number) => void;
   setUpgradePoints: (points: number) => void;
+  setLevelTickets: (tickets: number) => void;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
   fetchSettings: () => Promise<void>;
@@ -35,9 +41,13 @@ export const useStore = create<AppState>((set) => ({
   backgroundImage: "https://storage.googleapis.com/aistudio-user-uploads/b2c8a1e8-d1a2-4b3c-9d4e-5f6a7b8c9d0e.png",
   promoBanner: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070",
   spotlightImages: [],
+  weaponLicenseName: "ใบอนุญาตครอบครองอาวุธ",
+  weaponLicenseImage: "",
+  weaponLicenseLevelNames: Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`),
   setUser: (user) => set({ user, isAuthenticated: !!user }),
   setSpins: (spins) => set((state) => ({ user: state.user ? { ...state.user, spins } : null })),
   setUpgradePoints: (upgradePoints) => set((state) => ({ user: state.user ? { ...state.user, upgradePoints } : null })),
+  setLevelTickets: (levelTickets) => set((state) => ({ user: state.user ? { ...state.user, levelTickets } : null })),
   checkAuth: async () => {
     try {
       const res = await fetch("/api/auth/me");
@@ -68,7 +78,12 @@ export const useStore = create<AppState>((set) => ({
         set({
           backgroundImage: data.backgroundImage || "https://storage.googleapis.com/aistudio-user-uploads/b2c8a1e8-d1a2-4b3c-9d4e-5f6a7b8c9d0e.png",
           promoBanner: data.promoBanner || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070",
-          spotlightImages: data.spotlightImages || []
+          spotlightImages: data.spotlightImages || [],
+          weaponLicenseName: data.weaponLicenseName || "ใบอนุญาตครอบครองอาวุธ",
+          weaponLicenseImage: data.weaponLicenseImage || "",
+          weaponLicenseLevelNames: Array.isArray(data.weaponLicenseLevelNames) && data.weaponLicenseLevelNames.length === 15
+            ? data.weaponLicenseLevelNames
+            : Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`)
         });
       }
     } catch (error) {

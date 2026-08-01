@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   avatar: { type: String, required: false },
   spins: { type: Number, default: 0 },
   upgradePoints: { type: Number, default: 0 },
+  levelTickets: { type: Number, default: 0 },
+  weaponLicenseLevel: { type: Number, default: 0 },
   balance: { type: Number, default: 0 },
   role: { type: String, default: "user" },
   allowedCases: [{ type: mongoose.Schema.Types.ObjectId, ref: "Case" }],
@@ -14,6 +16,7 @@ const userSchema = new mongoose.Schema({
   // Anti-Cheat Fields
   spinLockedUntil: { type: Date, default: null },
   upgradeLockedUntil: { type: Date, default: null },
+  levelUpgradeLockedUntil: { type: Date, default: null },
   cheatWarnings: { type: Number, default: 0 },
   isBanned: { type: Boolean, default: false },
   banReason: { type: String, default: "" }

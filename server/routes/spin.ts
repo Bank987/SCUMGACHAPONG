@@ -5,7 +5,7 @@ import { SpinHistory } from "../models/SpinHistory.js";
 import { Settings } from "../models/Settings.js";
 import { CheatLog } from "../models/CheatLog.js";
 import jwt from "jsonwebtoken";
-import { sendWebhook } from "../utils/webhook.js";
+import { renderWebhookTemplate, sendWebhook } from "../utils/webhook.js";
 import crypto from "crypto";
 
 const router = express.Router();
@@ -14,6 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 // In-memory store for rate limiting (Anti-cheat)
 const upgradeRateLimits = new Map<string, number>();
 const spinRateLimits = new Map<string, number>();
+const weaponLicenseRates = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 20];
 
 function getUser(req: any) {
   let token = req.cookies?.token;
@@ -42,6 +43,128 @@ const getItemValue = (rarity: string) => {
   if (r.includes("rare special") || r === "legendary") return 1000;
   return 10;
 };
+
+const getWeaponLicenseLevelName = (settings: any, level: number) => {
+  if (level === 0) return "LEVEL 0";
+  return settings.weaponLicenseLevelNames?.[level - 1] || `LEVEL ${level}`;
+};
+
+router.get("/weapon-license", async (req, res) => {
+  try {
+    const userId = getUser(req);
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const [user, settings] = await Promise.all([
+      User.findById(userId),
+      Settings.findOne({})
+    ]);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const displaySettings = settings || new Settings();
+    res.json({
+      level: user.weaponLicenseLevel,
+      tickets: user.levelTickets,
+      name: displaySettings.weaponLicenseName,
+      image: displaySettings.weaponLicenseImage,
+      levelNames: displaySettings.weaponLicenseLevelNames,
+      rates: weaponLicenseRates
+    });
+  } catch (err) {
+    console.error("Fetch weapon license error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/weapon-license/upgrade", async (req, res) => {
+  try {
+    const userId = getUser(req);
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const [currentUser, settings] = await Promise.all([
+      User.findById(userId),
+      Settings.findOne({})
+    ]);
+    if (!currentUser) return res.status(404).json({ error: "User not found" });
+    if (currentUser.isBanned) return res.status(403).json({ error: `บัญชีถูกระงับ: ${currentUser.banReason}` });
+
+    const currentLevel = Number(currentUser.weaponLicenseLevel || 0);
+    if (currentLevel >= 15) return res.status(400).json({ error: "ใบอนุญาตถึงระดับสูงสุดแล้ว" });
+
+    const rate = weaponLicenseRates[currentLevel];
+    const success = crypto.randomInt(100) < rate;
+    const now = new Date();
+    const user = await User.findOneAndUpdate(
+      {
+        _id: userId,
+        isBanned: { $ne: true },
+        levelTickets: { $gte: 1 },
+        $and: [
+          {
+            $or: [
+              { weaponLicenseLevel: currentLevel },
+              ...(currentLevel === 0 ? [{ weaponLicenseLevel: { $exists: false } }] : [])
+            ]
+          },
+          {
+            $or: [
+              { levelUpgradeLockedUntil: { $lte: now } },
+              { levelUpgradeLockedUntil: null }
+            ]
+          }
+        ]
+      },
+      {
+        $inc: {
+          levelTickets: -1,
+          ...(success ? { weaponLicenseLevel: 1 } : {})
+        },
+        $set: { levelUpgradeLockedUntil: new Date(now.getTime() + 1000) }
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      const checkUser = await User.findById(userId);
+      if (!checkUser) return res.status(404).json({ error: "User not found" });
+      if (checkUser.isBanned) return res.status(403).json({ error: `บัญชีถูกระงับ: ${checkUser.banReason}` });
+      if (Number(checkUser.weaponLicenseLevel || 0) >= 15) return res.status(400).json({ error: "ใบอนุญาตถึงระดับสูงสุดแล้ว" });
+      if (checkUser.levelUpgradeLockedUntil && checkUser.levelUpgradeLockedUntil > now) {
+        return res.status(429).json({ error: "กรุณารอสักครู่ก่อนอัปเกรดอีกครั้ง" });
+      }
+      if (Number(checkUser.levelTickets || 0) < 1) return res.status(400).json({ error: "Level Ticket ไม่พอ" });
+      return res.status(409).json({ error: "ข้อมูลใบอนุญาตมีการเปลี่ยนแปลง กรุณาลองใหม่" });
+    }
+
+    const displaySettings = settings || new Settings();
+    const targetLevel = success ? user.weaponLicenseLevel : currentLevel + 1;
+    const levelName = getWeaponLicenseLevelName(displaySettings, targetLevel);
+    const template = success
+      ? displaySettings.weaponLicenseWebhookSuccessMessage
+      : displaySettings.weaponLicenseWebhookFailureMessage;
+    const message = renderWebhookTemplate(template, {
+      player: user.gameName || user.username,
+      function: displaySettings.weaponLicenseName,
+      level: levelName,
+      result: success ? "สำเร็จ !" : "ไม่สำเร็จ !"
+    });
+
+    void sendWebhook("level", {
+      username: "รายงานผลใบอนุญาตครอบครองอาวุธ",
+      content: message
+    });
+
+    res.json({
+      success,
+      currentLevel: user.weaponLicenseLevel,
+      levelName,
+      remainingTickets: user.levelTickets,
+      rate
+    });
+  } catch (err) {
+    console.error("Weapon license upgrade error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 router.post("/", async (req, res) => {
   let winningItem: any = null;
@@ -218,7 +341,10 @@ router.post("/", async (req, res) => {
       await sendWebhook('gacha', webhookPayload);
       const rarity = winningItem?.rarity?.toLowerCase();
       if (isGuaranteed || rarity === "legendary" || rarity === "mythic") {
-        await sendWebhook('public', webhookPayload);
+        await sendWebhook('public', {
+          username: "ห้องอวดผลกาชาปอง",
+          content: `${playerName} เปิดกาชาปองได้รับไอเทมสุดหายากอย่าง ${itemName} สำเร็จ !`
+        });
       }
     } catch (saveError) {
       console.error("Spin debug:", { winningItem, caseId });

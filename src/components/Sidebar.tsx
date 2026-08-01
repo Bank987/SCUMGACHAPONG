@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { User, PackageOpen, LayoutDashboard, History as HistoryIcon, Shield, Swords, Flame } from "lucide-react";
+import { User, PackageOpen, LayoutDashboard, History as HistoryIcon, Swords, Flame, BadgeCheck } from "lucide-react";
 import { useStore } from "../store/useStore";
 
 interface SidebarProps {
-  user?: { username: string; gameName?: string; spins: number; upgradePoints?: number; avatar?: string; role?: string };
+  user?: { username: string; gameName?: string; spins: number; upgradePoints?: number; levelTickets?: number; avatar?: string; role?: string };
   onClose?: () => void;
 }
 
@@ -28,6 +28,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
   const navLinks = [
     { name: "กล่องสุ่ม", path: "/", icon: <LayoutDashboard size={20} /> },
     { name: "อัปเกรด", path: "/upgrade", icon: <Swords size={20} /> },
+    { name: "ใบอนุญาตอาวุธ", path: "/weapon-license", icon: <BadgeCheck size={20} /> },
     { name: "กระเป๋าของฉัน", path: "/inventory", icon: <PackageOpen size={20} /> },
     { name: "ประวัติ", path: "/history", icon: <HistoryIcon size={20} /> },
     { name: "ติดต่อแอดมิน", path: "/contact", icon: <Flame size={20} /> }
@@ -76,6 +77,13 @@ export function Sidebar({ user, onClose }: SidebarProps) {
                 <div className="flex items-center gap-1.5 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">
                   <span className="text-blue-500 font-black">⚡</span>
                   <span className="font-black text-white tracking-wider text-[14px]">{Math.floor(user.spins)}</span>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">LEVEL TICKET</span>
+                <div className="flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                  <BadgeCheck className="h-3.5 w-3.5 text-emerald-400" />
+                  <span className="font-black text-white tracking-wider text-[14px]">{Math.floor(user.levelTickets || 0)}</span>
                 </div>
               </div>
               <div className="flex justify-between items-center">

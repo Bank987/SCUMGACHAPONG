@@ -26,6 +26,26 @@ const settingsSchema = new mongoose.Schema({
     combatArmoryImage: {
         type: String,
         default: "https://cdn.discordapp.com/attachments/1492459270564741273/1493677975315419236/4_1.png?ex=69dfd784&is=69de8604&hm=7e9d37824a788f8a2161fcb6786d07a985cd2415aac399080d2a14fdcd3513a0&"
+    },
+    weaponLicenseName: {
+        type: String,
+        default: "ใบอนุญาตครอบครองอาวุธ"
+    },
+    weaponLicenseImage: {
+        type: String,
+        default: ""
+    },
+    weaponLicenseLevelNames: {
+        type: [String],
+        default: Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`)
+    },
+    weaponLicenseWebhookSuccessMessage: {
+        type: String,
+        default: "{player} ได้อัพเกรด \"{function} {level} {result}\""
+    },
+    weaponLicenseWebhookFailureMessage: {
+        type: String,
+        default: "{player} อัพเกรด \"{function} {level} {result}\""
     }
 });
 
