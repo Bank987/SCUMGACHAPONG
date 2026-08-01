@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BadgeCheck, ChevronRight, CircleCheck, Fingerprint, LockKeyhole, TicketCheck, TrendingUp, X } from "lucide-react";
+import { BadgeCheck, ChevronRight, CircleCheck, Fingerprint, LockKeyhole, Shield, TicketCheck, TrendingUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { initLicenseAudio, playLicenseFailSound, playLicenseSuccessSound } from "../lib/audio";
 import { useStore } from "../store/useStore";
@@ -113,16 +113,17 @@ export default function WeaponLicense() {
     <div className="w-full pb-8 md:pb-12">
       <section className="relative min-h-[calc(100dvh-9rem)] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#0b1010]/35 shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-lg">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent" />
+        <div className="pointer-events-none absolute left-0 top-0 h-28 w-px bg-gradient-to-b from-emerald-300 via-emerald-300/30 to-transparent" />
 
-        <header className="relative flex justify-end border-b border-white/10 px-5 py-4 sm:px-8 lg:px-10">
-          <div className="flex items-center gap-2 rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-300 shadow-[0_0_10px_#6ee7b7]" />
-            <span className="text-[10px] font-black uppercase text-emerald-200">System online</span>
-          </div>
-        </header>
-
-        <div className="relative grid min-h-[calc(100dvh-16rem)] items-center gap-10 p-5 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:p-10 xl:gap-14 xl:p-12">
+        <div className="relative grid min-h-[calc(100dvh-9rem)] items-center gap-10 p-5 sm:p-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:p-10 xl:gap-14 xl:p-12">
           <div className="min-w-0">
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] px-3 py-2">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-300 shadow-[0_0_10px_#6ee7b7]" />
+                <span className="text-[10px] font-black uppercase text-emerald-200">System online</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-[10px] font-black text-gray-400"><Shield className="h-3.5 w-3.5 text-emerald-300" /> 15 TIER PROTOCOL</div>
+            </div>
             <h1 className="max-w-4xl text-4xl font-black uppercase leading-[1.02] text-white sm:text-5xl lg:text-6xl xl:text-7xl">ARMORY <span className="text-emerald-300">LICENSE</span> TIER</h1>
             <h2 className="mt-5 max-w-3xl text-xl font-black leading-snug text-gray-200 sm:text-2xl lg:text-3xl">{displayName}</h2>
             <p className="mt-5 max-w-3xl text-sm font-normal leading-7 text-gray-400 sm:text-base">
@@ -131,12 +132,13 @@ export default function WeaponLicense() {
             </p>
 
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Stat icon={<BadgeCheck />} label="ระดับปัจจุบัน" value={level >= 15 ? "MAX 15" : level ? `LEVEL ${level}` : "LEVEL 0"} />
-              <Stat icon={<TicketCheck />} label="TIER Access" value={String(license.tickets)} />
-              <Stat icon={<TrendingUp />} label="โอกาสสำเร็จ" value={level >= 15 ? "MAX" : `${rate.toFixed(rate % 1 ? 1 : 0)}%`} wide />
+              <Stat icon={<BadgeCheck />} label="ระดับปัจจุบัน" value={level >= 15 ? "MAX 15" : level ? `LEVEL ${level}` : "LEVEL 0"} tone="emerald" />
+              <Stat icon={<TicketCheck />} label="TIER Access" value={String(license.tickets)} tone="amber" />
+              <Stat icon={<TrendingUp />} label="โอกาสสำเร็จ" value={level >= 15 ? "MAX" : `${rate.toFixed(rate % 1 ? 1 : 0)}%`} tone="cyan" wide />
             </div>
 
-            <div className="mt-4 border border-white/10 bg-black/20 p-4 sm:p-5">
+            <div className="relative mt-4 overflow-hidden border border-white/10 bg-black/25 p-4 sm:p-5">
+              <div className="pointer-events-none absolute left-0 top-0 h-full w-0.5 bg-gradient-to-b from-emerald-300 via-emerald-300/40 to-transparent" />
               <div className="flex items-end justify-between gap-4">
                 <div><p className="text-[10px] font-black uppercase text-gray-500">Clearance progression</p><p className="mt-1 text-sm font-bold text-white">{level} / 15 TIER AUTHORIZED</p></div>
                 <p className="text-xl font-black text-emerald-300">{Math.round(progress)}%</p>
@@ -147,6 +149,7 @@ export default function WeaponLicense() {
               <div className="mt-3 grid grid-cols-15 gap-1" aria-label={`ความคืบหน้า ${level} จาก 15 ระดับ`}>
                 {Array.from({ length: 15 }, (_, index) => <span key={index} className={`h-1 ${index < level ? "bg-emerald-300/80" : index === level && level < 15 ? "bg-white/45" : "bg-white/10"}`} />)}
               </div>
+              <div className="mt-3 flex justify-between text-[9px] font-black text-gray-600"><span>TIER 0</span><span>TIER 5</span><span>TIER 10</span><span>TIER 15</span></div>
             </div>
           </div>
 
@@ -158,11 +161,18 @@ export default function WeaponLicense() {
                 <div><p className="text-[9px] font-black uppercase text-emerald-300">Official authorization</p><p className="mt-1 text-xs font-bold text-gray-500">CLEARANCE ID LS-{String(level).padStart(2, "0")}-15</p></div>
                 <Fingerprint className="h-7 w-7 text-emerald-300/60" />
               </div>
-              <div className="relative mx-auto mt-6 flex aspect-square w-full max-w-60 items-center justify-center rounded-full border border-emerald-300/20 bg-black/30 p-8 shadow-[inset_0_0_40px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.12)] sm:max-w-72">
-                <div className="absolute inset-3 rounded-full border border-dashed border-emerald-300/15" />
+              <div className="relative mx-auto mt-6 flex aspect-square w-full max-w-60 items-center justify-center rounded-full p-[3px] sm:max-w-72" style={{ background: `conic-gradient(#6ee7b7 ${progress}%, rgba(255,255,255,0.08) ${progress}% 100%)` }}>
+                <div className="absolute inset-[3px] rounded-full bg-[#0a0e0e]" />
+                <div className="absolute inset-4 rounded-full border border-dashed border-emerald-300/15" />
                 <div className="absolute left-1/2 top-0 h-full w-px bg-gradient-to-b from-transparent via-emerald-300/10 to-transparent" />
                 <div className="absolute left-0 top-1/2 h-px w-full bg-gradient-to-r from-transparent via-emerald-300/10 to-transparent" />
-                {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className="relative h-full w-full object-contain drop-shadow-[0_0_20px_rgba(52,211,153,0.45)]" /> : <BadgeCheck className="relative h-24 w-24 text-emerald-400" />}
+                <div className="relative flex h-[calc(100%-28px)] w-[calc(100%-28px)] items-center justify-center rounded-full border border-emerald-300/15 bg-black/30 p-8 shadow-[inset_0_0_40px_rgba(52,211,153,0.08),0_0_35px_rgba(52,211,153,0.12)] [perspective:900px]">
+                  <div className="license-emblem-3d relative flex h-full w-full items-center justify-center [transform-style:preserve-3d]">
+                    <div className="absolute inset-[12%] translate-x-2 rounded-full bg-emerald-300/20 blur-xl [transform:translateZ(-18px)]" />
+                    {displayImage ? <img src={displayImage} referrerPolicy="no-referrer" alt={displayName} className="relative h-full w-full object-contain drop-shadow-[0_0_20px_rgba(52,211,153,0.45)] [backface-visibility:hidden] [transform:translateZ(18px)]" /> : <BadgeCheck className="relative h-24 w-24 text-emerald-400 drop-shadow-[0_0_18px_rgba(52,211,153,0.6)] [backface-visibility:hidden] [transform:translateZ(18px)]" />}
+                  </div>
+                </div>
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-sm border border-emerald-300/25 bg-[#08100d] px-2 py-1 text-[9px] font-black text-emerald-300 shadow-lg">{level}/15</div>
               </div>
               <p className="relative mt-5 text-[10px] font-black uppercase text-gray-500">Current authorization</p>
               <h2 className="relative mt-2 min-h-8 text-xl font-black text-white sm:text-2xl">{currentName}</h2>
@@ -221,6 +231,7 @@ export default function WeaponLicense() {
   );
 }
 
-function Stat({ icon, label, value, wide = false }: { icon: ReactNode; label: string; value: string; wide?: boolean }) {
-  return <div className={`min-h-24 border border-white/10 bg-white/[0.045] p-4 backdrop-blur-md sm:p-5 ${wide ? "col-span-2 sm:col-span-1" : ""}`}><div className="flex items-center gap-2 text-emerald-400 [&>svg]:h-4 [&>svg]:w-4">{icon}<span className="text-[10px] font-black uppercase text-gray-400">{label}</span></div><p className="mt-3 text-2xl font-black text-white">{value}</p></div>;
+function Stat({ icon, label, value, tone, wide = false }: { icon: ReactNode; label: string; value: string; tone: "emerald" | "amber" | "cyan"; wide?: boolean }) {
+  const toneClass = tone === "amber" ? "text-amber-300 border-amber-300/15" : tone === "cyan" ? "text-cyan-300 border-cyan-300/15" : "text-emerald-300 border-emerald-300/15";
+  return <div className={`group relative min-h-24 overflow-hidden border bg-white/[0.045] p-4 backdrop-blur-sm transition-[transform,background-color,border-color] duration-200 hover:-translate-y-0.5 hover:bg-white/[0.07] sm:p-5 ${toneClass} ${wide ? "col-span-2 sm:col-span-1" : ""}`}><div className="pointer-events-none absolute -right-5 -top-5 h-16 w-16 rounded-full border border-current opacity-[0.07] transition-transform duration-300 group-hover:scale-125" /><div className="flex items-center gap-2 [&>svg]:h-4 [&>svg]:w-4">{icon}<span className="text-[10px] font-black uppercase text-gray-400">{label}</span></div><p className="mt-3 text-2xl font-black text-white">{value}</p></div>;
 }

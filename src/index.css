@@ -177,9 +177,42 @@
       opacity: 0;
     }
   }
+
+  @keyframes license-emblem-3d {
+    0%, 8% {
+      transform: rotateX(0deg) rotateY(0deg) scale(1);
+    }
+
+    25% {
+      transform: rotateX(5deg) rotateY(80deg) scale(1.04);
+    }
+
+    50% {
+      transform: rotateX(0deg) rotateY(180deg) scale(1);
+    }
+
+    75% {
+      transform: rotateX(-5deg) rotateY(280deg) scale(1.04);
+    }
+
+    92%, 100% {
+      transform: rotateX(0deg) rotateY(360deg) scale(1);
+    }
+  }
 }
 
 @layer utilities {
+  .license-emblem-3d {
+    animation: license-emblem-3d 7s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .license-emblem-3d {
+      animation: none;
+    }
+  }
+
   .mask-image-gradient-l {
     mask-image: linear-gradient(to left, black, transparent);
   }
