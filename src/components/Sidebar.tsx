@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { User, PackageOpen, LayoutDashboard, History as HistoryIcon, Swords, Flame, BadgeCheck } from "lucide-react";
+import { User, PackageOpen, LayoutDashboard, History as HistoryIcon, Swords, Flame, BadgeCheck, ClipboardList } from "lucide-react";
 import { useStore } from "../store/useStore";
 
 interface SidebarProps {
-  user?: { username: string; gameName?: string; spins: number; upgradePoints?: number; levelTickets?: number; avatar?: string; role?: string };
+  user?: { username: string; gameName?: string; spins: number; upgradePoints?: number; levelTickets?: number; taskPoints?: number; avatar?: string; role?: string };
   onClose?: () => void;
 }
 
@@ -28,6 +28,7 @@ export function Sidebar({ user, onClose }: SidebarProps) {
   const navLinks = [
     { name: "กล่องสุ่ม", path: "/", icon: <LayoutDashboard size={20} /> },
     { name: "ใบอนุญาตอาวุธ", path: "/weapon-license", icon: <BadgeCheck size={20} /> },
+    { name: "ภารกิจ", path: "/tasks", icon: <ClipboardList size={20} /> },
     { name: "กระเป๋าของฉัน", path: "/inventory", icon: <PackageOpen size={20} /> },
     { name: "อัปเกรด", path: "/upgrade", icon: <Swords size={20} /> },
     { name: "ประวัติ", path: "/history", icon: <HistoryIcon size={20} /> },
@@ -72,6 +73,13 @@ export function Sidebar({ user, onClose }: SidebarProps) {
             </div>
 
             <div className="mt-2 bg-[#050507] border border-[#ffb700]/30 p-3 flex flex-col gap-2 rounded-xl">
+              <div className="flex justify-between items-center">
+                <span className="text-[11px] font-bold text-gray-500 tracking-widest">TASKS POINT</span>
+                <div className="flex items-center gap-1.5 bg-violet-500/10 px-2 py-0.5 rounded-lg border border-violet-500/20">
+                  <ClipboardList className="h-3.5 w-3.5 text-violet-400" />
+                  <span className="font-black text-white tracking-wider text-[14px]">{Math.floor(user.taskPoints || 0)}</span>
+                </div>
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Gacha Point 💰</span>
                 <div className="flex items-center gap-1.5 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20">

@@ -46,6 +46,22 @@ const settingsSchema = new mongoose.Schema({
     weaponLicenseWebhookFailureMessage: {
         type: String,
         default: "{player} อัพเกรด \"{function} {level} {result}\""
+    },
+    taskFunctionName: {
+        type: String,
+        default: "สุ่มความสำเร็จภารกิจ"
+    },
+    taskFunctionImage: {
+        type: String,
+        default: ""
+    },
+    taskNames: {
+        type: [String],
+        default: ["ภารกิจ 1", "ภารกิจ 2", "ภารกิจ 3"]
+    },
+    taskImages: {
+        type: [String],
+        default: ["", "", ""]
     }
 });
 

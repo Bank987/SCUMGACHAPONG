@@ -37,6 +37,10 @@ export default function Admin() {
   const [weaponLicenseLevelNamesInput, setWeaponLicenseLevelNamesInput] = useState<string[]>(Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`));
   const [weaponLicenseWebhookSuccessMessage, setWeaponLicenseWebhookSuccessMessage] = useState("");
   const [weaponLicenseWebhookFailureMessage, setWeaponLicenseWebhookFailureMessage] = useState("");
+  const [taskFunctionNameInput, setTaskFunctionNameInput] = useState("สุ่มความสำเร็จภารกิจ");
+  const [taskFunctionImageInput, setTaskFunctionImageInput] = useState("");
+  const [taskNamesInput, setTaskNamesInput] = useState(["ภารกิจ 1", "ภารกิจ 2", "ภารกิจ 3"]);
+  const [taskImagesInput, setTaskImagesInput] = useState(["", "", ""]);
   const [editingCase, setEditingCase] = useState<any | null>(null);
 
   // Helper for requests
@@ -90,6 +94,10 @@ export default function Admin() {
             : Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`));
           setWeaponLicenseWebhookSuccessMessage(settingsData.weaponLicenseWebhookSuccessMessage || "");
           setWeaponLicenseWebhookFailureMessage(settingsData.weaponLicenseWebhookFailureMessage || "");
+          setTaskFunctionNameInput(settingsData.taskFunctionName || "สุ่มความสำเร็จภารกิจ");
+          setTaskFunctionImageInput(settingsData.taskFunctionImage || "");
+          setTaskNamesInput(Array.isArray(settingsData.taskNames) && settingsData.taskNames.length === 3 ? settingsData.taskNames : ["ภารกิจ 1", "ภารกิจ 2", "ภารกิจ 3"]);
+          setTaskImagesInput(Array.isArray(settingsData.taskImages) && settingsData.taskImages.length === 3 ? settingsData.taskImages : ["", "", ""]);
         } else {
           setBgImageInput(backgroundImage);
         }
@@ -270,7 +278,11 @@ export default function Admin() {
           weaponLicenseImage: weaponLicenseImageInput,
           weaponLicenseLevelNames: weaponLicenseLevelNamesInput,
           weaponLicenseWebhookSuccessMessage,
-          weaponLicenseWebhookFailureMessage
+          weaponLicenseWebhookFailureMessage,
+          taskFunctionName: taskFunctionNameInput,
+          taskFunctionImage: taskFunctionImageInput,
+          taskNames: taskNamesInput,
+          taskImages: taskImagesInput
         })
       });
       if (res.ok) {
@@ -419,7 +431,7 @@ export default function Admin() {
                     {u.isBanned ? <span className="rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-[10px] font-black text-red-400">BANNED</span> : <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-black text-emerald-400">ACTIVE</span>}
                   </div>
 
-                  <div className="grid gap-3 p-5 sm:grid-cols-3">
+                  <div className="grid gap-3 p-5 sm:grid-cols-2">
                     <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                       <p className="mb-2 text-[10px] font-black uppercase text-gray-500">Gacha Point</p>
                       <div className="flex items-center gap-2">
@@ -470,6 +482,24 @@ export default function Admin() {
                             className="min-w-0 w-full bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
                           />
                         <SaveButton onClick={() => handleUpdateUser(u._id, { upgradePoints: u.upgradePoints })} title="บันทึก REFINE POINT" />
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-violet-400/15 bg-violet-400/[0.04] p-3">
+                      <p className="mb-2 text-[10px] font-black uppercase text-violet-300/70">TASKS POINT</p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          value={u.taskPoints || 0}
+                          onChange={(e) => {
+                            const newUsers = [...users];
+                            const idx = newUsers.findIndex(x => x._id === u._id);
+                            newUsers[idx].taskPoints = parseInt(e.target.value) || 0;
+                            setUsers(newUsers);
+                          }}
+                          className="min-w-0 w-full bg-[#0a0a0f] border border-white/10 rounded-lg px-2.5 py-2 text-[14px] text-white focus:outline-none focus:border-red-500"
+                        />
+                        <SaveButton onClick={() => handleUpdateUser(u._id, { taskPoints: u.taskPoints })} title="บันทึก TASKS POINT" />
                       </div>
                     </div>
                   </div>
@@ -936,6 +966,37 @@ export default function Admin() {
                       <img referrerPolicy="no-referrer" src={combatArmoryImageInput} alt="Preview" className="max-w-full max-h-full object-contain p-2" />
                     </div>
                   )}
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-white/5">
+                <div className="mb-4">
+                  <h3 className="text-[16px] font-black text-white">ตั้งค่าสุ่มความสำเร็จภารกิจ</h3>
+                  <p className="mt-1 text-[12px] text-gray-500">ตั้งชื่อและโลโก้หน้าหลัก รวมถึงภารกิจย่อยทั้ง 3 ชนิด อัตราสำเร็จถูกล็อกไว้ที่ 75%, 50% และ 25%</p>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-1 block text-[12px] font-bold text-gray-400">ชื่อฟังก์ชันหลัก</label>
+                    <input value={taskFunctionNameInput} onChange={e => setTaskFunctionNameInput(e.target.value)} placeholder="สุ่มความสำเร็จภารกิจ" className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[12px] font-bold text-gray-400">URL Logo ฟังก์ชันหลัก</label>
+                    <input value={taskFunctionImageInput} onChange={e => setTaskFunctionImageInput(e.target.value)} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
+                    {taskFunctionImageInput && <div className="mt-3 flex h-28 w-28 items-center justify-center rounded-xl border border-white/10 bg-[#0a0a0f] p-3"><img src={taskFunctionImageInput} referrerPolicy="no-referrer" alt="Task function preview" className="max-h-full max-w-full object-contain" /></div>}
+                  </div>
+                  <div className="grid gap-4">
+                    {[75, 50, 25].map((rate, index) => (
+                      <div key={rate} className="rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-4">
+                        <div className="mb-3 flex items-center justify-between"><p className="text-sm font-black text-white">ภารกิจชนิดที่ {index + 1}</p><span className="rounded-lg bg-violet-500/10 px-3 py-1 text-xs font-black text-violet-300">{rate}%</span></div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div><label className="mb-1 block text-[11px] font-bold text-gray-500">ชื่อภารกิจ</label><input value={taskNamesInput[index]} onChange={e => setTaskNamesInput(current => current.map((name, nameIndex) => nameIndex === index ? e.target.value : name))} className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[13px] text-white outline-none focus:border-red-500" /></div>
+                          <div><label className="mb-1 block text-[11px] font-bold text-gray-500">URL Logo</label><input value={taskImagesInput[index]} onChange={e => setTaskImagesInput(current => current.map((image, imageIndex) => imageIndex === index ? e.target.value : image))} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[13px] text-white outline-none focus:border-red-500" /></div>
+                        </div>
+                        {taskImagesInput[index] && <div className="mt-3 flex h-20 w-20 items-center justify-center rounded-xl border border-white/10 bg-[#0a0a0f] p-2"><img src={taskImagesInput[index]} referrerPolicy="no-referrer" alt={`Task ${index + 1} preview`} className="max-h-full max-w-full object-contain" /></div>}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[12px] leading-5 text-amber-200">Discord ใช้ environment variable <code>WEBHOOK_TASK_URL</code> และข้อความจะแสดงชื่อผู้เล่น ชื่อภารกิจ อัตราสำเร็จ และผลสำเร็จ/ไม่สำเร็จ</p>
                 </div>
               </div>
 

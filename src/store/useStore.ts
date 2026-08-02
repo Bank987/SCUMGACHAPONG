@@ -9,6 +9,7 @@ interface User {
   spins: number;
   upgradePoints: number;
   levelTickets: number;
+  taskPoints: number;
   weaponLicenseLevel: number;
   balance: number;
   role: string;
@@ -25,10 +26,15 @@ interface AppState {
   weaponLicenseName: string;
   weaponLicenseImage: string;
   weaponLicenseLevelNames: string[];
+  taskFunctionName: string;
+  taskFunctionImage: string;
+  taskNames: string[];
+  taskImages: string[];
   setUser: (user: User | null) => void;
   setSpins: (spins: number) => void;
   setUpgradePoints: (points: number) => void;
   setLevelTickets: (tickets: number) => void;
+  setTaskPoints: (points: number) => void;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
   fetchSettings: () => Promise<void>;
@@ -44,10 +50,15 @@ export const useStore = create<AppState>((set) => ({
   weaponLicenseName: "ใบอนุญาตครอบครองอาวุธ",
   weaponLicenseImage: "",
   weaponLicenseLevelNames: Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`),
+  taskFunctionName: "สุ่มความสำเร็จภารกิจ",
+  taskFunctionImage: "",
+  taskNames: ["ภารกิจ 1", "ภารกิจ 2", "ภารกิจ 3"],
+  taskImages: ["", "", ""],
   setUser: (user) => set({ user, isAuthenticated: !!user }),
   setSpins: (spins) => set((state) => ({ user: state.user ? { ...state.user, spins } : null })),
   setUpgradePoints: (upgradePoints) => set((state) => ({ user: state.user ? { ...state.user, upgradePoints } : null })),
   setLevelTickets: (levelTickets) => set((state) => ({ user: state.user ? { ...state.user, levelTickets } : null })),
+  setTaskPoints: (taskPoints) => set((state) => ({ user: state.user ? { ...state.user, taskPoints } : null })),
   checkAuth: async () => {
     try {
       const res = await fetch("/api/auth/me");
@@ -83,7 +94,11 @@ export const useStore = create<AppState>((set) => ({
           weaponLicenseImage: data.weaponLicenseImage || "",
           weaponLicenseLevelNames: Array.isArray(data.weaponLicenseLevelNames) && data.weaponLicenseLevelNames.length === 15
             ? data.weaponLicenseLevelNames
-            : Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`)
+            : Array.from({ length: 15 }, (_, index) => `LEVEL ${index + 1}`),
+          taskFunctionName: data.taskFunctionName || "สุ่มความสำเร็จภารกิจ",
+          taskFunctionImage: data.taskFunctionImage || "",
+          taskNames: Array.isArray(data.taskNames) && data.taskNames.length === 3 ? data.taskNames : ["ภารกิจ 1", "ภารกิจ 2", "ภารกิจ 3"],
+          taskImages: Array.isArray(data.taskImages) && data.taskImages.length === 3 ? data.taskImages : ["", "", ""]
         });
       }
     } catch (error) {

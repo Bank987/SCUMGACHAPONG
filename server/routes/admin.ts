@@ -4,6 +4,7 @@ import { Case } from "../models/Case.js";
 import { Settings } from "../models/Settings.js";
 import { CheatLog } from "../models/CheatLog.js";
 import { SpinHistory } from "../models/SpinHistory.js";
+import { TaskHistory } from "../models/TaskHistory.js";
 import { createWeaponLicenseWebhookPayload, renderWebhookTemplate, sendWebhook } from "../utils/webhook.js";
 
 const router = express.Router();
@@ -49,7 +50,7 @@ router.get("/users", async (req, res) => {
 
 router.put("/users/:id", async (req, res) => {
   try {
-    const { gameName, spins, upgradePoints, levelTickets, weaponLicenseLevel, allowedCases, isBanned, banReason, cheatWarnings } = req.body;
+    const { gameName, spins, upgradePoints, levelTickets, taskPoints, weaponLicenseLevel, allowedCases, isBanned, banReason, cheatWarnings } = req.body;
 
     const updateData: any = {};
     if (gameName !== undefined) {
@@ -72,6 +73,11 @@ router.put("/users/:id", async (req, res) => {
       const value = clampInteger(levelTickets, 0, Number.MAX_SAFE_INTEGER);
       if (value === null) return res.status(400).json({ error: "levelTickets must be a number" });
       updateData.levelTickets = value;
+    }
+    if (taskPoints !== undefined) {
+      const value = clampInteger(taskPoints, 0, Number.MAX_SAFE_INTEGER);
+      if (value === null) return res.status(400).json({ error: "taskPoints must be a number" });
+      updateData.taskPoints = value;
     }
     if (weaponLicenseLevel !== undefined) {
       const value = clampInteger(weaponLicenseLevel, 0, 15);
@@ -162,6 +168,7 @@ router.delete("/users/:id", async (req, res) => {
 
     await Promise.all([
       SpinHistory.deleteMany({ userId: user._id }),
+      TaskHistory.deleteMany({ userId: user._id }),
       CheatLog.deleteMany({ userId: user._id }),
       User.deleteOne({ _id: user._id })
     ]);
@@ -175,6 +182,7 @@ router.delete("/users", async (req, res) => {
   try {
     await Promise.all([
       SpinHistory.deleteMany({}),
+      TaskHistory.deleteMany({}),
       CheatLog.deleteMany({}),
       User.deleteMany({})
     ]);
@@ -248,7 +256,11 @@ router.put("/settings", async (req, res) => {
       weaponLicenseImage,
       weaponLicenseLevelNames,
       weaponLicenseWebhookSuccessMessage,
-      weaponLicenseWebhookFailureMessage
+      weaponLicenseWebhookFailureMessage,
+      taskFunctionName,
+      taskFunctionImage,
+      taskNames,
+      taskImages
     } = req.body;
 
     if (weaponLicenseLevelNames !== undefined && (
@@ -263,12 +275,21 @@ router.put("/settings", async (req, res) => {
       weaponLicenseName,
       weaponLicenseImage,
       weaponLicenseWebhookSuccessMessage,
-      weaponLicenseWebhookFailureMessage
+      weaponLicenseWebhookFailureMessage,
+      taskFunctionName,
+      taskFunctionImage
     };
     for (const [field, value] of Object.entries(stringFields)) {
       if (value !== undefined && typeof value !== "string") {
         return res.status(400).json({ error: `${field} must be a string` });
       }
+    }
+
+    if (taskNames !== undefined && (!Array.isArray(taskNames) || taskNames.length !== 3 || taskNames.some((name: any) => typeof name !== "string" || !name.trim()))) {
+      return res.status(400).json({ error: "taskNames must contain exactly 3 non-empty names" });
+    }
+    if (taskImages !== undefined && (!Array.isArray(taskImages) || taskImages.length !== 3 || taskImages.some((image: any) => typeof image !== "string"))) {
+      return res.status(400).json({ error: "taskImages must contain exactly 3 image URLs" });
     }
 
     const weaponLicenseSettings = {
@@ -278,6 +299,12 @@ router.put("/settings", async (req, res) => {
       weaponLicenseWebhookSuccessMessage,
       weaponLicenseWebhookFailureMessage
     };
+    const taskSettings = {
+      taskFunctionName,
+      taskFunctionImage,
+      taskNames: taskNames?.map((name: string) => name.trim()),
+      taskImages
+    };
     let settings = await Settings.findOne({});
     if (!settings) {
       settings = await Settings.create({
@@ -286,7 +313,8 @@ router.put("/settings", async (req, res) => {
         promoBanner,
         combatArmoryName,
         combatArmoryImage,
-        ...weaponLicenseSettings
+        ...weaponLicenseSettings,
+        ...taskSettings
       });
     } else {
       if (backgroundImage !== undefined) (settings as any).backgroundImage = backgroundImage;
@@ -295,6 +323,9 @@ router.put("/settings", async (req, res) => {
       if (combatArmoryName !== undefined) (settings as any).combatArmoryName = combatArmoryName;
       if (combatArmoryImage !== undefined) (settings as any).combatArmoryImage = combatArmoryImage;
       for (const [field, value] of Object.entries(weaponLicenseSettings)) {
+        if (value !== undefined) (settings as any)[field] = value;
+      }
+      for (const [field, value] of Object.entries(taskSettings)) {
         if (value !== undefined) (settings as any)[field] = value;
       }
       await settings.save();

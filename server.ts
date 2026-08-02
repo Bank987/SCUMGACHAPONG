@@ -15,6 +15,7 @@ import casesRoutes from "./server/routes/cases.js";
 import spinRoutes from "./server/routes/spin.js";
 import adminRoutes from "./server/routes/admin.js";
 import settingsRoutes from "./server/routes/settings.js";
+import taskRoutes from "./server/routes/tasks.js";
 
 dotenv.config();
 
@@ -94,6 +95,7 @@ async function startServer() {
   app.use("/api/spin", spinRoutes);
   app.use("/api/admin", adminRoutes);
   app.use("/api/settings", settingsRoutes);
+  app.use("/api/tasks", taskRoutes);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

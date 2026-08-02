@@ -11,8 +11,9 @@ import Contact from "./pages/Contact";
 import Inventory from "./pages/Inventory";
 import Upgrade from "./pages/Upgrade";
 import WeaponLicense from "./pages/WeaponLicense";
+import Tasks from "./pages/Tasks";
 import { Toaster } from "./components/ui/sonner";
-import { Home, PackageOpen, Swords, User, MessageSquare, BadgeCheck } from "lucide-react";
+import { Home, PackageOpen, Swords, User, MessageSquare, BadgeCheck, ClipboardList } from "lucide-react";
 import { ServerLoader } from "./components/ServerLoader";
 
 export default function App() {
@@ -117,7 +118,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               {user ? (
                 <div className="flex items-center gap-3">
-                  <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/5 bg-white/[0.03] px-2 py-1.5">
+                  <div className="grid grid-cols-4 gap-2 rounded-lg border border-white/5 bg-white/[0.03] px-2 py-1.5">
                     <div className="flex items-center gap-1">
                       <span className="text-[#3b82f6] text-[10px] font-black">⚡</span>
                       <span className="text-white text-xs font-bold leading-none">{Math.floor(user.spins)}</span>
@@ -129,6 +130,10 @@ export default function App() {
                     <div className="flex items-center gap-1">
                       <BadgeCheck className="h-3 w-3 text-emerald-400" />
                       <span className="text-white text-xs font-bold leading-none">{Math.floor(user.levelTickets || 0)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <ClipboardList className="h-3 w-3 text-violet-400" />
+                      <span className="text-white text-xs font-bold leading-none">{Math.floor(user.taskPoints || 0)}</span>
                     </div>
                   </div>
                   <div className="w-8 h-8 rounded-lg border border-[#ffb700]/50 overflow-hidden bg-[#050507]">
@@ -164,6 +169,7 @@ export default function App() {
                 <Route path="/inventory" element={<Inventory />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/weapon-license" element={<WeaponLicense />} />
+                <Route path="/tasks" element={<Tasks />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
@@ -223,20 +229,13 @@ function MobileBottomNav({ user }: any) {
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a0f] backdrop-blur-xl border-t border-white/5 z-50">
-      <div className="flex justify-between items-end h-[70px] pb-2 px-4 relative">
+      <div className="grid grid-cols-6 items-end h-[70px] pb-2 px-1 relative">
         <NavSlot path="/" currentPath={path} label="หน้าหลัก" icon={<Home size={24} />} isExact />
         <NavSlot path="/inventory" currentPath={path} label="กระเป๋า" icon={<PackageOpen size={24} />} />
-
-        {/* Center Highlight */}
-        <div className="relative -top-5 z-20 flex flex-col items-center w-[72px]">
-          <Link to="/contact" className="flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#ffb700] border-[5px] border-[#0a0a0f] shadow-[0_0_20px_rgba(255,183,0,0.5)] transition-transform active:scale-95">
-            <MessageSquare size={26} className="text-[#0a0a0f] fill-current" />
-          </Link>
-          <span className="text-[11px] font-bold mt-1 text-gray-400">ติดต่อแอดมิน</span>
-        </div>
-
+        <NavSlot path="/tasks" currentPath={path} label="ภารกิจ" icon={<ClipboardList size={24} />} />
         <NavSlot path="/upgrade" currentPath={path} label="ตีบวก" icon={<Swords size={24} />} />
         <NavSlot path="/weapon-license" currentPath={path} label="ใบอนุญาต" icon={<BadgeCheck size={24} />} />
+        <NavSlot path="/contact" currentPath={path} label="ติดต่อ" icon={<MessageSquare size={24} />} />
       </div>
     </div>
   );
@@ -246,12 +245,12 @@ function NavSlot({ path, currentPath, label, icon, isExact = false }: { path: st
   const active = isExact ? currentPath === path : currentPath.startsWith(path);
 
   return (
-    <Link to={path} className="flex flex-col items-center justify-end h-full gap-1.5 w-14 pb-1 relative z-10 group">
+    <Link to={path} className="flex flex-col items-center justify-end h-full gap-1.5 min-w-0 pb-1 relative z-10 group">
       {active && <div className="absolute top-0 w-6 h-[3px] bg-[#ffb700] rounded-b-md shadow-[0_0_8px_#ffb700]" />}
       <div className={`transition-colors ${active ? "text-[#ffb700]" : "text-gray-500"}`}>
         {icon}
       </div>
-      <span className={`text-[11px] font-bold transition-colors ${active ? "text-[#ffb700]" : "text-gray-500"}`}>
+      <span className={`max-w-full truncate px-0.5 text-[9px] font-bold transition-colors ${active ? "text-[#ffb700]" : "text-gray-500"}`}>
         {label}
       </span>
     </Link>

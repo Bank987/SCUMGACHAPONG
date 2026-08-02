@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   spins: { type: Number, default: 0 },
   upgradePoints: { type: Number, default: 0 },
   levelTickets: { type: Number, default: 0 },
+  taskPoints: { type: Number, default: 0 },
   weaponLicenseLevel: { type: Number, default: 0 },
   balance: { type: Number, default: 0 },
   role: { type: String, default: "user" },
@@ -18,6 +19,7 @@ const userSchema = new mongoose.Schema({
   spinLockedUntil: { type: Date, default: null },
   upgradeLockedUntil: { type: Date, default: null },
   levelUpgradeLockedUntil: { type: Date, default: null },
+  taskLockedUntil: { type: Date, default: null },
   cheatWarnings: { type: Number, default: 0 },
   isBanned: { type: Boolean, default: false },
   banReason: { type: String, default: "" }
