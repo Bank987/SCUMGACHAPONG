@@ -132,7 +132,7 @@ export default function App() {
                       <span className="text-white text-xs font-bold leading-none">{Math.floor(user.levelTickets || 0)}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <ClipboardList className="h-3 w-3 text-violet-400" />
+                      <ClipboardList className="h-3 w-3 text-[#ffb700]" />
                       <span className="text-white text-xs font-bold leading-none">{Math.floor(user.taskPoints || 0)}</span>
                     </div>
                   </div>

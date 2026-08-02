@@ -75,8 +75,8 @@ export function Sidebar({ user, onClose }: SidebarProps) {
             <div className="mt-2 bg-[#050507] border border-[#ffb700]/30 p-3 flex flex-col gap-2 rounded-xl">
               <div className="flex justify-between items-center">
                 <span className="text-[11px] font-bold text-gray-500 tracking-widest">TASKS POINT</span>
-                <div className="flex items-center gap-1.5 bg-violet-500/10 px-2 py-0.5 rounded-lg border border-violet-500/20">
-                  <ClipboardList className="h-3.5 w-3.5 text-violet-400" />
+                <div className="flex items-center gap-1.5 bg-[#ffb700]/10 px-2 py-0.5 rounded-lg border border-[#ffb700]/20">
+                  <ClipboardList className="h-3.5 w-3.5 text-[#ffb700]" />
                   <span className="font-black text-white tracking-wider text-[14px]">{Math.floor(user.taskPoints || 0)}</span>
                 </div>
               </div>

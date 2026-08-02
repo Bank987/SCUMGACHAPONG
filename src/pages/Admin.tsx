@@ -484,8 +484,8 @@ export default function Admin() {
                         <SaveButton onClick={() => handleUpdateUser(u._id, { upgradePoints: u.upgradePoints })} title="บันทึก REFINE POINT" />
                       </div>
                     </div>
-                    <div className="rounded-xl border border-violet-400/15 bg-violet-400/[0.04] p-3">
-                      <p className="mb-2 text-[10px] font-black uppercase text-violet-300/70">TASKS POINT</p>
+                    <div className="rounded-xl border border-[#ffb700]/15 bg-[#ffb700]/[0.04] p-3">
+                      <p className="mb-2 text-[10px] font-black uppercase text-[#ffb700]/70">TASKS POINT</p>
                       <div className="flex items-center gap-2">
                         <input
                           type="number"
@@ -986,8 +986,8 @@ export default function Admin() {
                   </div>
                   <div className="grid gap-4">
                     {[75, 50, 25].map((rate, index) => (
-                      <div key={rate} className="rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-4">
-                        <div className="mb-3 flex items-center justify-between"><p className="text-sm font-black text-white">ภารกิจชนิดที่ {index + 1}</p><span className="rounded-lg bg-violet-500/10 px-3 py-1 text-xs font-black text-violet-300">{rate}%</span></div>
+                      <div key={rate} className="rounded-2xl border border-[#ffb700]/15 bg-[#ffb700]/[0.03] p-4">
+                        <div className="mb-3 flex items-center justify-between"><p className="text-sm font-black text-white">ภารกิจชนิดที่ {index + 1}</p><span className="rounded-lg border border-[#ffb700]/20 bg-[#ffb700]/10 px-3 py-1 text-xs font-black text-[#ffb700]">{rate}%</span></div>
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div><label className="mb-1 block text-[11px] font-bold text-gray-500">ชื่อภารกิจ</label><input value={taskNamesInput[index]} onChange={e => setTaskNamesInput(current => current.map((name, nameIndex) => nameIndex === index ? e.target.value : name))} className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[13px] text-white outline-none focus:border-red-500" /></div>
                           <div><label className="mb-1 block text-[11px] font-bold text-gray-500">URL Logo</label><input value={taskImagesInput[index]} onChange={e => setTaskImagesInput(current => current.map((image, imageIndex) => imageIndex === index ? e.target.value : image))} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[13px] text-white outline-none focus:border-red-500" /></div>
