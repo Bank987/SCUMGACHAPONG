@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useStore } from "../store/useStore";
 import { toast } from "sonner";
-import { ShieldAlert, Plus, Users, PackageOpen, Settings, X, Save, Edit, Trash2, KeyRound, ServerCrash } from "lucide-react";
+import { ShieldAlert, Plus, Users, PackageOpen, Settings, X, Save, Edit, Trash2, KeyRound, ServerCrash, LogOut } from "lucide-react";
 
 function SaveButton({ onClick, title }: { onClick: () => void; title: string }) {
   return (
@@ -349,44 +349,54 @@ export default function Admin() {
     }
   };
 
-  return (
-    <div className="max-w-6xl mx-auto pb-20 pt-6">
-      <div className="flex items-center gap-4 mb-10">
-        <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-500 rounded-[18px] flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-          <ShieldAlert className="w-7 h-7 text-white" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-black tracking-wide text-white">ระบบจัดการหลังบ้าน</h1>
-          <p className="text-gray-400 font-bold text-[13px] tracking-wide mt-1">ตั้งค่ากล่อง, ให้สปินผู้เล่นแบบเรียลไทม์</p>
-        </div>
-      </div>
+  const adminTabs = [
+    { id: "cases", label: "จัดการกล่อง", description: "สร้างและแก้ไขกล่องสุ่ม", icon: PackageOpen },
+    { id: "users", label: "จัดการผู้เล่น", description: "แต้ม สิทธิ์ และสถานะบัญชี", icon: Users },
+    { id: "logs", label: "ประวัติและการแบน", description: "ตรวจสอบเหตุการณ์ผิดปกติ", icon: ServerCrash },
+    { id: "settings", label: "ตั้งค่าหน้าเว็บ", description: "รูปภาพและชื่อระบบ", icon: Settings }
+  ];
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-8 bg-[#111218] border border-white/5 p-1.5 rounded-[20px] w-fit shadow-md">
-        {[
-          { id: "cases", label: "จัดการกล่อง", icon: PackageOpen },
-          { id: "users", label: "แจก Gacha Point ยูสเซอร์", icon: Users },
-          { id: "logs", label: "ประวัติ/แบน", icon: ServerCrash },
-          { id: "settings", label: "ตั้งค่าเว็บหลัก", icon: Settings },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => { setActiveTab(tab.id); setEditingCase(null); }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold text-[14px] transition-all ${activeTab === tab.id
-              ? "bg-red-500/20 text-red-500 border border-red-500/30"
-              : "text-gray-500 hover:bg-white/5 hover:text-white border border-transparent"
-              }`}
-          >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-          </button>
-        ))}
-        <button onClick={() => { setPin(""); setIsAuthenticated(false); window.location.reload(); }} className="flex items-center gap-2 px-6 py-3 rounded-[16px] font-bold text-[14px] transition-all text-gray-500 hover:bg-white/5 hover:text-white border border-transparent">
-          ออกล๊อกอิน
+  return (
+    <div className="mx-auto w-full max-w-[1600px] pb-20 pt-2 sm:pt-4">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-[#111218]/85 p-4 shadow-[0_18px_45px_rgba(0,0,0,0.25)] sm:p-5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-orange-500 shadow-[0_0_20px_rgba(239,68,68,0.3)] sm:h-13 sm:w-13">
+            <ShieldAlert className="h-5 w-5 text-white sm:h-6 sm:w-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-black tracking-wide text-white sm:text-2xl">ระบบจัดการหลังบ้าน</h1>
+            <p className="mt-1 text-[11px] font-bold text-gray-500 sm:text-xs">จัดการผู้เล่น กล่องสุ่ม และการตั้งค่าระบบ</p>
+          </div>
+        </div>
+        <button onClick={() => { setPin(""); setIsAuthenticated(false); window.location.reload(); }} className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-bold text-gray-400 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 sm:px-4">
+          <LogOut className="h-4 w-4" /> ออกจากระบบ
         </button>
       </div>
 
-      <div className="bg-[#111218] border border-white/5 rounded-[28px] p-8 shadow-lg relative overflow-hidden">
+      <div className="mb-4 overflow-x-auto lg:hidden">
+        <div className="flex min-w-max gap-2 rounded-2xl border border-white/10 bg-[#111218]/90 p-1.5">
+          {adminTabs.map(tab => (
+            <button key={tab.id} onClick={() => { setActiveTab(tab.id); setEditingCase(null); }} className={`flex items-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2.5 text-xs font-bold transition ${activeTab === tab.id ? "border-red-500/30 bg-red-500/15 text-red-400" : "border-transparent text-gray-500 hover:bg-white/5 hover:text-white"}`}>
+              <tab.icon className="h-4 w-4" /> {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid items-start gap-5 lg:grid-cols-[250px_minmax(0,1fr)]">
+        <aside className="sticky top-4 hidden overflow-hidden rounded-2xl border border-white/10 bg-[#111218]/90 p-3 shadow-lg lg:block">
+          <p className="px-3 pb-3 pt-2 text-[10px] font-black uppercase tracking-[0.22em] text-gray-600">เมนูจัดการ</p>
+          <div className="space-y-1.5">
+            {adminTabs.map(tab => (
+              <button key={tab.id} onClick={() => { setActiveTab(tab.id); setEditingCase(null); }} className={`w-full rounded-xl border p-3 text-left transition ${activeTab === tab.id ? "border-red-500/30 bg-red-500/12 text-white shadow-[inset_3px_0_0_#ef4444]" : "border-transparent text-gray-500 hover:border-white/5 hover:bg-white/[0.035] hover:text-white"}`}>
+                <div className="flex items-center gap-3"><tab.icon className={`h-5 w-5 shrink-0 ${activeTab === tab.id ? "text-red-400" : "text-gray-600"}`} /><div><p className="text-sm font-black">{tab.label}</p><p className="mt-0.5 text-[10px] font-medium text-gray-600">{tab.description}</p></div></div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 rounded-xl border border-white/5 bg-black/20 p-3"><p className="text-[10px] font-bold text-gray-600">ข้อมูลอัปเดตอัตโนมัติ</p><div className="mt-2 flex items-center gap-2 text-[10px] font-black text-emerald-400"><span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" /> ระบบเชื่อมต่ออยู่</div></div>
+        </aside>
+
+        <div className="relative min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#111218]/90 p-3 shadow-lg sm:p-5 xl:p-7">
         {/* USERS TAB */}
         {activeTab === "users" && (
           <div>
@@ -399,14 +409,14 @@ export default function Admin() {
                 <Trash2 className="h-4 w-4" /> WIPE ผู้ใช้ทั้งหมด
               </button>
             </div>
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="grid gap-5 2xl:grid-cols-2">
               {users.map(u => (
                 <article key={u._id} className={`overflow-hidden rounded-2xl border bg-[#0d0e14] shadow-lg transition-colors hover:border-white/15 ${u.isBanned ? 'border-red-500/35 bg-red-950/10' : 'border-white/10'}`}>
-                  <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 p-5">
+                  <div className="grid gap-4 border-b border-white/10 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:p-5">
                     <div className="flex min-w-0 items-start gap-3">
                       <img referrerPolicy="no-referrer" src={u.avatar} alt={u.username} className="h-12 w-12 shrink-0 rounded-xl object-cover drop-shadow" />
-                      <div className="min-w-0">
-                        <div className="flex max-w-full items-center gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex max-w-xl items-center gap-2">
                           <input
                             maxLength={32}
                             value={u.gameName || ""}
@@ -417,7 +427,7 @@ export default function Admin() {
                               newUsers[idx].gameName = e.target.value;
                               setUsers(newUsers);
                             }}
-                            className="min-w-0 w-full max-w-[220px] bg-[#08090d] border border-white/10 rounded-lg px-2.5 py-1.5 text-[13px] font-bold text-white focus:outline-none focus:border-red-500"
+                            className="min-w-0 w-full bg-[#08090d] border border-white/10 rounded-lg px-3 py-2 text-[13px] font-bold text-white focus:outline-none focus:border-red-500"
                           />
                           <button onClick={() => handleUpdateUser(u._id, { gameName: u.gameName })} className="shrink-0 rounded-lg border border-green-500/20 bg-green-500/10 p-2 text-green-500 transition-all hover:bg-green-500 hover:text-white" title="กำหนดชื่อผู้เล่นและล็อกชื่อ">
                             <Save className="h-3.5 w-3.5" />
@@ -428,10 +438,10 @@ export default function Admin() {
                         {u.cheatWarnings > 0 && <span className="mt-1 block text-[10px] text-orange-400">Cheat Warnings: {u.cheatWarnings}/5</span>}
                       </div>
                     </div>
-                    {u.isBanned ? <span className="rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-[10px] font-black text-red-400">BANNED</span> : <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-black text-emerald-400">ACTIVE</span>}
+                    {u.isBanned ? <span className="w-fit rounded border border-red-500/20 bg-red-500/10 px-2 py-1 text-[10px] font-black text-red-400">BANNED</span> : <span className="w-fit rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] font-black text-emerald-400">ACTIVE</span>}
                   </div>
 
-                  <div className="grid gap-3 p-5 sm:grid-cols-2">
+                  <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
                     <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                       <p className="mb-2 text-[10px] font-black uppercase text-gray-500">Gacha Point</p>
                       <div className="flex items-center gap-2">
@@ -504,17 +514,17 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  <div className="border-t border-white/10 p-5">
+                  <div className="grid gap-4 border-t border-white/10 p-4 sm:grid-cols-[minmax(0,1fr)_220px] sm:items-center sm:p-5">
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                       <p className="text-[10px] font-black uppercase text-gray-500">ใบอนุญาตอาวุธ</p>
                       <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-black text-emerald-400">LEVEL {Math.min(15, Math.max(0, u.weaponLicenseLevel || 0))}</span>
                     </div>
-                    <button onClick={() => handleWeaponLicenseAccess(u)} className="w-full rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-xs font-black text-blue-400 transition hover:bg-blue-500 hover:text-white">ACCESS +1 TIER</button>
+                    <button onClick={() => handleWeaponLicenseAccess(u)} className="w-full rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2.5 text-xs font-black text-blue-400 transition hover:bg-blue-500 hover:text-white">ACCESS +1 TIER</button>
                   </div>
 
-                  <div className="border-t border-white/10 p-5">
+                  <div className="border-t border-white/10 p-4 sm:p-5">
                     <p className="mb-3 text-[10px] font-black uppercase text-gray-500">สิทธิ์เปิดกล่อง <span className="font-normal text-gray-600">(คลิกเพื่อสลับ)</span></p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="max-h-32 overflow-y-auto pr-1 custom-scrollbar flex flex-wrap gap-2">
                           {cases.map(c => {
                             const isAllowed = u.allowedCases?.includes(c._id);
                             return (
@@ -530,7 +540,7 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 border-t border-white/10 p-5">
+                  <div className="grid gap-2 border-t border-white/10 p-4 sm:grid-cols-2 sm:p-5">
                            {u.isBanned ? (
                            <>
                              <button
@@ -539,7 +549,7 @@ export default function Admin() {
                                   handleUpdateUser(u._id, { isBanned: false, cheatWarnings: 0, banReason: "" });
                                 }
                               }}
-                               className="rounded-lg bg-green-500/20 px-3 py-2 text-xs font-bold text-green-400 transition-colors hover:bg-green-500 hover:text-white"
+                               className="w-full rounded-lg bg-green-500/20 px-3 py-2.5 text-xs font-bold text-green-400 transition-colors hover:bg-green-500 hover:text-white"
                              >
                                ปลดแบน
                             </button>
@@ -552,12 +562,12 @@ export default function Admin() {
                                 handleUpdateUser(u._id, { isBanned: true, banReason: reason || "แบนโดยแอดมิน" });
                               }
                             }}
-                             className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-bold text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+                             className="w-full rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-500 hover:text-white"
                            >
                              แบนบัญชี
                           </button>
                           )}
-                           <button onClick={() => handleDeleteUser(u)} className="rounded-lg border border-red-500/30 bg-red-950 px-3 py-2 text-xs font-bold text-red-300 transition-colors hover:bg-red-700 hover:text-white">
+                            <button onClick={() => handleDeleteUser(u)} className="w-full rounded-lg border border-red-500/30 bg-red-950 px-3 py-2.5 text-xs font-bold text-red-300 transition-colors hover:bg-red-700 hover:text-white">
                              ล้างข้อมูลผู้ใช้นี้
                            </button>
                   </div>
@@ -570,22 +580,22 @@ export default function Admin() {
         {/* CASES TAB */}
         {activeTab === "cases" && !editingCase && (
           <div>
-            <div className="flex justify-between items-center mb-8">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-2xl font-black tracking-wide flex items-center gap-3">
                 <div className="w-1.5 h-6 bg-red-500 rounded-full"></div>
                 ระบบกล่องทั้งหมด
               </h2>
               <button
                 onClick={() => setEditingCase({ name: "", image: "", price: 1, items: [], guaranteeEnabled: false, guaranteeEvery: 0, guaranteeItemId: "" })}
-                className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-5 py-3 rounded-xl font-bold text-[14px] transition-all shadow-lg active:scale-95"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-[14px] font-bold text-white shadow-lg transition-all hover:bg-red-500 active:scale-95 sm:w-auto"
               >
                 <Plus className="w-4 h-4" />
                 สร้างกล่องใหม่
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {cases.map(c => (
-                <div key={c._id} className="bg-[#161720] border border-white/5 rounded-2xl p-6 flex flex-col items-center relative group">
+                <div key={c._id} className="group relative flex min-w-0 flex-col items-center rounded-2xl border border-white/5 bg-[#161720] p-4 sm:p-5">
                   <img referrerPolicy="no-referrer" src={c.image} alt={c.name} className="h-32 object-contain mb-4 drop-shadow-lg group-hover:scale-110 transition-transform" />
                   <h3 className="text-[15px] font-bold text-center mb-2">{c.name}</h3>
                   <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[12px] font-black tracking-widest mb-4 border border-red-500/20">{c.price} SPINS</div>
@@ -608,12 +618,12 @@ export default function Admin() {
         {/* CASE EDITOR */}
         {activeTab === "cases" && editingCase && (
           <div>
-            <div className="flex justify-between items-center mb-8 bg-[#161720] -m-8 mb-8 p-8 border-b border-white/5">
-              <h2 className="text-2xl font-black text-white">{editingCase._id ? "แก้ไขกล่องสุ่ม" : "สร้างกล่องสุ่มใหม่แกะกล่อง"}</h2>
+            <div className="mb-6 flex items-center justify-between gap-4 rounded-xl border border-white/5 bg-[#161720] p-4 sm:p-5">
+              <h2 className="text-xl font-black text-white sm:text-2xl">{editingCase._id ? "แก้ไขกล่องสุ่ม" : "สร้างกล่องสุ่มใหม่"}</h2>
               <button onClick={() => setEditingCase(null)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors"><X size={20} /></button>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 mb-10">
+            <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <label className="block text-[13px] font-bold text-gray-400 mb-2">ชื่อกล่อง (Case Name)</label>
                 <input
@@ -644,7 +654,7 @@ export default function Admin() {
                   <option value="3">กล่องแบบที่ 3</option>
                 </select>
               </div>
-              <div className="col-span-2">
+              <div className="md:col-span-2">
                 <label className="block text-[13px] font-bold text-gray-400 mb-2">ลิงก์รูปลักล่อง (Image URL)</label>
                 <input
                   type="text"
@@ -654,7 +664,7 @@ export default function Admin() {
                   className="w-full bg-[#161720] border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
                 />
               </div>
-              <div className="col-span-2 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 md:col-span-2 sm:p-5">
                 <label className="flex cursor-pointer items-center justify-between gap-4">
                   <div>
                     <span className="block text-[14px] font-black text-amber-400">เปิดใช้งานระบบการันตี</span>
@@ -698,21 +708,21 @@ export default function Admin() {
               </div>
             </div>
 
-            <div className="mb-4 flex justify-between items-center bg-[#161720] py-3 px-4 rounded-xl border border-white/5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-[#161720] px-4 py-3">
               <h3 className="text-[15px] font-bold text-white relative pl-4 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1.5 before:h-4 before:bg-red-500 before:rounded-full">ไอเทมที่ยัดในกล่อง</h3>
               <button
                 onClick={() => setEditingCase({ ...editingCase, items: [...(editingCase.items || []), { name: "", image: "", rarity: "Uncommon", dropRate: 10, color: "#10b981" }] })}
-                className="px-4 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500 hover:text-white rounded-xl flex items-center gap-2 text-[12px] font-bold transition-colors"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/20 px-4 py-2 text-[12px] font-bold text-blue-400 transition-colors hover:bg-blue-500 hover:text-white sm:w-auto"
               >
                 <Plus className="w-4 h-4" /> เพิ่มของดรอปใหม่
               </button>
             </div>
 
-            <div className="space-y-4 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="mb-8 max-h-[520px] space-y-4 overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
               {(editingCase.items || []).map((item: any, idx: number) => (
-                <div key={idx} className="flex gap-5 items-start bg-[#161720] p-5 rounded-xl border border-white/5">
+                <div key={idx} className="grid gap-4 rounded-xl border border-white/5 bg-[#161720] p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:p-5">
                   <div className="flex-1 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                       <input type="text" placeholder="ชื่อไอเทม เช่น AK-47 | Redline" value={item.name} onChange={e => {
                         const newItems = [...editingCase.items];
                         newItems[idx].name = e.target.value;
@@ -724,7 +734,7 @@ export default function Admin() {
                         setEditingCase({ ...editingCase, items: newItems });
                       }} className="bg-[#0a0a0f] border border-white/5 rounded-xl px-4 py-2.5 w-full text-[14px] focus:outline-none focus:border-red-500" />
                     </div>
-                    <div className="grid grid-cols-[2fr_1fr_0.5fr] gap-4">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(120px,1fr)_64px]">
                       <select value={item.rarity} onChange={e => {
                         const newItems = [...editingCase.items];
                         newItems[idx].rarity = e.target.value;
@@ -762,16 +772,16 @@ export default function Admin() {
                     const newItems = editingCase.items.filter((_: any, i: number) => i !== idx);
                     const removedGuarantee = String(editingCase.guaranteeItemId) === String(item._id);
                     setEditingCase({ ...editingCase, items: newItems, ...(removedGuarantee ? { guaranteeItemId: "", guaranteeEnabled: false } : {}) });
-                  }} className="p-3 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white rounded-xl transition-colors shrink-0">
+                  }} className="flex h-11 w-full items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 transition-colors hover:bg-red-500 hover:text-white sm:w-11">
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
-              <button onClick={() => setEditingCase(null)} className="px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 font-bold text-[14px] transition-colors">ยกเลิกไปก่อน</button>
-              <button onClick={handleSaveCase} className="px-8 py-3.5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-[14px] transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(22,163,74,0.4)] active:scale-95">
+            <div className="flex flex-col-reverse gap-3 border-t border-white/5 pt-4 sm:flex-row sm:justify-end">
+              <button onClick={() => setEditingCase(null)} className="w-full rounded-xl bg-white/5 px-6 py-3.5 text-[14px] font-bold transition-colors hover:bg-white/10 sm:w-auto">ยกเลิก</button>
+              <button onClick={handleSaveCase} className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-8 py-3.5 text-[14px] font-bold text-white shadow-[0_0_15px_rgba(22,163,74,0.4)] transition-all hover:bg-green-500 active:scale-95 sm:w-auto">
                 <Save className="w-4 h-4" /> กดบันทึกลงฐานข้อมูล
               </button>
             </div>
@@ -785,15 +795,17 @@ export default function Admin() {
               <div className="w-1.5 h-6 bg-red-500 rounded-full"></div>
               Log การโกง/ระบบแบน
             </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="rounded-xl border border-white/5 bg-[#0d0e14]">
+              <div className="border-b border-white/5 px-4 py-3 text-[10px] font-bold text-gray-600 md:hidden">เลื่อนซ้าย-ขวาเพื่อดูรายละเอียดทั้งหมด</div>
+              <div className="overflow-x-auto">
+              <table className="min-w-[900px] w-full text-left border-collapse">
                 <thead className="bg-[#161720] border-b border-white/5 rounded-t-xl">
                   <tr>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">เวลา</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">User</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">Action/การกระทำ</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">ประเภทการโกง</th>
-                    <th className="p-4 font-bold text-[13px] text-gray-400">รายละเอียด</th>
+                    <th className="w-44 p-4 font-bold text-[13px] text-gray-400">เวลา</th>
+                    <th className="w-52 p-4 font-bold text-[13px] text-gray-400">ผู้ใช้</th>
+                    <th className="w-48 p-4 font-bold text-[13px] text-gray-400">การกระทำ</th>
+                    <th className="w-48 p-4 font-bold text-[13px] text-gray-400">ประเภท</th>
+                    <th className="min-w-72 p-4 font-bold text-[13px] text-gray-400">รายละเอียด</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -806,13 +818,13 @@ export default function Admin() {
                   ) : (
                     logs.map(log => (
                       <tr key={log._id} className="border-b border-white/5 last:border-0 hover:bg-[#161720] transition-colors">
-                        <td className="p-4 text-[13px] text-gray-400">
+                        <td className="whitespace-nowrap p-4 text-[13px] text-gray-400">
                           {new Date(log.createdAt).toLocaleString('th-TH')}
                         </td>
-                        <td className="p-4 flex items-center gap-3">
+                        <td className="p-4"><div className="flex items-center gap-3">
                           <img referrerPolicy="no-referrer" src={log.userId?.avatar || `https://ui-avatars.com/api/?name=${log.userId?.username||'U'}`} alt="avatar" className="w-8 h-8 rounded-lg" />
                           <span className="font-bold text-[14px]">{log.userId?.username || "Unknown"}</span>
-                        </td>
+                        </div></td>
                         <td className="p-4">
                           <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-[8px] text-[12px] font-bold">
                             {log.action}
@@ -821,7 +833,7 @@ export default function Admin() {
                         <td className="p-4 text-[14px] font-medium text-orange-400">
                           {log.cheatType}
                         </td>
-                        <td className="p-4 text-[13px] text-gray-300">
+                        <td className="max-w-md break-words p-4 text-[13px] leading-6 text-gray-300">
                           {log.description}
                         </td>
                       </tr>
@@ -829,18 +841,22 @@ export default function Admin() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
         )}
 
         {/* SETTINGS TAB */}
         {activeTab === "settings" && (
-          <div className="max-w-2xl">
+          <div className="w-full max-w-6xl">
             <h2 className="text-2xl font-black tracking-wide flex items-center gap-3 mb-8">
               <div className="w-1.5 h-6 bg-red-500 rounded-full"></div>
               ปรับแต่งหน้าบ้าน
             </h2>
-            <div className="space-y-6 bg-[#161720] border border-white/5 rounded-2xl p-8">
+            <div className="space-y-5">
+              <section className="rounded-2xl border border-white/5 bg-[#161720] p-4 sm:p-6">
+                <div className="mb-5"><h3 className="text-base font-black text-white">ภาพหลักของเว็บไซต์</h3><p className="mt-1 text-xs text-gray-500">พื้นหลังและแบนเนอร์ที่แสดงในหน้าแรก</p></div>
+                <div className="grid gap-6 xl:grid-cols-2">
               <div>
                 <label className="block text-[14px] font-bold text-gray-300 mb-2">ลิงก์ภาพพื้นหลัง (Background Image URL)</label>
                 <input
@@ -861,7 +877,7 @@ export default function Admin() {
                 )}
               </div>
 
-              <div className="pt-6 border-t border-white/5">
+              <div>
                 <label className="block text-[14px] font-bold text-gray-300 mb-2">ลิงก์ภาพ Promo Banner (แบนเนอร์กิจกรรมในหน้าแรก)</label>
                 <input
                   type="text"
@@ -879,11 +895,13 @@ export default function Admin() {
                   </div>
                 )}
               </div>
+                </div>
+              </section>
 
-              <div className="pt-6 border-t border-white/5">
+              <section className="rounded-2xl border border-white/5 bg-[#161720] p-4 sm:p-6">
                 <label className="block text-[14px] font-bold text-gray-300 mb-4">ลิงก์ภาพ Spotlight ด้านขวา (5 รูป)</label>
 
-                <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   <div>
                     <label className="block text-[12px] font-bold text-gray-400 mb-1">รูปที่ 1</label>
                     <input
@@ -935,12 +953,12 @@ export default function Admin() {
                     />
                   </div>
                 </div>
-              </div>
+              </section>
 
-              <div className="pt-6 border-t border-white/5">
+              <section className="rounded-2xl border border-white/5 bg-[#161720] p-4 sm:p-6">
                 <label className="block text-[14px] font-bold text-gray-300 mb-4">ตั้งค่าไอเทมเริ่มต้น (Combat Armory Tier)</label>
 
-                <div className="space-y-4">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_160px] lg:items-end">
                   <div>
                     <label className="block text-[12px] font-bold text-gray-400 mb-1">ชื่อไอเทมเริ่มต้น (ไม่ต้องใส่ +0)</label>
                     <input
@@ -962,14 +980,14 @@ export default function Admin() {
                     />
                   </div>
                   {combatArmoryImageInput && (
-                    <div className="mt-2 rounded-[16px] overflow-hidden border border-white/10 w-32 h-32 relative shadow-inner flex items-center justify-center bg-[#0a0a0f]">
+                    <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-[16px] border border-white/10 bg-[#0a0a0f] shadow-inner lg:justify-self-end">
                       <img referrerPolicy="no-referrer" src={combatArmoryImageInput} alt="Preview" className="max-w-full max-h-full object-contain p-2" />
                     </div>
                   )}
                 </div>
-              </div>
+              </section>
 
-              <div className="pt-6 border-t border-white/5">
+              <section className="rounded-2xl border border-[#ffb700]/15 bg-[#161720] p-4 sm:p-6">
                 <div className="mb-4">
                   <h3 className="text-[16px] font-black text-white">ตั้งค่าสุ่มความสำเร็จภารกิจ</h3>
                   <p className="mt-1 text-[12px] text-gray-500">ตั้งชื่อและโลโก้หน้าหลัก รวมถึงภารกิจย่อยทั้ง 3 ชนิด อัตราสำเร็จถูกล็อกไว้ที่ 75%, 50% และ 25%</p>
@@ -984,11 +1002,11 @@ export default function Admin() {
                     <input value={taskFunctionImageInput} onChange={e => setTaskFunctionImageInput(e.target.value)} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
                     {taskFunctionImageInput && <div className="mt-3 flex h-28 w-28 items-center justify-center rounded-xl border border-white/10 bg-[#0a0a0f] p-3"><img src={taskFunctionImageInput} referrerPolicy="no-referrer" alt="Task function preview" className="max-h-full max-w-full object-contain" /></div>}
                   </div>
-                  <div className="grid gap-4">
+                  <div className="grid gap-4 xl:grid-cols-3">
                     {[75, 50, 25].map((rate, index) => (
                       <div key={rate} className="rounded-2xl border border-[#ffb700]/15 bg-[#ffb700]/[0.03] p-4">
                         <div className="mb-3 flex items-center justify-between"><p className="text-sm font-black text-white">ภารกิจชนิดที่ {index + 1}</p><span className="rounded-lg border border-[#ffb700]/20 bg-[#ffb700]/10 px-3 py-1 text-xs font-black text-[#ffb700]">{rate}%</span></div>
-                        <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="grid gap-3">
                           <div><label className="mb-1 block text-[11px] font-bold text-gray-500">ชื่อภารกิจ</label><input value={taskNamesInput[index]} onChange={e => setTaskNamesInput(current => current.map((name, nameIndex) => nameIndex === index ? e.target.value : name))} className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[13px] text-white outline-none focus:border-red-500" /></div>
                           <div><label className="mb-1 block text-[11px] font-bold text-gray-500">URL Logo</label><input value={taskImagesInput[index]} onChange={e => setTaskImagesInput(current => current.map((image, imageIndex) => imageIndex === index ? e.target.value : image))} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[13px] text-white outline-none focus:border-red-500" /></div>
                         </div>
@@ -997,14 +1015,15 @@ export default function Admin() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </section>
 
-              <div className="pt-6 border-t border-white/5">
+              <section className="rounded-2xl border border-emerald-500/15 bg-[#161720] p-4 sm:p-6">
                 <div className="mb-4">
                   <h3 className="text-[16px] font-black text-white">ตั้งค่าใบอนุญาตครอบครองอาวุธ</h3>
                   <p className="mt-1 text-[12px] text-gray-500">ตั้งค่าข้อความและภาพที่แสดงในหน้าใบอนุญาต รวมถึงชื่อแต่ละระดับ</p>
                 </div>
-                <div className="space-y-4">
+                <div className="grid gap-5 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                  <div className="space-y-4">
                   <div>
                     <label className="mb-1 block text-[12px] font-bold text-gray-400">ชื่อฟังก์ชัน</label>
                     <input value={weaponLicenseNameInput} onChange={e => setWeaponLicenseNameInput(e.target.value)} placeholder="ใบอนุญาตครอบครองอาวุธ" className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
@@ -1014,9 +1033,11 @@ export default function Admin() {
                     <input value={weaponLicenseImageInput} onChange={e => setWeaponLicenseImageInput(e.target.value)} placeholder="https://..." className="w-full rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
                     {weaponLicenseImageInput && <div className="mt-3 flex h-28 w-28 items-center justify-center rounded-xl border border-white/10 bg-[#0a0a0f] p-3"><img src={weaponLicenseImageInput} referrerPolicy="no-referrer" alt="Weapon license preview" className="max-h-full max-w-full object-contain" /></div>}
                   </div>
+                  </div>
+                  <div className="space-y-4">
                   <div>
                     <label className="mb-2 block text-[12px] font-bold text-gray-400">ชื่อ LEVEL 1 ถึง LEVEL 15</label>
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-3 md:grid-cols-2">
                       {weaponLicenseLevelNamesInput.map((levelName, index) => (
                         <label key={index} className="flex items-center gap-3 rounded-xl border border-white/5 bg-[#0a0a0f] px-3 py-2">
                           <span className="w-16 shrink-0 text-[10px] font-black text-emerald-400">LEVEL {index + 1}</span>
@@ -1034,15 +1055,17 @@ export default function Admin() {
                     <textarea rows={3} value={weaponLicenseWebhookFailureMessage} onChange={e => setWeaponLicenseWebhookFailureMessage(e.target.value)} placeholder="{player} อัปเกรด {function} ที่ {level}: {result}" className="w-full resize-y rounded-xl border border-white/5 bg-[#0a0a0f] px-4 py-3 text-[14px] text-white outline-none focus:border-red-500" />
                   </div>
                   <p className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-[12px] leading-5 text-blue-300">Placeholders ที่ใช้ได้: <code>{'{player}'}</code> ชื่อผู้เล่น, <code>{'{function}'}</code> ชื่อฟังก์ชัน, <code>{'{level}'}</code> ระดับใบอนุญาต และ <code>{'{result}'}</code> ผลสำเร็จหรือไม่สำเร็จ</p>
+                  </div>
                 </div>
-              </div>
+              </section>
 
-              <button onClick={handleSaveSettings} className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)] active:scale-[0.98] mt-4">
+              <button onClick={handleSaveSettings} className="sticky bottom-3 z-20 w-full rounded-xl border border-red-400/30 bg-red-600 py-4 font-black text-white shadow-[0_12px_35px_rgba(220,38,38,0.35)] transition hover:bg-red-500 active:scale-[0.99]">
                 อัปเดตการตั้งค่า
               </button>
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
