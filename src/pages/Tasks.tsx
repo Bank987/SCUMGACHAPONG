@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Activity, CheckCircle2, ClipboardList, Coins, Crosshair, Dices, History, Radio, ShieldCheck, X, XCircle, Zap } from "lucide-react";
+import { Activity, CheckCircle2, ClipboardList, Coins, Crosshair, Dices, History, X, XCircle, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useStore } from "../store/useStore";
 
@@ -20,8 +20,6 @@ interface TaskResult {
 
 const taskStyles = [
   {
-    label: "STANDARD OPERATION",
-    risk: "LOW RISK",
     accent: "text-[#ffcf4d]",
     border: "border-[#ffb700]/35 hover:border-[#ffcf4d]/80",
     glow: "group-hover:shadow-[0_0_40px_rgba(255,183,0,0.18)]",
@@ -29,8 +27,6 @@ const taskStyles = [
     meter: "from-[#ff8c00] to-[#ffe08a]"
   },
   {
-    label: "TACTICAL OPERATION",
-    risk: "MEDIUM RISK",
     accent: "text-orange-400",
     border: "border-orange-500/30 hover:border-orange-400/75",
     glow: "group-hover:shadow-[0_0_40px_rgba(249,115,22,0.18)]",
@@ -38,8 +34,6 @@ const taskStyles = [
     meter: "from-orange-600 to-orange-300"
   },
   {
-    label: "BLACK OPERATION",
-    risk: "HIGH RISK",
     accent: "text-red-400",
     border: "border-red-500/30 hover:border-red-400/75",
     glow: "group-hover:shadow-[0_0_40px_rgba(239,68,68,0.18)]",
@@ -162,9 +156,8 @@ export default function Tasks() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2 rounded-md border border-emerald-400/20 bg-emerald-400/[0.06] px-3 py-2">
                   <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" /><span className="relative h-2 w-2 rounded-full bg-emerald-400" /></span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">Mission system online</span>
+                  <span className="text-[10px] font-black tracking-widest text-emerald-300">ระบบพร้อมใช้งาน</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400"><Radio className="h-3.5 w-3.5 text-[#ffb700]" /> Server authorized roll</div>
               </div>
 
               <div className="mt-7 flex items-center gap-5">
@@ -173,7 +166,6 @@ export default function Tasks() {
                   {functionImage ? <img src={functionImage} referrerPolicy="no-referrer" alt={functionName} className="relative h-full w-full object-contain drop-shadow-[0_0_14px_rgba(255,183,0,0.5)]" /> : <Crosshair className="relative h-14 w-14 text-[#ffb700] drop-shadow-[0_0_12px_rgba(255,183,0,0.6)]" />}
                 </motion.div>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#ffb700] sm:text-xs">Mission probability command</p>
                   <h1 className="mt-2 text-3xl font-black uppercase italic leading-none tracking-tight text-white sm:text-5xl lg:text-6xl">{functionName}</h1>
                   <p className="mt-4 max-w-3xl text-sm leading-7 text-gray-400 sm:text-base">เลือกภารกิจแล้วส่งคำสั่งเข้าสู่ระบบ ทุกการปฏิบัติการใช้ 1 TASKS POINT ผลลัพธ์ถูกตัดสินจากเซิร์ฟเวอร์และบันทึกทันที</p>
                 </div>
@@ -183,14 +175,13 @@ export default function Tasks() {
             <motion.aside initial={{ opacity: 0, x: 25 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.55, delay: 0.12 }} className="relative overflow-hidden rounded-2xl border border-[#ffb700]/25 bg-gradient-to-br from-[#1a1510] to-[#08090d] p-5 shadow-[0_20px_45px_rgba(0,0,0,0.3)]">
               <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full border border-[#ffb700]/10" />
               <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full border border-[#ffb700]/10" />
-              <div className="flex items-center justify-between"><div><p className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-500">Operator resources</p><p className="mt-1 text-sm font-black text-white">AVAILABLE ACCESS</p></div><ShieldCheck className="h-7 w-7 text-[#ffb700]/70" /></div>
-              <div className="my-5 h-px bg-gradient-to-r from-[#ffb700]/40 to-transparent" />
+              <div className="mb-5 flex items-center justify-between"><p className="text-sm font-black text-white">แต้มสำหรับสุ่มภารกิจ</p><Coins className="h-6 w-6 text-[#ffb700]/70" /></div>
               <div className="flex items-end justify-between"><div className="flex items-center gap-3"><div className="rounded-xl border border-[#ffb700]/25 bg-[#ffb700]/10 p-3"><Coins className="h-6 w-6 text-[#ffb700]" /></div><div><p className="text-[10px] font-black tracking-widest text-[#ffb700]/65">TASKS POINT</p><motion.p key={data?.points} initial={{ scale: 1.35, color: "#ffb700" }} animate={{ scale: 1, color: "#ffffff" }} className="text-4xl font-black">{Math.floor(data?.points || 0)}</motion.p></div></div><p className="mb-1 text-xs font-black text-gray-600">01 / ROLL</p></div>
               <div className="mt-5 grid grid-cols-3 gap-2">{tasks.map(task => <div key={task.index} className="rounded-lg border border-white/5 bg-black/25 p-2 text-center"><p className="text-[8px] font-black text-gray-600">M{task.index + 1}</p><p className={`mt-1 text-sm font-black ${taskStyles[task.index]?.accent}`}>{task.rate}%</p></div>)}</div>
             </motion.aside>
           </div>
 
-          <div className="mt-8 flex items-center gap-3"><span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#ffb700]/30" /><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.28em] text-gray-500"><Crosshair className="h-4 w-4 text-[#ffb700]" /> Select operation</div><span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#ffb700]/30" /></div>
+          <div className="mt-8 flex items-center gap-3"><span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#ffb700]/30" /><div className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-gray-500"><Crosshair className="h-4 w-4 text-[#ffb700]" /> เลือกภารกิจ</div><span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#ffb700]/30" /></div>
 
           <div className="mt-6 grid gap-5 lg:grid-cols-3">
             {tasks.map((task, index) => {
@@ -200,21 +191,19 @@ export default function Tasks() {
                 <motion.article key={task.index} initial={{ opacity: 0, y: 35 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 + index * 0.12, duration: 0.5 }} whileHover={reduceMotion ? undefined : { y: -8, rotateX: 1.5 }} className={`group relative overflow-hidden rounded-[22px] border bg-[#0d0e13]/95 transition-[border-color,box-shadow] duration-300 ${style.border} ${style.glow}`}>
                   <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${style.wash} via-transparent to-transparent opacity-60`} />
                   <motion.div animate={reduceMotion ? undefined : { x: ["-150%", "350%"] }} transition={{ duration: 4.5 + index, repeat: Infinity, repeatDelay: 2 }} className="pointer-events-none absolute inset-y-0 z-20 w-16 skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
-                  <div className="relative flex items-center justify-between border-b border-white/10 px-5 py-3"><div className="flex items-center gap-2"><span className={`h-2 w-2 rounded-full bg-current shadow-[0_0_8px_currentColor] ${style.accent}`} /><span className="text-[9px] font-black tracking-[0.22em] text-gray-500">{style.label}</span></div><span className={`text-[9px] font-black ${style.accent}`}>{style.risk}</span></div>
                   <div className="relative flex h-48 items-center justify-center overflow-hidden bg-gradient-to-b from-white/[0.025] to-black/25 p-6">
                     <div className="absolute inset-6 rounded-full border border-dashed border-white/[0.07]" />
                     <motion.div animate={reduceMotion ? undefined : { rotate: index % 2 ? -360 : 360 }} transition={{ duration: 16 + index * 3, repeat: Infinity, ease: "linear" }} className="absolute h-36 w-36 rounded-full border border-dashed border-white/10" />
                     <div className="absolute left-1/2 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/[0.05] to-transparent" />
                     <div className="absolute left-0 top-1/2 h-px w-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent" />
                     {task.image ? <motion.img whileHover={reduceMotion ? undefined : { scale: 1.08, rotate: 1.5 }} src={task.image} referrerPolicy="no-referrer" alt={task.name} className="relative z-10 h-full w-full object-contain drop-shadow-[0_18px_22px_rgba(0,0,0,0.7)]" /> : <motion.div animate={reduceMotion ? undefined : { y: [0, -7, 0] }} transition={{ duration: 3 + index * 0.4, repeat: Infinity }}><Dices className={`relative z-10 h-20 w-20 ${style.accent} drop-shadow-[0_0_16px_currentColor]`} /></motion.div>}
-                    <div className="absolute bottom-3 right-4 font-mono text-[9px] text-gray-700">TARGET.0{index + 1}</div>
                   </div>
                   <div className="relative p-5">
-                    <div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-[9px] font-black tracking-[0.25em] text-gray-600">MISSION {String(index + 1).padStart(2, "0")}</p><h2 className="mt-1 truncate text-xl font-black text-white">{task.name}</h2></div><div className="text-right"><p className="text-[8px] font-black text-gray-600">SUCCESS RATE</p><p className={`text-3xl font-black ${style.accent}`}>{task.rate}<span className="text-sm">%</span></p></div></div>
+                    <div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-[9px] font-black tracking-[0.2em] text-gray-600">ภารกิจที่ {index + 1}</p><h2 className="mt-1 truncate text-xl font-black text-white">{task.name}</h2></div><div className="text-right"><p className="text-[8px] font-black text-gray-600">โอกาสสำเร็จ</p><p className={`text-3xl font-black ${style.accent}`}>{task.rate}<span className="text-sm">%</span></p></div></div>
                     <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/5"><motion.div initial={{ width: 0 }} animate={{ width: `${task.rate}%` }} transition={{ delay: 0.6 + index * 0.15, duration: 0.9, ease: "easeOut" }} className={`h-full bg-gradient-to-r ${style.meter} shadow-[0_0_10px_currentColor]`} /></div>
                     <button disabled={disabled} onClick={() => void rollTask(task)} className="group/button relative mt-5 w-full overflow-hidden rounded-lg border-2 border-[#ffb700] bg-[#0a0500] py-3.5 text-sm font-black uppercase tracking-widest text-[#ffb700] shadow-[0_5px_0_#8a5b00,0_12px_24px_rgba(255,183,0,0.12)] transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#ffb700] hover:text-black hover:shadow-[0_7px_0_#8a5b00,0_18px_30px_rgba(255,183,0,0.25)] active:translate-y-1 active:shadow-[0_1px_0_#8a5b00] disabled:translate-y-0 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-gray-600 disabled:shadow-none">
                       <span className="absolute inset-y-0 -left-1/2 w-1/3 skew-x-[-20deg] bg-white/45 transition-[left] duration-500 group-hover/button:left-[120%] group-disabled/button:hidden" />
-                      <span className="relative flex items-center justify-center gap-2">{rolling === task.index ? <><Activity className="h-4 w-4 animate-pulse" /> Processing</> : Number(data?.points || 0) < 1 ? "Insufficient points" : <><Zap className="h-4 w-4" /> Deploy mission</>}</span>
+                      <span className="relative flex items-center justify-center gap-2">{rolling === task.index ? <><Activity className="h-4 w-4 animate-pulse" /> กำลังสุ่มผล</> : Number(data?.points || 0) < 1 ? "TASKS POINT ไม่พอ" : <><Zap className="h-4 w-4" /> สุ่มภารกิจ</>}</span>
                     </button>
                   </div>
                 </motion.article>
@@ -223,8 +212,8 @@ export default function Tasks() {
           </div>
 
           <motion.section initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="mt-7 overflow-hidden rounded-[20px] border border-[#ffb700]/20 bg-[#0d0e13]/90">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4"><div className="flex items-center gap-3"><div className="h-5 w-1 rounded-full bg-[#ffb700] shadow-[0_0_8px_#ffb700]" /><History className="h-5 w-5 text-[#ffb700]" /><div><h2 className="text-sm font-black uppercase tracking-wider text-white">Operation log</h2><p className="text-[9px] font-bold uppercase tracking-widest text-gray-600">ประวัติภารกิจล่าสุด</p></div></div><div className="flex items-center gap-2 text-[9px] font-black text-emerald-400"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> LIVE RECORD</div></div>
-            <div className="grid gap-px bg-white/5 md:grid-cols-2 xl:grid-cols-4">{history.length ? history.slice(0, 8).map((item: any, index: number) => <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 + index * 0.04 }} key={item._id} className="group flex items-center justify-between gap-3 bg-[#0b0c10] p-4 transition hover:bg-white/[0.025]"><div className="min-w-0"><div className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${item.success ? "bg-emerald-400 shadow-[0_0_7px_#34d399]" : "bg-red-400 shadow-[0_0_7px_#f87171]"}`} /><p className="truncate text-xs font-black text-white">{item.taskName}</p></div><p className="mt-1 text-[9px] font-bold text-gray-600">RATE {item.successRate}% · {new Date(item.createdAt).toLocaleString("th-TH")}</p></div><span className={`shrink-0 text-[9px] font-black ${item.success ? "text-emerald-400" : "text-red-400"}`}>{item.success ? "SUCCESS" : "FAILED"}</span></motion.div>) : <p className="col-span-full bg-[#0b0c10] py-10 text-center text-sm text-gray-600">ยังไม่มีประวัติการสุ่มภารกิจ</p>}</div>
+            <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4"><div className="h-5 w-1 rounded-full bg-[#ffb700] shadow-[0_0_8px_#ffb700]" /><History className="h-5 w-5 text-[#ffb700]" /><h2 className="text-sm font-black text-white">ประวัติการสุ่ม</h2></div>
+            <div className="grid gap-px bg-white/5 md:grid-cols-2 xl:grid-cols-4">{history.length ? history.slice(0, 8).map((item: any, index: number) => <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 + index * 0.04 }} key={item._id} className="group flex items-center justify-between gap-3 bg-[#0b0c10] p-4 transition hover:bg-white/[0.025]"><div className="min-w-0"><div className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${item.success ? "bg-emerald-400 shadow-[0_0_7px_#34d399]" : "bg-red-400 shadow-[0_0_7px_#f87171]"}`} /><p className="truncate text-xs font-black text-white">{item.taskName}</p></div><p className="mt-1 text-[9px] font-bold text-gray-600">โอกาสสำเร็จ {item.successRate}% · {new Date(item.createdAt).toLocaleString("th-TH")}</p></div><span className={`shrink-0 text-[9px] font-black ${item.success ? "text-emerald-400" : "text-red-400"}`}>{item.success ? "สำเร็จ" : "ไม่สำเร็จ"}</span></motion.div>) : <p className="col-span-full bg-[#0b0c10] py-10 text-center text-sm text-gray-600">ยังไม่มีประวัติการสุ่มภารกิจ</p>}</div>
           </motion.section>
         </div>
       </motion.section>
@@ -250,18 +239,17 @@ export default function Tasks() {
 
               {!resultRevealed ? (
                 <div className="mt-3">
-                  <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#ffb700]">Calculating probability</p>
                   <h2 className="mt-3 text-2xl font-black text-white">กำลังประมวลผลภารกิจ...</h2>
-                  <p className="mt-2 text-sm text-gray-500">{selectedTask.name} · Success rate {selectedTask.rate}%</p>
+                  <p className="mt-2 text-sm text-gray-500">{selectedTask.name} · โอกาสสำเร็จ {selectedTask.rate}%</p>
                   <div className="mx-auto mt-6 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-white/5"><motion.div animate={{ x: ["-100%", "300%"] }} transition={{ duration: 0.85, repeat: Infinity, ease: "linear" }} className="h-full w-1/3 bg-gradient-to-r from-transparent via-[#ffb700] to-transparent" /></div>
-                  <div className="mt-5 flex items-center justify-center gap-5 text-[9px] font-black uppercase tracking-widest text-gray-600"><span className="animate-pulse">Encrypting</span><span className="animate-pulse [animation-delay:200ms]">Rolling</span><span className="animate-pulse [animation-delay:400ms]">Verifying</span></div>
+                  <p className="mt-5 animate-pulse text-[10px] font-black tracking-widest text-gray-600">กรุณารอผลการสุ่ม</p>
                 </div>
               ) : (
                 <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="mt-3">
-                  <div className={`mx-auto flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] ${result?.success ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-400" : "border-red-400/25 bg-red-400/10 text-red-400"}`}>{result?.success ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}{result?.success ? "Mission success" : "Mission failed"}</div>
+                  <div className={`mx-auto flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black tracking-[0.2em] ${result?.success ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-400" : "border-red-400/25 bg-red-400/10 text-red-400"}`}>{result?.success ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}{result?.success ? "ภารกิจสำเร็จ" : "ภารกิจไม่สำเร็จ"}</div>
                   <h2 className={`mt-4 text-4xl font-black uppercase italic ${result?.success ? "text-emerald-300" : "text-red-300"}`}>{result?.success ? "สำเร็จ !" : "ไม่สำเร็จ !"}</h2>
                   <p className="mt-2 text-sm font-bold text-gray-400">{result?.taskName}</p>
-                  <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl border border-white/5 bg-black/25 p-3"><p className="text-[9px] font-black text-gray-600">SUCCESS RATE</p><p className="mt-1 text-xl font-black text-white">{result?.rate}%</p></div><div className="rounded-xl border border-white/5 bg-black/25 p-3"><p className="text-[9px] font-black text-gray-600">TASKS POINT LEFT</p><p className="mt-1 text-xl font-black text-white">{result?.remainingPoints}</p></div></div>
+                  <div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl border border-white/5 bg-black/25 p-3"><p className="text-[9px] font-black text-gray-600">โอกาสสำเร็จ</p><p className="mt-1 text-xl font-black text-white">{result?.rate}%</p></div><div className="rounded-xl border border-white/5 bg-black/25 p-3"><p className="text-[9px] font-black text-gray-600">TASKS POINT คงเหลือ</p><p className="mt-1 text-xl font-black text-white">{result?.remainingPoints}</p></div></div>
                   <button onClick={closeResult} className={`group relative mt-6 w-full overflow-hidden rounded-lg border py-3.5 font-black uppercase tracking-wider transition hover:-translate-y-0.5 active:translate-y-1 ${result?.success ? "border-emerald-200/50 bg-emerald-400 text-[#04100b] shadow-[0_5px_0_#047857,0_12px_25px_rgba(52,211,153,0.2)]" : "border-red-300/40 bg-red-500 text-white shadow-[0_5px_0_#991b1b,0_12px_25px_rgba(239,68,68,0.2)]"}`}><span className="absolute inset-y-0 -left-1/2 w-1/3 skew-x-[-20deg] bg-white/35 transition-[left] duration-500 group-hover:left-[120%]" /><span className="relative">ยืนยันผล</span></button>
                 </motion.div>
               )}
