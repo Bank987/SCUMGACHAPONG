@@ -996,7 +996,6 @@ export default function Admin() {
                       </div>
                     ))}
                   </div>
-                  <p className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-[12px] leading-5 text-amber-200">Discord ใช้ environment variable <code>WEBHOOK_TASK_URL</code> และข้อความจะแสดงชื่อผู้เล่น ชื่อภารกิจ อัตราสำเร็จ และผลสำเร็จ/ไม่สำเร็จ</p>
                 </div>
               </div>
 
