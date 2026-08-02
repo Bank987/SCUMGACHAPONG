@@ -121,7 +121,7 @@ export default function Tasks() {
   if (!isAuthenticated) {
     return (
       <div className="flex min-h-[68vh] items-center justify-center">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="relative w-full max-w-xl overflow-hidden rounded-[24px] border border-[#ffb700]/30 bg-[#111218]/90 p-10 text-center shadow-[0_0_40px_rgba(255,183,0,0.12)]">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="relative w-full max-w-xl overflow-hidden rounded-[24px] border border-[#ffb700]/30 bg-[#111218]/25 p-10 text-center shadow-[0_0_40px_rgba(255,183,0,0.12)] backdrop-blur-[2px]">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ffb700] to-transparent" />
           <ClipboardList className="mx-auto h-14 w-14 text-[#ffb700] drop-shadow-[0_0_12px_rgba(255,183,0,0.6)]" />
           <h1 className="mt-5 text-2xl font-black text-white">กรุณาเข้าสู่ระบบ</h1>
@@ -142,8 +142,7 @@ export default function Tasks() {
 
   return (
     <div className="mx-auto max-w-[1500px] pb-20">
-      <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative min-h-[calc(100dvh-9rem)] overflow-hidden rounded-[26px] border border-[#ffb700]/25 bg-[#0b0c10]/90 shadow-[0_30px_100px_rgba(0,0,0,0.5)] backdrop-blur-md">
-        <div className="pointer-events-none absolute inset-0 opacity-[0.13] [background-image:linear-gradient(rgba(255,183,0,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,183,0,0.18)_1px,transparent_1px)] [background-size:48px_48px]" />
+      <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative min-h-[calc(100dvh-9rem)] overflow-hidden rounded-[26px] border border-[#ffb700]/25 bg-[#0b0c10]/25 shadow-[0_30px_100px_rgba(0,0,0,0.42)] backdrop-blur-[2px]">
         <motion.div animate={reduceMotion ? undefined : { backgroundPositionX: ["0%", "200%"] }} transition={{ duration: 7, repeat: Infinity, ease: "linear" }} className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,183,0,0.055)_45%,transparent_65%)] bg-[length:200%_100%]" />
         <div className="pointer-events-none absolute -left-32 top-20 h-96 w-96 rounded-full bg-[#ffb700]/10 blur-[110px]" />
         <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-orange-600/10 blur-[120px]" />
@@ -188,7 +187,7 @@ export default function Tasks() {
               const style = taskStyles[index] || taskStyles[0];
               const disabled = rolling !== null || Number(data?.points || 0) < 1;
               return (
-                <motion.article key={task.index} initial={{ opacity: 0, y: 35 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 + index * 0.12, duration: 0.5 }} whileHover={reduceMotion ? undefined : { y: -8, rotateX: 1.5 }} className={`group relative overflow-hidden rounded-[22px] border bg-[#0d0e13]/95 transition-[border-color,box-shadow] duration-300 ${style.border} ${style.glow}`}>
+                <motion.article key={task.index} initial={{ opacity: 0, y: 35 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 + index * 0.12, duration: 0.5 }} whileHover={reduceMotion ? undefined : { y: -8, rotateX: 1.5 }} className={`group relative overflow-hidden rounded-[22px] border bg-[#0d0e13]/35 backdrop-blur-[2px] transition-[border-color,box-shadow] duration-300 ${style.border} ${style.glow}`}>
                   <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${style.wash} via-transparent to-transparent opacity-60`} />
                   <motion.div animate={reduceMotion ? undefined : { x: ["-150%", "350%"] }} transition={{ duration: 4.5 + index, repeat: Infinity, repeatDelay: 2 }} className="pointer-events-none absolute inset-y-0 z-20 w-16 skew-x-[-18deg] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
                   <div className="relative flex h-48 items-center justify-center overflow-hidden bg-gradient-to-b from-white/[0.025] to-black/25 p-6">
@@ -211,17 +210,16 @@ export default function Tasks() {
             })}
           </div>
 
-          <motion.section initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="mt-7 overflow-hidden rounded-[20px] border border-[#ffb700]/20 bg-[#0d0e13]/90">
+          <motion.section initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="mt-7 overflow-hidden rounded-[20px] border border-[#ffb700]/20 bg-[#0d0e13]/30 backdrop-blur-[2px]">
             <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4"><div className="h-5 w-1 rounded-full bg-[#ffb700] shadow-[0_0_8px_#ffb700]" /><History className="h-5 w-5 text-[#ffb700]" /><h2 className="text-sm font-black text-white">ประวัติการสุ่ม</h2></div>
-            <div className="grid gap-px bg-white/5 md:grid-cols-2 xl:grid-cols-4">{history.length ? history.slice(0, 8).map((item: any, index: number) => <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 + index * 0.04 }} key={item._id} className="group flex items-center justify-between gap-3 bg-[#0b0c10] p-4 transition hover:bg-white/[0.025]"><div className="min-w-0"><div className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${item.success ? "bg-emerald-400 shadow-[0_0_7px_#34d399]" : "bg-red-400 shadow-[0_0_7px_#f87171]"}`} /><p className="truncate text-xs font-black text-white">{item.taskName}</p></div><p className="mt-1 text-[9px] font-bold text-gray-600">โอกาสสำเร็จ {item.successRate}% · {new Date(item.createdAt).toLocaleString("th-TH")}</p></div><span className={`shrink-0 text-[9px] font-black ${item.success ? "text-emerald-400" : "text-red-400"}`}>{item.success ? "สำเร็จ" : "ไม่สำเร็จ"}</span></motion.div>) : <p className="col-span-full bg-[#0b0c10] py-10 text-center text-sm text-gray-600">ยังไม่มีประวัติการสุ่มภารกิจ</p>}</div>
+            <div className="grid gap-px bg-white/5 md:grid-cols-2 xl:grid-cols-4">{history.length ? history.slice(0, 8).map((item: any, index: number) => <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.65 + index * 0.04 }} key={item._id} className="group flex items-center justify-between gap-3 bg-[#0b0c10]/35 p-4 transition hover:bg-white/[0.05]"><div className="min-w-0"><div className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${item.success ? "bg-emerald-400 shadow-[0_0_7px_#34d399]" : "bg-red-400 shadow-[0_0_7px_#f87171]"}`} /><p className="truncate text-xs font-black text-white">{item.taskName}</p></div><p className="mt-1 text-[9px] font-bold text-gray-500">โอกาสสำเร็จ {item.successRate}% · {new Date(item.createdAt).toLocaleString("th-TH")}</p></div><span className={`shrink-0 text-[9px] font-black ${item.success ? "text-emerald-400" : "text-red-400"}`}>{item.success ? "สำเร็จ" : "ไม่สำเร็จ"}</span></motion.div>) : <p className="col-span-full bg-[#0b0c10]/30 py-10 text-center text-sm text-gray-500">ยังไม่มีประวัติการสุ่มภารกิจ</p>}</div>
           </motion.section>
         </div>
       </motion.section>
 
       <AnimatePresence>
         {selectedTask && (rolling !== null || result) && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`fixed inset-0 z-[1200] flex items-center justify-center overflow-hidden bg-black/90 px-4 backdrop-blur-lg ${resultRevealed && result && !result.success ? "animate-[shake_0.45s_ease-in-out]" : ""}`}>
-            <div className="pointer-events-none absolute inset-0 opacity-[0.18] [background-image:linear-gradient(rgba(255,183,0,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,183,0,0.2)_1px,transparent_1px)] [background-size:52px_52px]" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={`fixed inset-0 z-[1200] flex items-center justify-center overflow-hidden bg-black/70 px-4 backdrop-blur-[2px] ${resultRevealed && result && !result.success ? "animate-[shake_0.45s_ease-in-out]" : ""}`}>
             {!resultRevealed && <motion.div animate={{ y: ["-10vh", "110vh"] }} transition={{ duration: 1.3, repeat: Infinity, ease: "linear" }} className="pointer-events-none absolute inset-x-0 h-px bg-[#ffb700] shadow-[0_0_25px_#ffb700]" />}
             {resultRevealed && <motion.div initial={{ opacity: 0.85 }} animate={{ opacity: 0 }} transition={{ duration: 0.8 }} className={`pointer-events-none absolute inset-0 ${result?.success ? "bg-emerald-300" : "bg-red-600"}`} />}
             <motion.div animate={reduceMotion ? undefined : { rotate: 360 }} transition={{ duration: 18, repeat: Infinity, ease: "linear" }} className={`pointer-events-none absolute h-[75vmin] w-[75vmin] rounded-full border border-dashed ${resultRevealed ? result?.success ? "border-emerald-400/25" : "border-red-400/25" : "border-[#ffb700]/20"}`} />
