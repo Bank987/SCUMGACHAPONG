@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { User } from "../models/User.js";
 import { Case } from "../models/Case.js";
 import { Settings } from "../models/Settings.js";
@@ -25,6 +26,46 @@ function clampInteger(value: any, min: number, max: number) {
   const number = Number(value);
   if (!Number.isFinite(number)) return null;
   return Math.min(max, Math.max(min, Math.trunc(number)));
+}
+
+function requireDatabase(res: express.Response) {
+  if (mongoose.connection.readyState !== 1) {
+    res.status(503).json({ error: "Database not connected. Check MONGODB_URI and MongoDB network access." });
+    return false;
+  }
+  return true;
+}
+
+function validateCasePayload(caseData: any) {
+  if (!caseData || typeof caseData !== "object") return "ข้อมูลกล่องไม่ถูกต้อง";
+  if (typeof caseData.name !== "string" || !caseData.name.trim()) return "กรุณากรอกชื่อกล่อง";
+  if (typeof caseData.image !== "string" || !caseData.image.trim()) return "กรุณากรอกลิงก์รูปกล่อง";
+  if (!Number.isFinite(Number(caseData.price)) || Number(caseData.price) < 0) return "ราคากล่องต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป";
+  if (!Array.isArray(caseData.items)) return "รายการไอเทมในกล่องไม่ถูกต้อง";
+
+  for (const [index, item] of caseData.items.entries()) {
+    if (!item || typeof item !== "object") return `ไอเทมลำดับที่ ${index + 1} ไม่ถูกต้อง`;
+    if (typeof item.name !== "string" || !item.name.trim()) return `กรุณากรอกชื่อไอเทมลำดับที่ ${index + 1}`;
+    if (typeof item.image !== "string" || !item.image.trim()) return `กรุณากรอกลิงก์รูปไอเทมลำดับที่ ${index + 1}`;
+    if (typeof item.rarity !== "string" || !item.rarity.trim()) return `กรุณาระบุระดับไอเทมลำดับที่ ${index + 1}`;
+    if (!Number.isFinite(Number(item.dropRate)) || Number(item.dropRate) < 0) return `อัตราดรอปไอเทมลำดับที่ ${index + 1} ไม่ถูกต้อง`;
+    if (typeof item.color !== "string" || !item.color.trim()) return `กรุณาระบุสีไอเทมลำดับที่ ${index + 1}`;
+  }
+
+  return null;
+}
+
+function getDatabaseError(error: any) {
+  if (error?.name === "ValidationError") {
+    const message = Object.values(error.errors || {})
+      .map((entry: any) => entry.message)
+      .filter(Boolean)
+      .join(", ");
+    return message || "ข้อมูลกล่องไม่ผ่านการตรวจสอบ";
+  }
+  if (error?.name === "CastError") return `ข้อมูล ID ไม่ถูกต้อง: ${error.path}`;
+  if (error?.code === 11000) return "ข้อมูลกล่องซ้ำกับข้อมูลเดิม";
+  return "ไม่สามารถบันทึกข้อมูลกล่องได้ กรุณาตรวจสอบฐานข้อมูลและข้อมูลที่กรอก";
 }
 
 router.use(async (req, res, next) => {
@@ -194,26 +235,35 @@ router.delete("/users", async (req, res) => {
 
 router.get("/cases", async (req, res) => {
   try {
+    if (!requireDatabase(res)) return;
     const cases = await Case.find({});
     res.json(cases || []);
   } catch (err) {
+    console.error("Admin fetch cases error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
 router.post("/cases", async (req, res) => {
   try {
+    if (!requireDatabase(res)) return;
+    const validationError = validateCasePayload(req.body);
+    if (validationError) return res.status(400).json({ error: validationError });
     const guaranteeError = validateGuarantee(req.body);
     if (guaranteeError) return res.status(400).json({ error: guaranteeError });
     const newCase = await Case.create(req.body);
     res.json(newCase);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("Admin create case error:", err);
+    res.status(500).json({ error: getDatabaseError(err) });
   }
 });
 
 router.put("/cases/:id", async (req, res) => {
   try {
+    if (!requireDatabase(res)) return;
+    const validationError = validateCasePayload(req.body);
+    if (validationError) return res.status(400).json({ error: validationError });
     const guaranteeError = validateGuarantee(req.body);
     if (guaranteeError) return res.status(400).json({ error: guaranteeError });
     const updatedCase = await Case.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
@@ -221,16 +271,18 @@ router.put("/cases/:id", async (req, res) => {
 
     res.json(updatedCase);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("Admin update case error:", err);
+    res.status(500).json({ error: getDatabaseError(err) });
   }
 });
 
 router.delete("/cases/:id", async (req, res) => {
   try {
+    if (!requireDatabase(res)) return;
     await Case.deleteOne({ _id: req.params.id });
     res.json({ success: true });
   } catch (err) {
+    console.error("Admin delete case error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
