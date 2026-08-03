@@ -68,6 +68,34 @@ function getDatabaseError(error: any) {
   return "ไม่สามารถบันทึกข้อมูลกล่องได้ กรุณาตรวจสอบฐานข้อมูลและข้อมูลที่กรอก";
 }
 
+function normalizeCasePayload(caseData: any) {
+  const normalized = {
+    name: caseData.name.trim(),
+    description: typeof caseData.description === "string" ? caseData.description : "",
+    image: caseData.image.trim(),
+    price: Number(caseData.price),
+    category: typeof caseData.category === "string" ? caseData.category : "1",
+    guaranteeEnabled: Boolean(caseData.guaranteeEnabled),
+    guaranteeEvery: Number(caseData.guaranteeEvery || 0),
+    guaranteeItemId: caseData.guaranteeItemId || null,
+    items: caseData.items.map((item: any) => ({
+      ...(item._id ? { _id: item._id } : {}),
+      name: item.name.trim(),
+      image: item.image.trim(),
+      rarity: item.rarity.trim(),
+      dropRate: Number(item.dropRate),
+      color: item.color.trim()
+    }))
+  };
+
+  if (!normalized.guaranteeEnabled) {
+    normalized.guaranteeEvery = 0;
+    normalized.guaranteeItemId = null;
+  }
+
+  return normalized;
+}
+
 router.use(async (req, res, next) => {
   try {
     const pin = req.headers["x-admin-pin"];
@@ -249,9 +277,10 @@ router.post("/cases", async (req, res) => {
     if (!requireDatabase(res)) return;
     const validationError = validateCasePayload(req.body);
     if (validationError) return res.status(400).json({ error: validationError });
-    const guaranteeError = validateGuarantee(req.body);
+    const caseData = normalizeCasePayload(req.body);
+    const guaranteeError = validateGuarantee(caseData);
     if (guaranteeError) return res.status(400).json({ error: guaranteeError });
-    const newCase = await Case.create(req.body);
+    const newCase = await Case.create(caseData);
     res.json(newCase);
   } catch (err) {
     console.error("Admin create case error:", err);
@@ -264,9 +293,10 @@ router.put("/cases/:id", async (req, res) => {
     if (!requireDatabase(res)) return;
     const validationError = validateCasePayload(req.body);
     if (validationError) return res.status(400).json({ error: validationError });
-    const guaranteeError = validateGuarantee(req.body);
+    const caseData = normalizeCasePayload(req.body);
+    const guaranteeError = validateGuarantee(caseData);
     if (guaranteeError) return res.status(400).json({ error: guaranteeError });
-    const updatedCase = await Case.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
+    const updatedCase = await Case.findOneAndUpdate({ _id: req.params.id }, { $set: caseData }, { new: true, runValidators: true });
     if (!updatedCase) return res.status(404).json({ error: "Case not found" });
 
     res.json(updatedCase);
